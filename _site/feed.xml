@@ -1,17 +1,92 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-07T15:35:52+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">개발과 성장을 남기는 공간</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/sparkshell-import-error/">&lt;p&gt;&lt;img src=&quot;http://&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><summary type="html"></summary></entry><entry><title type="html">HDFS의 블록 수와 견딜 수 있는 장애 수</title><link href="http://localhost:4000/bigdata/hdfs-fault-tolerance/" rel="alternate" type="text/html" title="HDFS의 블록 수와 견딜 수 있는 장애 수" /><published>2020-03-13T00:00:00+09:00</published><updated>2020-03-13T00:00:00+09:00</updated><id>http://localhost:4000/bigdata/hdfs-fault-tolerance</id><content type="html" xml:base="http://localhost:4000/bigdata/hdfs-fault-tolerance/">&lt;p&gt;HDFS의 block replication은 기본 3이다. 이를 5로 변경하면 몇 번의 장애를 견딜 수 있을까?&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-07T17:22:15+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">개발과 성장을 남기는 공간</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/dev/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/dev/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/dev/sparkshell-import-error/">&lt;h2 id=&quot;1-문제-발견&quot;&gt;1. 문제 발견&lt;/h2&gt;
 
-&lt;h2 id=&quot;block-replication&quot;&gt;Block Replication&lt;/h2&gt;
+&lt;p&gt;Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다.
+아래는 “&lt;a href=&quot;https://github.com/sryza/aas/blob/master/ch08-geotime/src/main/scala/com/cloudera/datascience/geotime/RichGeometry.scala&quot;&gt;9가지 사례로 익히는 고급 스파크 분석&lt;/a&gt;” 책의 예제코드이다.&lt;/p&gt;
 
-&lt;p&gt;hdfs는 불라불라다.&lt;/p&gt;
+&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.esri.core.geometry.Geometry&lt;/span&gt;
 
-&lt;p&gt;그럼 이런 걸 우량루나허니ㅏ딘 하면은
-어떻게 될까&lt;/p&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RichGeometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;geometry&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;fault-tolerance&quot;&gt;Fault Tolerance&lt;/h2&gt;
+&lt;p&gt;위 코드를 Zeppelin에서 수행하게 되면 아래와 같은 에러가 뜬다.&lt;/p&gt;
 
-&lt;p&gt;장애에 대응할 수 있는 빅데이터. 클러스터&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/07/2020-09-07-zeppelin-error.png&quot; alt=&quot;zeppelin-error&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;동해물과 백두산이 마르고 닳도록
-아헤이이이&lt;/p&gt;
+&lt;p&gt;첫 줄의 java esri 라이브러리는 Zeppelin의 Spark interpreter 옵션에서 Dependencies 항목에 jar 파일 경로로 추가했다.
+import 자체는 문제 없이 수행된다.
+문제는 import되었음에도 Spark interpreter가 인식을 못 하는 것이다. (심지어 같은 paragraph에서 실행했다!)&lt;/p&gt;
 
-&lt;p&gt;우해하도넨하ㅏ히나다다&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="bigdata" /><category term="hdfs" /><category term="wowo" /><category term="fault-tolerance" /><summary type="html">HDFS의 block replication은 기본 3이다. 이를 5로 변경하면 몇 번의 장애를 견딜 수 있을까?</summary></entry><entry><title type="html">Layout: Comments Enabled</title><link href="http://localhost:4000/layout/uncategorized/layout-comments/" rel="alternate" type="text/html" title="Layout: Comments Enabled" /><published>2012-01-02T00:00:00+09:00</published><updated>2012-01-02T00:00:00+09:00</updated><id>http://localhost:4000/layout/uncategorized/layout-comments</id><content type="html" xml:base="http://localhost:4000/layout/uncategorized/layout-comments/">&lt;p&gt;This post should display comments if a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;provider&lt;/code&gt; is enabled.&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="Layout" /><category term="Uncategorized" /><category term="comments" /><category term="layout" /><summary type="html">This post should display comments if a provider is enabled.</summary></entry></feed>
+&lt;p&gt;위 문제가 발생한 환경은 다음과 같다&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;name&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;version&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;Scala&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;2.11.8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;Spark&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;2.2.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;2-stackoverflow-검색&quot;&gt;2. StackOverflow 검색&lt;/h2&gt;
+
+&lt;p&gt;Stackoverflow에서 검색을 하다 크게 2가지 해결 방법을 찾았다.&lt;/p&gt;
+
+&lt;h3 id=&quot;2-1-세미콜론으로-라인-이어붙이기&quot;&gt;2-1. 세미콜론으로 라인 이어붙이기&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;세미콜론&lt;/em&gt;을 이용하여 import 구문과 class 선언 구문을 한 라인으로 이어 붙이는 방법이다. (…)
+정상적으로 수행은 가능하지만 코드가 매우 기괴해진다.&lt;/p&gt;
+
+&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.esri.core.geometry.Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RichGeometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;geometry&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,...)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;2-2-싱글톤으로-감싸기&quot;&gt;2-2. 싱글톤으로 감싸기&lt;/h3&gt;
+
+&lt;p&gt;import 구문부터 class 선언구문 전체를 하나의 싱글톤으로 감싼다.
+싱글톤 내부에서 import하므로 정상적으로 class 선언이 가능해진다.
+그러나 클래스를 직접 호출할 수 없고 싱글톤 내부에서 가져와야 한다.&lt;/p&gt;
+
+&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.esri.core.geometry.Geometry&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RichGeometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;geometry&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;
+두 가지 모두 마음에 드는 해결책은 아니다.
+구체적으로 원인이 무엇인지, 근본적인 해결책은 어떤건지 자세히 알아봐야겠다.&lt;/p&gt;
+
+&lt;h2 id=&quot;3-근본적인-원인과-해결책&quot;&gt;3. 근본적인 원인과 해결책&lt;/h2&gt;
+&lt;p&gt;Zeppelin 상에서 발견해서 당연히 Zeppelin 상의 버그인 줄 알았는데 알고보니 Spark-Shell의 오류였다.
+(좀 더 깊게 들어가면 Scala까지 가게 된다.)&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://issues.apache.org/jira/browse/SPARK-22393&quot;&gt;SPARK-22393&lt;/a&gt; 이슈에 따르면 Spark 2.x대에 들어서면서 발생한 버그다.
+Scala 언어에서 2.11~2.12 버전 사이에 importHandler 관련 버그 픽스(&lt;a href=&quot;https://github.com/scala/bug/issues/9881&quot;&gt;SI-9880&lt;/a&gt;)가 있었는데 해당 이슈로 인해 Spark에도 import 관련 버그가 발생한 것으로 보인다.&lt;/p&gt;
+
+&lt;p&gt;컨트리뷰터들 사이에서도 굉장히 난해한 버그였던 것 같다. 핵심만 정리하자면&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Scala 2.11 에서 동작하는 Spark에서 해당 버그 발생함&lt;/li&gt;
+  &lt;li&gt;Scala 2.12 에서는 importHandler 이슈가 해결됨에 따라 spark-shell 역시 정상적으로 동작함&lt;/li&gt;
+  &lt;li&gt;spark-shell의 버그를 고치기 위해 Scala까지 수정하는 것은 매우 큰 작업이고 리스크가 크므로 실용적이지 않음&lt;/li&gt;
+  &lt;li&gt;따라서 Scala의 fix를 적절히 이용하여 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SparkExprTyper&lt;/code&gt; 및 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SparkILoopInterpreter&lt;/code&gt;를 spark-shell에 추가하여 버그픽스함&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;즉, Spark 2.3부터는 해당 이슈가 해결되었다.
+Spark의 버전을 업그레이드하는 것이 가장 합리적인 해결책이다.&lt;/p&gt;
+
+&lt;p&gt;문제가 있다면 내가 사용하는 HDP에서는 Spark 버전이 2.2라는 것이다.
+HDP와는 별도로 Spark 최신버전을 설치하고 Zeppelin에 연동하는 방식으로 사용해야할 것 같다.&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="dev" /><category term="spark" /><category term="zeppelin" /><category term="scala" /><summary type="html">1. 문제 발견</summary></entry></feed>

@@ -1,19 +1,7 @@
 var store = [{
-        "title": "Layout: Comments Enabled",
-        "excerpt":"This post should display comments if a provider is enabled.  ","categories": ["Layout","Uncategorized"],
-        "tags": ["comments","layout"],
-        "url": "http://localhost:4000/layout/uncategorized/layout-comments/",
-        "teaser": null
-      },{
-        "title": "HDFS의 블록 수와 견딜 수 있는 장애 수",
-        "excerpt":"HDFS의 block replication은 기본 3이다. 이를 5로 변경하면 몇 번의 장애를 견딜 수 있을까?   Block Replication   hdfs는 불라불라다.   그럼 이런 걸 우량루나허니ㅏ딘 하면은 어떻게 될까   Fault Tolerance   장애에 대응할 수 있는 빅데이터. 클러스터   동해물과 백두산이 마르고 닳도록 아헤이이이   우해하도넨하ㅏ히나다다  ","categories": ["bigdata"],
-        "tags": ["hdfs","wowo","fault-tolerance"],
-        "url": "http://localhost:4000/bigdata/hdfs-fault-tolerance/",
-        "teaser": null
-      },{
         "title": "Spark Shell import 에러",
-        "excerpt":"  ","categories": [],
-        "tags": [],
-        "url": "http://localhost:4000/sparkshell-import-error/",
+        "excerpt":"1. 문제 발견 Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다. 아래는 “9가지 사례로 익히는 고급 스파크 분석” 책의 예제코드이다. import com.esri.core.geometry.Geometry class RichGeometry(val geometry: Geometry, ...) { ... } 위 코드를 Zeppelin에서 수행하게 되면 아래와 같은 에러가 뜬다. 첫 줄의 java esri 라이브러리는 Zeppelin의 Spark interpreter 옵션에서 Dependencies...","categories": ["dev"],
+        "tags": ["spark","zeppelin","scala"],
+        "url": "http://localhost:4000/dev/sparkshell-import-error/",
         "teaser": null
       }]
