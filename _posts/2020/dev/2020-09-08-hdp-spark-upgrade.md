@@ -129,4 +129,4 @@ $ ./bin/spark-shell \
 여기까지 수행한 끝에 HDP 2.6에서 Spark 2.4 버전을 사용할 수 있게 되었다.
 ```-Dhdp.version``` 옵션은 설정 파일 등에 추가할 생각이다.
 
-[result](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-spark-shell-result.jpeg)
+![result](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-spark-shell-result.jpeg)
