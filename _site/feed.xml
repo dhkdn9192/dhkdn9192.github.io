@@ -1,4 +1,72 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-08T21:52:35+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">개발과 성장을 남기는 공간</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">HDP 2.6에서 Spark 업그레이드하기</title><link href="http://localhost:4000/dev/hdp-spark-upgrade/" rel="alternate" type="text/html" title="HDP 2.6에서 Spark 업그레이드하기" /><published>2020-09-08T00:00:00+09:00</published><updated>2020-09-08T00:00:00+09:00</updated><id>http://localhost:4000/dev/hdp-spark-upgrade</id><content type="html" xml:base="http://localhost:4000/dev/hdp-spark-upgrade/">&lt;h2 id=&quot;1-spark-22의-import-버그&quot;&gt;1. Spark 2.2의 import 버그&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-09T16:16:35+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">PySpark의 py4j 호환성 오류</title><link href="http://localhost:4000/dev/pyspark-py4j-error/" rel="alternate" type="text/html" title="PySpark의 py4j 호환성 오류" /><published>2020-09-09T00:00:00+09:00</published><updated>2020-09-09T00:00:00+09:00</updated><id>http://localhost:4000/dev/pyspark-py4j-error</id><content type="html" xml:base="http://localhost:4000/dev/pyspark-py4j-error/">&lt;h2 id=&quot;1-py4jerror&quot;&gt;1. Py4JError&lt;/h2&gt;
+&lt;p&gt;기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다.
+실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.&lt;/p&gt;
+
+&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pyspark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;sql&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;SparkSession&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;spark&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;SparkSession&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;getOrCreate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;SparkSession을 생성하려고 하면 다음과 같이 Py4JError가 발생한다.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Py4JError                                 Traceback (most recent call last)
+&amp;lt;ipython-input-3-ce55329f3d67&amp;gt; in &amp;lt;module&amp;gt;()
+----&amp;gt; 1 spark = SparkSession.builder.getOrCreate()
+      2 spark
+
+/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/sql/session.py in getOrCreate(self)
+/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/context.py in getOrCreate(cls, conf)
+/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/context.py in __init__(self, master, appName, sparkHome, pyFiles, environment, batchSize, serializer, conf, gateway, jsc, profiler_cls)
+/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/context.py in _ensure_initialized(cls, instance, gateway, conf)
+/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/java_gateway.py in launch_gateway(conf)
+/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/java_gateway.py in _launch_gateway(conf, insecure)
+/data/venv/lib64/python3.6/site-packages/py4j/java_gateway.py in java_import(jvm_view, import_str)
+/data/venv/lib64/python3.6/site-packages/py4j/protocol.py in get_return_value(answer, gateway_client, target_id, name)
+    321                 raise Py4JError(
+    322                     &quot;An error occurred while calling {0}{1}{2}. Trace:\n{3}\n&quot;.
+--&amp;gt; 323                     format(target_id, &quot;.&quot;, name, value))
+    324         else:
+    325             raise Py4JError(
+
+Py4JError: An error occurred while calling None.None. Trace:
+Authentication error: unexpected command. 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;2-pyspark의-jvm-연동&quot;&gt;2. PySpark의 JVM 연동&lt;/h2&gt;
+&lt;p&gt;위 현상은 새로 설치한 spark의 pyspark shell에서는 발생하지 않는다.
+기존에 사용하던 python 가상환경에서 pyspark을 import하여 사용할 때에만 발생한다.&lt;/p&gt;
+
+&lt;p&gt;PySpark은 python으로 작성된 코드를 jvm에서 수행하기 위해 py4j 라이브러리를 사용한다.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;${SPARK_HOME}/python/pyspark/java_gateway.py&lt;/code&gt;를 보면 
+py4j의 java_import 함수를 사용하여 필요한 클래스들을 jvm에 import한다.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;c1&quot;&gt;# Import the classes used by PySpark
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.SparkConf&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.api.java.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.api.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.ml.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.mllib.api.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# TODO(davies): move into sql
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.sql.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.sql.api.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.sql.hive.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;scala.Tuple2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;3-원인과-해결책&quot;&gt;3. 원인과 해결책&lt;/h2&gt;
+
+&lt;p&gt;여기서 오류가 발생한 이유는 정말 사소한 것 때문이었다.
+기존에 사용하던 PySpark을 위해 py4j를 설치했었는데,
+신규 설치한 Spark이 요구하는 버전과 달라서 오류가 발생했던 것이다.&lt;/p&gt;
+
+&lt;p&gt;기존 사용하던 python 가상환경에는 py4j 0.10.4 버전이 설치되어 있었다.
+반면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;${SPARK_HOME}/python/setup.py&lt;/code&gt;에서 신규 설치한 pyspark이 요구하는 py4j 버전은 다음과 같다.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;install_requires&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'py4j==0.10.7'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;요구하는 버전을 설치하여 정말 간단하게 해결할 수 있는 문제였다.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;pip &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;py4j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;0.10.7
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="dev" /><category term="spark" /><category term="pyspark" /><category term="py4j" /><summary type="html">1. Py4JError 기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다. 실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.</summary></entry><entry><title type="html">HDP 2.6에서 Spark 업그레이드하기</title><link href="http://localhost:4000/dev/hdp-spark-upgrade/" rel="alternate" type="text/html" title="HDP 2.6에서 Spark 업그레이드하기" /><published>2020-09-08T00:00:00+09:00</published><updated>2020-09-08T00:00:00+09:00</updated><id>http://localhost:4000/dev/hdp-spark-upgrade</id><content type="html" xml:base="http://localhost:4000/dev/hdp-spark-upgrade/">&lt;h2 id=&quot;1-spark-22의-import-버그&quot;&gt;1. Spark 2.2의 import 버그&lt;/h2&gt;
 &lt;p&gt;현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다.
 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(&lt;a href=&quot;https://issues.apache.org/jira/browse/SPARK-22393&quot;&gt;SPARK-22393&lt;/a&gt;)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다.
 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.&lt;/p&gt;
@@ -108,7 +176,7 @@ HDP와는 별개로 설치한 Spark 패키지여서 이 부분을 생략했던 �
 &lt;p&gt;여기까지 수행한 끝에 HDP 2.6에서 Spark 2.4 버전을 사용할 수 있게 되었다.
 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-Dhdp.version&lt;/code&gt; 옵션은 설정 파일 등에 추가할 생각이다.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-spark-shell-result.jpeg&quot; alt=&quot;result&quot; /&gt;&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="dev" /><category term="spark" /><category term="scala" /><category term="HDP" /><category term="YARN" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/dev/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/dev/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/dev/sparkshell-import-error/">&lt;h2 id=&quot;1-문제-발견&quot;&gt;1. 문제 발견&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-spark-shell-result.jpeg&quot; alt=&quot;result&quot; /&gt;&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="dev" /><category term="spark" /><category term="scala" /><category term="hdp" /><category term="yarn" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/dev/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/dev/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/dev/sparkshell-import-error/">&lt;h2 id=&quot;1-문제-발견&quot;&gt;1. 문제 발견&lt;/h2&gt;
 
 &lt;p&gt;Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다.
 아래는 “&lt;a href=&quot;https://github.com/sryza/aas/blob/master/ch08-geotime/src/main/scala/com/cloudera/datascience/geotime/RichGeometry.scala&quot;&gt;9가지 사례로 익히는 고급 스파크 분석&lt;/a&gt;” 책의 예제코드이다.&lt;/p&gt;

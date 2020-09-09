@@ -8,8 +8,8 @@ categories:
 tags:
 - spark
 - scala
-- HDP
-- YARN
+- hdp
+- yarn
 ---
 
 ## 1. Spark 2.2의 import 버그
