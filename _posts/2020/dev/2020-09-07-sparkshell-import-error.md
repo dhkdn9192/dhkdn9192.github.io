@@ -12,7 +12,6 @@ tags:
 ---
 
 ## 1. 문제 발견
-
 Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다.
 아래는 "[9가지 사례로 익히는 고급 스파크 분석](https://github.com/sryza/aas/blob/master/ch08-geotime/src/main/scala/com/cloudera/datascience/geotime/RichGeometry.scala)" 책의 예제코드이다.
 
