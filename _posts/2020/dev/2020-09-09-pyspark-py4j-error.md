@@ -9,6 +9,7 @@ tags:
 - spark
 - pyspark
 - py4j
+comments: true
 ---
 
 ## 1. Py4JError

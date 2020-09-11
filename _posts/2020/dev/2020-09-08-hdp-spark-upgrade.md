@@ -10,6 +10,7 @@ tags:
 - scala
 - hdp
 - yarn
+comments: true
 ---
 
 ## 1. Spark 2.2의 import 버그
@@ -18,17 +19,15 @@ tags:
 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.
 
 
-## 2. Spark 업그레이드 하기
-
-### 2-1. Spark 2.4 다운로드 및 설치
+## 2. HDP에 외부 Spark 연동하기 (yarn-client)
+### 2-1. Spark 2.4.6 다운로드 및 설치
 
 우선 Apache Ambari 관리모드에서 기존 Spark을 삭제한 뒤, Spark 신규 버전을 Master 노드에 다운로드하였다.
 HDP 2.6에선 Hadoop 2.7을 사용하므로 **Pre-built for Apache Hadoop 2.7**을 선택한다.
 
 ![download-spark](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-download-spark.png)
 
-
-### 2-2. spark-env.sh 설정
+### 2-2. spark-env.sh 및 SPARK_HOME 설정
 원하는 곳에 압축 해제한 뒤 ```conf/spark-env.sh``` 파일을 열어 아래와 같이 수정한다.
 
 ```bash
@@ -36,11 +35,19 @@ export HADOOP_HOME=/usr/hdp/2.6.3.0-235/hadoop
 export HADOOP_CONF_DIR=/etc/hadoop/conf
 ```
 
-Spark은 ```${HADOOP_CONF_DIR}/yarn-site.xml``` 파일로부터 YARN과 연결하기 위한 정보들을 가져오게 된다.
+```HADOOP_HOME```은 HDP Hadoop이 설치된 경로이다.
+Spark은 ```HADOOP_CONF_DIR}``` 하위의 ```yarn-site.xml``` 파일을 이용해 YARN과 연결할 수 있게 된다.
+
+또한, ```~/.bashrc``` 파일을 열어 아래와 같이 ```SPARK_HOME```, ```PATH``` 환경변수를 설정해준다.
+
+```bash
+export SPARK_HOME={설치한 Spark 디렉토리 경로}
+export PATH=$SPARK_HOME/bin:$PATH
+```
 
 ### 2-3. spark-shell 실행
 
-```bin/spark-shell```을 수행하면 REPL 환경에서 Spark 프로그래밍을 할 수 있다.
+```bin/spark-shell```을 실행하면 REPL 환경에서 Spark 프로그래밍을 할 수 있다.
 별도의 옵션 없이 수행하면 standalone 모드로 동작한다. YARN과 연동하여 하둡 클러스터를 이용하려면 yarn-client 모드로 동작해야 한다.
 
 ```bash
@@ -49,7 +56,7 @@ $ ./bin/spark-shell --master yarn --deploy-mode client
 
 ### 2-4. YARN timeline-service 이슈
 
-위와 같이 yarn-client 모드를 수행하면 다음과 같은 에러가  발생한다.
+hdp에서 위와 같이 yarn-client 모드를 수행하면 다음과 같은 에러가  발생한다.
 
 ```
 java.lang.NoClassDefFoundError: com/sun/jersey/api/client/config/ClientConfig
@@ -81,7 +88,7 @@ Caused by: java.lang.ClassNotFoundException: com.sun.jersey.api.client.config.Cl
 
 - YARN의 timeline-service 기능과 관련하여 jersey 라이브러리를 사용하고 있다.
 - 기존에 사용하던 HDP 환경에선 YARN과 Spark 모두 jersey 1.9 버전을 사용하고 있었으나, **Spark 2.4는 2.22.2 버전을 사용하므로 서로 호환되지 않는다**.
-- YARN은 디폴트로 timeline-service 기능이 켜져있으므로 항상 jersey 호환성으로 인한 NoClassDefFoundError를 일으키게 된다.
+- YARN은 디폴트로 timeline-service 기능이 켜져있으므로 **항상 jersey 호환성으로 인한 NoClassDefFoundError를 일으키게 된다**.
 
 
 jira 이슈에서 제시되는 몇가지 해결책들이 있다.
@@ -93,9 +100,12 @@ jira 이슈에서 제시되는 몇가지 해결책들이 있다.
 
 YARN에 제출되는 다양한 애플리케이션들 중 오직 Spark만을 위해서 timeline-service 기능을 끄는 것은 다소 실용성이 떨어진다.
 jersey의 버전을 강제적으로 통일했을 땐 부가적인 문제가 생길 가능성이 있으므로 여기서는 두번째 방안을 채택하기로 했다.
+옵션을 디폴트로 설정하려면 ```conf/spark-defaults.conf``` 파일에 아래와 같이 추가해준다.
+```
+spark.hadoop.yarn.timeline-service.enabled   false
+```
 
-
-### 2-5. YARN application has already ended!
+### 2-5. YARN application has already ended! (hdp.version 이슈)
 
 timeline-service 이슈를 해결했더니 이번에는 다음과 같은 에러가 발생했다.
 
@@ -122,11 +132,125 @@ $ ./bin/spark-shell \
   --deploy-mode client \
   --conf spark.hadoop.yarn.timeline-service.enabled=false \
   --conf spark.driver.extraJavaOptions='-Dhdp.version=2.6.3.0-235' \
-  --conf spark.yarn.am.extraJavaOptions='-Dhdp.version=2.6.3.0-235'
+  --conf spark.yarn.am.extraJavaOptions='-Dhdp.version=2.6.3.0-235' \
+  --conf spark.executor.extraJavaOptions='-Dhdp.version=2.6.3.0-235'
+```
+
+여기까지 수행한 끝에 HDP 2.6에서 yarn-client 모드로 Spark 2.4 버전을 사용할 수 있게 되었다.
+
+![result](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-spark-shell-result.jpeg)
+
+해당 옵션을 디폴트로 사용하려면 ```conf/spark-defaults.conf```에 아래 라인들을 추가해준다.
+참고로 ```spark.yarn.am.extraJavaOptions``` 옵션은 yarn-cluster 모드에선 효과가 없다.
+```
+spark.driver.extraJavaOptions    -Dhdp.version=2.6.3.0-235
+spark.yarn.am.extraJavaOptions   -Dhdp.version=2.6.3.0-235
+spark.executor.extraJavaOptions  -Dhdp.version=2.6.3.0-235
+```
+
+## 3. HDP에 Spark Cluster 설치하기 (yarn-cluster)
+### 3-1. yarn-client vs. yarn-cluster
+
+위처럼 yarn-client 모드로 사용할 땐 master 노드에만 spark을 설치하면 된다.
+그러나 yarn-cluster 모드를 사용하려면 slave 노드들에도 spark이 설치되어야 한다.
+
+- yarn-client
+
+![yarn-client](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/11/2020-09-11-yarn-client-mode.png)
+
+- yarn-cluster
+
+![yarn-cluster](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/11/2020-09-11-yarn-cluster-mode.png)
+
+- 이미지 출처 : https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2
+
+
+
+위 이미지에서 보듯이, client 모드와 cluster 모드의 가장 큰 차이는 spark driver의 위치다.
+cluster 모드에선 spark driver가 application master에서 동작한다.
+즉 클러스터 내부에서 spark driver가 생성되어야 한다.
+모든 slave 노드들에 spark을 설치해줘야 하는 이유다.
+
+
+### 3-2. ssh 연결 설정
+
+spark cluster가 구성되려면 각 노드의 spark 계정끼리 ssh로 연결 가능해햐 한다.
+ssh 키가 없다면 아래 명령어로 생성해준다.
+
+```bash
+$ ssh-keygen
+```
+
+master 노드의 ssh public 키를 나머지 노드들에 복사해준다.
+```bash
+$ ssh-copy-id {계정}@{서버IP} -p {ssh포트번호}
+```
+
+그 후, 각 slave 장비에 접속하여 ```~/.ssh/authorized_keys``` 파일의 권한을 확인해준다.
+```bash
+$ chmod 600 ~/.ssh/authorized_keys
 ```
 
 
-여기까지 수행한 끝에 HDP 2.6에서 Spark 2.4 버전을 사용할 수 있게 되었다.
-```-Dhdp.version``` 옵션은 설정 파일 등에 추가할 생각이다.
+### 3-3. Spark Cluster를 위한 설정
 
-![result](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-spark-shell-result.jpeg)
+slave 노드들에 spark을 설치해주기 전에 master 노드의 spark에 몇가지 설정을 변경해주어야 한다.
+
+#### java-opts
+```conf/java-opts``` 파일을 생성하고 아래 라인을 추가한다.
+yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
+```
+-Dhdp.version=2.6.3.0-235
+```
+
+
+#### spark-env.sh
+
+```conf/spark-env.sh``` 파일에 다음 라인들을 추가한다.
+
+```bash
+export SPARK_MASTER='{master 서버 IP}'
+export SPARK_WORKER_PORT={ssh포트번호}
+export SPARK_SSH_OPTS='-p {ssh포트번호}'
+export JAVA_HOME={JAVA_HOME}
+```
+
+#### slaves
+
+```conf/slaves.template``` 파일 이름을 ```conf/slaves```로 변경하고 아래 라인들을 추가한다.
+```
+{slave1 서버IP}
+{slave2 서버IP}
+{slave3 서버IP}
+...(하략)...
+```
+
+
+### 3-4. Spark Cluster 설치
+
+이제 master 노드의 spark을 압축하여 모든 slave 노드들의 동일한 경로에 복사/압축해제해준다.
+각 노드의 ```~/.bashrc```파일에 master 노드와 동일한 설정을 추가해준다.
+
+```bash
+export SPARK_HOME={설치한 Spark 디렉토리 경로}
+export PATH=$SPARK_HOME/bin:$PATH
+```
+
+끝으로 ```JAVA_HOME``` 역시 확인해준다.
+
+```bash
+$ echo $JAVA_HOME
+```
+
+### 3-5. Spark Cluster 실행
+
+master 노드의 ```SPARK_HOME```에서 다음 명령어로 spark cluster를 실행해준다.
+
+```bash
+$ ./sbin/start-all.sh
+```
+
+기존에 개발된 spark 프로그램이 yarn-cluster 모드에서 정상 동작하는 것까지 확인하였다.
+여기까지 수행하면 Spark 2.4.6 설치가 완료된 것이다.
+
+웬만하면 Ambari나 Cloudera Manager가 제공해주는 버전을 그냥 쓰는게 정신건강에 이로울 것 같다.

@@ -9,6 +9,7 @@ tags:
 - spark
 - zeppelin
 - scala
+comments: true
 ---
 
 ## 1. 문제 발견
