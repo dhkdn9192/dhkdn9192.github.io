@@ -254,3 +254,16 @@ $ ./sbin/start-all.sh
 여기까지 수행하면 Spark 2.4.6 설치가 완료된 것이다.
 
 웬만하면 Ambari나 Cloudera Manager가 제공해주는 버전을 그냥 쓰는게 정신건강에 이로울 것 같다.
+
+
+### (부록) Zeppelin 설치
+hdp 2.6에서 제공하는 Zeppelin의 Spark interpreter는 2.4.6 버전을 지원하지 않으므로 Zeppelin 역시 삭제하고 별도로 설치해야 한다.
+최신 버전인 **0.9.0-preview2-bin-netinst** 으로 설치하고 ```conf/zeppelin-env.sh```에 아래와 같은 설정들을 추가해줬다.
+
+```bash
+export JAVA_HOME={Java home 경로}
+export SPARK_MASTER=yarn-client
+export ZEPPELIN_JAVA_OPTS="-Dhdp.version=2.6.3.0-235"
+export SPARK_HOME={Spark 설치경로}
+export HADOOP_CONF_DIR=/etc/hadoop/conf
+```
