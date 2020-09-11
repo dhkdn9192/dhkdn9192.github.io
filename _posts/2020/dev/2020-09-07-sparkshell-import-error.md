@@ -39,8 +39,11 @@ import 자체는 문제 없이 수행된다.
 
 | name | version |
 | :---: | :---: |
+| OpenJDK  | 1.8.0_191 |
 | Scala     | 2.11.8     |
 | Spark     | 2.2.0     |
+| HDP    | 2.6.3.0-235 |
+| Zeppelin | 0.7.3 |
 
 ## 2. StackOverflow 검색
 
