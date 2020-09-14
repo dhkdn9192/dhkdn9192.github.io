@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-14T15:14:40+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tunning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tunning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tunning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-14T15:25:50+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tunning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tunning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tunning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
 &lt;p&gt;Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다.
 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.&lt;/p&gt;
@@ -29,16 +29,16 @@
 &lt;/table&gt;
 
 &lt;h2 id=&quot;2-what-to-crawl&quot;&gt;2. What to crawl&lt;/h2&gt;
-&lt;p&gt;구축할 웹 크롤러의 목적은 주요 해외 사이트들을 주기적으로 수집하는 것이다.
-특정 뉴스들을 제공해주는 소스 사이트들이 존재하는데,
-이들을 seed로 하여 페이지 내의 뉴스 링크들을 수집하는 것이다.&lt;/p&gt;
+&lt;p&gt;구축할 웹 크롤러의 목적은 타겟 해외 사이트들을 주기적으로 수집하는 것이다.
+주식 관련 뉴스들을 제공해주는 소스 사이트들이 존재하는데,
+이들 사이트를 seed로 하여 페이지 내의 뉴스 링크들을 수집하는 것이다.&lt;/p&gt;
 
 &lt;p&gt;Nutch는 방대한 인터넷 세계를 깊이 탐색하며 수집할 수 있도록 설계된 범용성 있는 크롤러다.
 때문에 내 요구사항에 그대로 맞춰 사용하기에는 어려운 점들이 많아 일부 튜닝이 필요했다.&lt;/p&gt;
 
 &lt;h2 id=&quot;3-tunning&quot;&gt;3. Tunning&lt;/h2&gt;
 &lt;h3 id=&quot;3-1-이전-페이지의-url-저장하기&quot;&gt;3-1. 이전 페이지의 url 저장하기&lt;/h3&gt;
-&lt;p&gt;Nutch는 웹 페이지를 저장(indexing)할 때 해당 페이지로 연결되는 “&lt;em&gt;이전 페이지의 링크 텍스트(anchor)&lt;/em&gt;“를 함께 기록한다.
+&lt;p&gt;Nutch는 웹 페이지를 저장(indexing)할 때 해당 페이지로 연결되는 &lt;strong&gt;이전 페이지의 링크 텍스트&lt;/strong&gt;(anchor)를 함께 기록한다.
 아래처럼 뉴스 타이틀에 하이퍼링크가 걸려있어서 뉴스 페이지로 연결될 경우, anchor 필드에 뉴스 타이틀이 들어오게 된다.
 혹은 “다음 기사”와 같이 버튼을 눌러 뉴스 페이지로 연결될 수도 있다.&lt;/p&gt;
 
@@ -54,7 +54,7 @@
 &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;여기서 내가 수집하고 싶은 정보는 링크 텍스트가 아니라 “&lt;em&gt;이전 페이지의 url&lt;/em&gt;“이다.
+&lt;p&gt;여기서 내가 수집하고 싶은 정보는 링크 텍스트가 아니라 &lt;strong&gt;이전 페이지의 url&lt;/strong&gt;이다.
 즉 아래처럼 anchor 필드에는 현재 페이지로 연결되는 url들이 들어와야 한다.&lt;/p&gt;
 &lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
   &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;tstamp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2020-06-30T01:58:26.987Z&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
@@ -142,7 +142,7 @@ Nutch가 페이지를 저장하는 과정에서 중복 페이지는 알아서 �
 (Nutch는 politeness를 최대한 준수하기 위해 동일 서버에 대해 기본적으로 5초의 idle time을 갖는다.)&lt;/p&gt;
 
 &lt;p&gt;아래는 Nutch의 워크플로우 구조다.
-&lt;strong&gt;Inject&lt;/strong&gt; &amp;gt; [ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ] x ? &amp;gt; &lt;strong&gt;invert links&lt;/strong&gt; &amp;gt; &lt;strong&gt;index&lt;/strong&gt; 순서로 작업이 진행된다.
+&lt;strong&gt;Inject&lt;/strong&gt; &amp;gt; [ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ]*n &amp;gt; &lt;strong&gt;invert links&lt;/strong&gt; &amp;gt; &lt;strong&gt;index&lt;/strong&gt; 순서로 작업이 진행된다.
 &lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-workflow.png&quot; alt=&quot;nutch-workflow&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
@@ -159,9 +159,9 @@ Nutch가 페이지를 저장하는 과정에서 중복 페이지는 알아서 �
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;여기서 각 Nutch 배치가 이전 배치의 수집 url들을 제거하여 fetch list를 줄일 수 있도록 워크플로우를 수정했다.
-[ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ] 의 사이클을 1회만 수행한다.
+ &lt;strong&gt;generate&lt;/strong&gt; ~ &lt;strong&gt;update&lt;/strong&gt;  의 사이클을 1회만 수행한다.
 그 후, 갱신된 crawldb를 읽어(&lt;strong&gt;readdb&lt;/strong&gt;) 이전 배치에서 수집한 url들을 제거하고 (&lt;strong&gt;remove_existing&lt;/strong&gt;) 중복 제거된 fetch list를 생성한다(&lt;strong&gt;freegen&lt;/strong&gt;).
-&lt;strong&gt;readdb&lt;/strong&gt;, &lt;strong&gt;freegen&lt;/strong&gt;은 Nutch 명령어이며 &lt;strong&gt;remove_existing&lt;/strong&gt;은 파이썬으로 직접 구현했다.&lt;/p&gt;
+readdb, freegen은 Nutch 명령어이며 remove_existing은 파이썬으로 직접 구현했다.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-my-workflow.png&quot; alt=&quot;my-workflow&quot; /&gt;&lt;/p&gt;
 
@@ -176,7 +176,7 @@ Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려�
 해당 이슈는 (NUTCH-2810){https://issues.apache.org/jira/browse/NUTCH-2810}를 참고&lt;/p&gt;
 
 &lt;h3 id=&quot;3-5-배치-작업-스케줄링&quot;&gt;3-5. 배치 작업 스케줄링&lt;/h3&gt;
-&lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry><entry><title type="html">PySpark의 py4j 호환성 오류</title><link href="http://localhost:4000/apache-spark/pyspark-py4j-error/" rel="alternate" type="text/html" title="PySpark의 py4j 호환성 오류" /><published>2020-09-09T00:00:00+09:00</published><updated>2020-09-09T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/pyspark-py4j-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/pyspark-py4j-error/">&lt;h2 id=&quot;1-py4jerror&quot;&gt;1. Py4JError&lt;/h2&gt;
+&lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><category term="airflow" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry><entry><title type="html">PySpark의 py4j 호환성 오류</title><link href="http://localhost:4000/apache-spark/pyspark-py4j-error/" rel="alternate" type="text/html" title="PySpark의 py4j 호환성 오류" /><published>2020-09-09T00:00:00+09:00</published><updated>2020-09-09T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/pyspark-py4j-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/pyspark-py4j-error/">&lt;h2 id=&quot;1-py4jerror&quot;&gt;1. Py4JError&lt;/h2&gt;
 &lt;p&gt;기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다.
 실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.&lt;/p&gt;
 
