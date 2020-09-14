@@ -346,6 +346,7 @@
       <li><a href="#부록-zeppelin-설치">(부록) Zeppelin 설치</a></li>
     </ul>
   </li>
+  <li><a href="#references">References</a></li>
 </ul>
 
             </nav>
@@ -497,10 +498,6 @@ spark.executor.extraJavaOptions  -Dhdp.version=2.6.3.0-235
 
 <p><img src="https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/11/2020-09-11-yarn-cluster-mode.png" alt="yarn-cluster" /></p>
 
-<ul>
-  <li>이미지 출처 : https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2</li>
-</ul>
-
 <p>위 이미지에서 보듯이, client 모드와 cluster 모드의 가장 큰 차이는 spark driver의 위치다.
 cluster 모드에선 spark driver가 application master에서 동작한다.
 즉 클러스터 내부에서 spark driver가 생성되어야 한다.
@@ -587,6 +584,14 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 <span class="nb">export </span><span class="nv">SPARK_HOME</span><span class="o">={</span>Spark 설치경로<span class="o">}</span>
 <span class="nb">export </span><span class="nv">HADOOP_CONF_DIR</span><span class="o">=</span>/etc/hadoop/conf
 </code></pre></div></div>
+
+<h2 id="references">References</h2>
+<ul>
+  <li>https://issues.apache.org/jira/browse/SPARK-22393</li>
+  <li>https://issues.apache.org/jira/browse/SPARK-15343</li>
+  <li>https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp</li>
+  <li>https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2</li>
+</ul>
 
         
       </section>

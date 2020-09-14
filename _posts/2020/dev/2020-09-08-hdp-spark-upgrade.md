@@ -162,10 +162,6 @@ spark.executor.extraJavaOptions  -Dhdp.version=2.6.3.0-235
 
 ![yarn-cluster](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/11/2020-09-11-yarn-cluster-mode.png)
 
-- 이미지 출처 : https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2
-
-
-
 위 이미지에서 보듯이, client 모드와 cluster 모드의 가장 큰 차이는 spark driver의 위치다.
 cluster 모드에선 spark driver가 application master에서 동작한다.
 즉 클러스터 내부에서 spark driver가 생성되어야 한다.
@@ -267,3 +263,9 @@ export ZEPPELIN_JAVA_OPTS="-Dhdp.version=2.6.3.0-235"
 export SPARK_HOME={Spark 설치경로}
 export HADOOP_CONF_DIR=/etc/hadoop/conf
 ```
+
+## References
+- https://issues.apache.org/jira/browse/SPARK-22393
+- https://issues.apache.org/jira/browse/SPARK-15343
+- https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp
+- https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2

@@ -97,3 +97,9 @@ Spark의 버전을 업그레이드하는 것이 가장 합리적인 해결책이
 
 문제가 있다면 내가 사용하는 HDP에서는 Spark 버전이 2.2라는 것이다.
 HDP와는 별도로 Spark 최신버전을 설치하고 Zeppelin에 연동하는 방식으로 사용해야할 것 같다.
+
+
+## References
+- https://github.com/sryza/aas
+- https://issues.apache.org/jira/browse/SPARK-22393
+- https://github.com/scala/bug/issues/9881

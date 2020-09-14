@@ -70,7 +70,7 @@ Nutch는 웹 페이지를 저장(indexing)할 때 해당 페이지로 연결되�
 ```
 
 위처럼 이전페이지 url을 넣는 방법은 간단하다.
-```org.apache.nutch.crawl.Inlinks.java``` 코드에서 
+```src/java/org/apache/nutch/crawl/Inlinks.java``` 코드에서 
 Inlinks 클래스의 getAnchors 메소드를 수정해주면 된다.
 while문의 마지막 if문에서 anchor 대신 fromUrl을 results에 입력해준다.
 
@@ -96,8 +96,8 @@ while문의 마지막 if문에서 anchor 대신 fromUrl을 results에 입력해�
         domainAnchors = new HashSet<>();
         domainToAnchors.put(domain, domainAnchors);
       }
-      if (domainAnchors.add(fromUrl)) { // new anchor from domain
-        results.add(fromUrl); // collect fromurl, not anchor text
+      if (domainAnchors.add(fromUrl)) {
+        results.add(fromUrl);  // 이전 페이지의 url 입력
       }
     }
     return results.toArray(new String[results.size()]);
@@ -149,8 +149,6 @@ Nutch가 페이지를 저장하는 과정에서 중복 페이지는 알아서 �
 **Inject** > \[ **generate** > **fetch** > **parse** > **update** \]\*n > **invert links** > **index** 순서로 작업이 진행된다.
 ![nutch-workflow](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-workflow.png)
 
-- 출처 : https://www.slideshare.net/sebastian_nagel/aceu2014-snagelwebcrawlingnutch
-
 ```
 - inject : seed url을 crawldb에 입력
 - generate : fetch할 url 리스트 생성
@@ -183,3 +181,10 @@ Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려�
 
 ### 3-5. 배치 작업 스케줄링
 Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.
+
+## References
+
+- https://cwiki.apache.org/confluence/display/NUTCH/NutchTutorial
+- https://issues.apache.org/jira/browse/NUTCH-2706
+- https://www.slideshare.net/sebastian_nagel/aceu2014-snagelwebcrawlingnutch
+- https://issues.apache.org/jira/browse/NUTCH-2810

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-14T15:25:50+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tunning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tunning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tunning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-14T15:40:43+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tunning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tunning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tunning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
 &lt;p&gt;Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다.
 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.&lt;/p&gt;
@@ -69,7 +69,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;위처럼 이전페이지 url을 넣는 방법은 간단하다.
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;org.apache.nutch.crawl.Inlinks.java&lt;/code&gt; 코드에서 
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/java/org/apache/nutch/crawl/Inlinks.java&lt;/code&gt; 코드에서 
 Inlinks 클래스의 getAnchors 메소드를 수정해주면 된다.
 while문의 마지막 if문에서 anchor 대신 fromUrl을 results에 입력해준다.&lt;/p&gt;
 
@@ -94,8 +94,8 @@ while문의 마지막 if문에서 anchor 대신 fromUrl을 results에 입력해�
         &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HashSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;domainToAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
       &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// new anchor from domain&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// collect fromurl, not anchor text&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// 이전 페이지의 url 입력&lt;/span&gt;
       &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()]);&lt;/span&gt;
@@ -145,10 +145,6 @@ Nutch가 페이지를 저장하는 과정에서 중복 페이지는 알아서 �
 &lt;strong&gt;Inject&lt;/strong&gt; &amp;gt; [ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ]*n &amp;gt; &lt;strong&gt;invert links&lt;/strong&gt; &amp;gt; &lt;strong&gt;index&lt;/strong&gt; 순서로 작업이 진행된다.
 &lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-workflow.png&quot; alt=&quot;nutch-workflow&quot; /&gt;&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;출처 : https://www.slideshare.net/sebastian_nagel/aceu2014-snagelwebcrawlingnutch&lt;/li&gt;
-&lt;/ul&gt;
-
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- inject : seed url을 crawldb에 입력
 - generate : fetch할 url 리스트 생성
 - fetch : html 수집
@@ -176,7 +172,16 @@ Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려�
 해당 이슈는 (NUTCH-2810){https://issues.apache.org/jira/browse/NUTCH-2810}를 참고&lt;/p&gt;
 
 &lt;h3 id=&quot;3-5-배치-작업-스케줄링&quot;&gt;3-5. 배치 작업 스케줄링&lt;/h3&gt;
-&lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><category term="airflow" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry><entry><title type="html">PySpark의 py4j 호환성 오류</title><link href="http://localhost:4000/apache-spark/pyspark-py4j-error/" rel="alternate" type="text/html" title="PySpark의 py4j 호환성 오류" /><published>2020-09-09T00:00:00+09:00</published><updated>2020-09-09T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/pyspark-py4j-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/pyspark-py4j-error/">&lt;h2 id=&quot;1-py4jerror&quot;&gt;1. Py4JError&lt;/h2&gt;
+&lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;https://cwiki.apache.org/confluence/display/NUTCH/NutchTutorial&lt;/li&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2706&lt;/li&gt;
+  &lt;li&gt;https://www.slideshare.net/sebastian_nagel/aceu2014-snagelwebcrawlingnutch&lt;/li&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2810&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><category term="airflow" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry><entry><title type="html">PySpark의 py4j 호환성 오류</title><link href="http://localhost:4000/apache-spark/pyspark-py4j-error/" rel="alternate" type="text/html" title="PySpark의 py4j 호환성 오류" /><published>2020-09-09T00:00:00+09:00</published><updated>2020-09-09T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/pyspark-py4j-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/pyspark-py4j-error/">&lt;h2 id=&quot;1-py4jerror&quot;&gt;1. Py4JError&lt;/h2&gt;
 &lt;p&gt;기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다.
 실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.&lt;/p&gt;
 
@@ -390,10 +395,6 @@ spark.executor.extraJavaOptions  -Dhdp.version=2.6.3.0-235
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/11/2020-09-11-yarn-cluster-mode.png&quot; alt=&quot;yarn-cluster&quot; /&gt;&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;이미지 출처 : https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2&lt;/li&gt;
-&lt;/ul&gt;
-
 &lt;p&gt;위 이미지에서 보듯이, client 모드와 cluster 모드의 가장 큰 차이는 spark driver의 위치다.
 cluster 모드에선 spark driver가 application master에서 동작한다.
 즉 클러스터 내부에서 spark driver가 생성되어야 한다.
@@ -479,7 +480,15 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 &lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ZEPPELIN_JAVA_OPTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;-Dhdp.version=2.6.3.0-235&quot;&lt;/span&gt;
 &lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;Spark 설치경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_CONF_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/etc/hadoop/conf
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="scala" /><category term="hdp" /><category term="yarn" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/apache-spark/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/sparkshell-import-error/">&lt;h2 id=&quot;1-문제-발견&quot;&gt;1. 문제 발견&lt;/h2&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/SPARK-22393&lt;/li&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/SPARK-15343&lt;/li&gt;
+  &lt;li&gt;https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp&lt;/li&gt;
+  &lt;li&gt;https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="scala" /><category term="hdp" /><category term="yarn" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/apache-spark/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/sparkshell-import-error/">&lt;h2 id=&quot;1-문제-발견&quot;&gt;1. 문제 발견&lt;/h2&gt;
 &lt;p&gt;Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다.
 아래는 “&lt;a href=&quot;https://github.com/sryza/aas/blob/master/ch08-geotime/src/main/scala/com/cloudera/datascience/geotime/RichGeometry.scala&quot;&gt;9가지 사례로 익히는 고급 스파크 분석&lt;/a&gt;” 책의 예제코드이다.&lt;/p&gt;
 
@@ -581,4 +590,11 @@ Scala 언어에서 2.11~2.12 버전 사이에 importHandler 관련 버그 픽스
 Spark의 버전을 업그레이드하는 것이 가장 합리적인 해결책이다.&lt;/p&gt;
 
 &lt;p&gt;문제가 있다면 내가 사용하는 HDP에서는 Spark 버전이 2.2라는 것이다.
-HDP와는 별도로 Spark 최신버전을 설치하고 Zeppelin에 연동하는 방식으로 사용해야할 것 같다.&lt;/p&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="zeppelin" /><category term="scala" /><summary type="html">1. 문제 발견 Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다. 아래는 “9가지 사례로 익히는 고급 스파크 분석” 책의 예제코드이다.</summary></entry></feed>
+HDP와는 별도로 Spark 최신버전을 설치하고 Zeppelin에 연동하는 방식으로 사용해야할 것 같다.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://github.com/sryza/aas&lt;/li&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/SPARK-22393&lt;/li&gt;
+  &lt;li&gt;https://github.com/scala/bug/issues/9881&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="zeppelin" /><category term="scala" /><summary type="html">1. 문제 발견 Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다. 아래는 “9가지 사례로 익히는 고급 스파크 분석” 책의 예제코드이다.</summary></entry></feed>
