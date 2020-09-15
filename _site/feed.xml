@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-14T15:40:43+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tunning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tunning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tunning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-16T08:56:46+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tuning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tuning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tuning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
 &lt;p&gt;Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다.
 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.&lt;/p&gt;
@@ -36,7 +36,7 @@
 &lt;p&gt;Nutch는 방대한 인터넷 세계를 깊이 탐색하며 수집할 수 있도록 설계된 범용성 있는 크롤러다.
 때문에 내 요구사항에 그대로 맞춰 사용하기에는 어려운 점들이 많아 일부 튜닝이 필요했다.&lt;/p&gt;
 
-&lt;h2 id=&quot;3-tunning&quot;&gt;3. Tunning&lt;/h2&gt;
+&lt;h2 id=&quot;3-tuning&quot;&gt;3. Tuning&lt;/h2&gt;
 &lt;h3 id=&quot;3-1-이전-페이지의-url-저장하기&quot;&gt;3-1. 이전 페이지의 url 저장하기&lt;/h3&gt;
 &lt;p&gt;Nutch는 웹 페이지를 저장(indexing)할 때 해당 페이지로 연결되는 &lt;strong&gt;이전 페이지의 링크 텍스트&lt;/strong&gt;(anchor)를 함께 기록한다.
 아래처럼 뉴스 타이틀에 하이퍼링크가 걸려있어서 뉴스 페이지로 연결될 경우, anchor 필드에 뉴스 타이틀이 들어오게 된다.
