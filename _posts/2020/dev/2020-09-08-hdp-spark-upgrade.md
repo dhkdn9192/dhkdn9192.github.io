@@ -224,11 +224,10 @@ export JAVA_HOME={JAVA_HOME}
 이 부분은 Spark이 아니라 Ambari의 YARN 설정에서 수정해주어야 한다.
 
 Spark이 dynamicAllocation을 사용하려면 YARN의 NodeManager 설정에서 spark_shuffle 옵션을 추가해주어야 한다.
-```yarn.nodemanager.aux-services``` 항목에 spark_shuffle을 추가한다.
 
 그 다음 YARN이 spark_shuffle 기능을 사용할 수 있도록 class path를 입력해주어야 한다.
-새로 설치한 Spark의 ```${SPARK_HOME}/yarn``` 디렉토리에 spark-2.4.6-yarn-shuffle.jar 파일이 존재한다.
-따라서 ```yarn.nodemanager.aux-services.spark2_shuffle.classpath``` 항목과 ```yarn.nodemanager.aux-services.spark_shuffle.classpath```항목에 경로를 class path로 입력해준다.
+새로 설치한 Spark의 yarn 디렉토리에 spark-2.4.6-yarn-shuffle.jar 파일이 존재하므로
+```${SPARK_HOME}/yarn/*``` 와 같이 classpath를 입력해준다.
 
 ![spark_shuffle_setting](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-yarn-spark-shuffle-setting.png)
 

@@ -23,8 +23,8 @@ Apache Nutch는 Hadoop 위에서 동작하는 분산형 웹 크롤러다.
 
 ![nutch_workflow](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/16/2020-09-16-nutch-overall-workflow.png)
 
-- 워크플로우에서 웹 페이지의 수집은 **Fetcher**에 의해 이뤄진다.
-- Fetcher는 수집할 url 목록(fetchlist)을 입력받아 동작하며 이 목록은 **Generator**가 생성한다.
+- 워크플로우에서 웹 페이지의 수집은 (3)**Fetcher**에 의해 이뤄진다.
+- Fetcher는 수집할 url 목록(fetchlist)을 입력받아 동작하며 이 목록은 (2)**Generator**가 생성한다.
 - Generator는 url 메타정보를 가지고 있는 **crawldb**를 참조하여 수집한 적이 없는 url들로 목록을 구성한다.
 
 즉 Nutch가 어느 url들을 수집할 것인지는 Generator에 의해서 결정된다.
