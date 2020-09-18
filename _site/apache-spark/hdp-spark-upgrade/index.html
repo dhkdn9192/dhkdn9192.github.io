@@ -339,6 +339,7 @@
           <li><a href="#java-opts">java-opts</a></li>
           <li><a href="#spark-envsh">spark-env.sh</a></li>
           <li><a href="#slaves">slaves</a></li>
+          <li><a href="#spark_shuffle">spark_shuffle</a></li>
         </ul>
       </li>
       <li><a href="#3-4-spark-cluster-설치">3-4. Spark Cluster 설치</a></li>
@@ -530,7 +531,6 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 </code></pre></div></div>
 
 <h4 id="spark-envsh">spark-env.sh</h4>
-
 <p><code class="language-plaintext highlighter-rouge">conf/spark-env.sh</code> 파일에 다음 라인들을 추가한다.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">SPARK_MASTER</span><span class="o">=</span><span class="s1">'{master 서버 IP}'</span>
@@ -540,13 +540,26 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 </code></pre></div></div>
 
 <h4 id="slaves">slaves</h4>
-
 <p><code class="language-plaintext highlighter-rouge">conf/slaves.template</code> 파일 이름을 <code class="language-plaintext highlighter-rouge">conf/slaves</code>로 변경하고 아래 라인들을 추가한다.</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{slave1 서버IP}
 {slave2 서버IP}
 {slave3 서버IP}
 ...(하략)...
 </code></pre></div></div>
+
+<h4 id="spark_shuffle">spark_shuffle</h4>
+<p>이 부분은 Spark이 아니라 Ambari의 YARN 설정에서 수정해주어야 한다.</p>
+
+<p>Spark이 dynamicAllocation을 사용하려면 YARN의 NodeManager 설정에서 spark_shuffle 옵션을 추가해주어야 한다.
+<code class="language-plaintext highlighter-rouge">yarn.nodemanager.aux-services</code> 항목에 spark_shuffle을 추가한다.</p>
+
+<p>그 다음 YARN이 spark_shuffle 기능을 사용할 수 있도록 class path를 입력해주어야 한다.
+새로 설치한 Spark의 <code class="language-plaintext highlighter-rouge">${SPARK_HOME}/yarn</code> 디렉토리에 spark-2.4.6-yarn-shuffle.jar 파일이 존재한다.
+따라서 <code class="language-plaintext highlighter-rouge">yarn.nodemanager.aux-services.spark2_shuffle.classpath</code> 항목과 <code class="language-plaintext highlighter-rouge">yarn.nodemanager.aux-services.spark_shuffle.classpath</code>항목에 경로를 class path로 입력해준다.</p>
+
+<p><img src="https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-yarn-spark-shuffle-setting.png" alt="spark_shuffle_setting" /></p>
+
+<p>설정 완료 후 YARN을 재시작한다.</p>
 
 <h3 id="3-4-spark-cluster-설치">3-4. Spark Cluster 설치</h3>
 
@@ -591,6 +604,7 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
   <li>https://issues.apache.org/jira/browse/SPARK-15343</li>
   <li>https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp</li>
   <li>https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2</li>
+  <li>https://kb.informatica.com/solution/23/pages/71/577764.aspx</li>
 </ul>
 
         
@@ -702,6 +716,47 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
+        <a href="/apache-nutch/opensource-bugfix-ssul/" rel="permalink">오픈 소스 bug-fix에 기여한 소소한 썰
+</a>
+      
+    </h2>
+    
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        1 분 소요
+      
+    
+
+  </p>
+
+    <p class="archive__item-excerpt" itemprop="description">최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다.
+이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
         <a href="/apache-nutch/nutch-tuning/" rel="permalink">Apache Nutch 튜닝하기
 </a>
       
@@ -721,7 +776,7 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 
       <i class="far fa-clock" aria-hidden="true"></i>
       
-        3 분 소요
+        4 분 소요
       
     
 

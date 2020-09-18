@@ -22,4 +22,10 @@ var store = [{
         "tags": ["nutch","java","crawler","airflow"],
         "url": "http://localhost:4000/apache-nutch/nutch-tuning/",
         "teaser": null
+      },{
+        "title": "오픈 소스 bug-fix에 기여한 소소한 썰",
+        "excerpt":"최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다. 이를 해결하고 contributor에게 공유했던 경험을 기록해보았다. 1. 문제의 발견 1-1. Nutch Workflow Apache Nutch는 Hadoop 위에서 동작하는 분산형 웹 크롤러다. (이전 포스트) 웹 페이지를 수집하기 위한 다양한 컴포넌트들로 구성되며 아래와 같은 워크플로우로 동작한다. 워크플로우에서 웹 페이지의 수집은...","categories": ["apache-nutch"],
+        "tags": ["java","nutch","jira"],
+        "url": "http://localhost:4000/apache-nutch/opensource-bugfix-ssul/",
+        "teaser": null
       }]

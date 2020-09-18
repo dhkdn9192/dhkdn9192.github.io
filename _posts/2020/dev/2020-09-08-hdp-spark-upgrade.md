@@ -201,7 +201,6 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 
 
 #### spark-env.sh
-
 ```conf/spark-env.sh``` 파일에 다음 라인들을 추가한다.
 
 ```bash
@@ -212,7 +211,6 @@ export JAVA_HOME={JAVA_HOME}
 ```
 
 #### slaves
-
 ```conf/slaves.template``` 파일 이름을 ```conf/slaves```로 변경하고 아래 라인들을 추가한다.
 ```
 {slave1 서버IP}
@@ -221,6 +219,20 @@ export JAVA_HOME={JAVA_HOME}
 ...(하략)...
 ```
 
+
+#### spark_shuffle
+이 부분은 Spark이 아니라 Ambari의 YARN 설정에서 수정해주어야 한다.
+
+Spark이 dynamicAllocation을 사용하려면 YARN의 NodeManager 설정에서 spark_shuffle 옵션을 추가해주어야 한다.
+```yarn.nodemanager.aux-services``` 항목에 spark_shuffle을 추가한다.
+
+그 다음 YARN이 spark_shuffle 기능을 사용할 수 있도록 class path를 입력해주어야 한다.
+새로 설치한 Spark의 ```${SPARK_HOME}/yarn``` 디렉토리에 spark-2.4.6-yarn-shuffle.jar 파일이 존재한다.
+따라서 ```yarn.nodemanager.aux-services.spark2_shuffle.classpath``` 항목과 ```yarn.nodemanager.aux-services.spark_shuffle.classpath```항목에 경로를 class path로 입력해준다.
+
+![spark_shuffle_setting](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-yarn-spark-shuffle-setting.png)
+
+설정 완료 후 YARN을 재시작한다.
 
 ### 3-4. Spark Cluster 설치
 
@@ -269,3 +281,4 @@ export HADOOP_CONF_DIR=/etc/hadoop/conf
 - https://issues.apache.org/jira/browse/SPARK-15343
 - https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp
 - https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2
+- https://kb.informatica.com/solution/23/pages/71/577764.aspx

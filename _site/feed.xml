@@ -1,4 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-16T08:56:46+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tuning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tuning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tuning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-18T11:08:12+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">오픈 소스 bug-fix에 기여한 소소한 썰</title><link href="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/" rel="alternate" type="text/html" title="오픈 소스 bug-fix에 기여한 소소한 썰" /><published>2020-09-16T00:00:00+09:00</published><updated>2020-09-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/opensource-bugfix-ssul</id><content type="html" xml:base="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/">&lt;p&gt;최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다.
+이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.&lt;/p&gt;
+
+&lt;h2 id=&quot;1-문제의-발견&quot;&gt;1. 문제의 발견&lt;/h2&gt;
+&lt;h3 id=&quot;1-1-nutch-workflow&quot;&gt;1-1. Nutch Workflow&lt;/h3&gt;
+&lt;p&gt;Apache Nutch는 Hadoop 위에서 동작하는 분산형 웹 크롤러다.
+(&lt;a href=&quot;https://dhkdn9192.github.io/apache-nutch/nutch-tuning/&quot;&gt;이전 포스트&lt;/a&gt;)
+웹 페이지를 수집하기 위한 다양한 컴포넌트들로 구성되며 아래와 같은 워크플로우로 동작한다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/16/2020-09-16-nutch-overall-workflow.png&quot; alt=&quot;nutch_workflow&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;워크플로우에서 웹 페이지의 수집은 &lt;strong&gt;Fetcher&lt;/strong&gt;에 의해 이뤄진다.&lt;/li&gt;
+  &lt;li&gt;Fetcher는 수집할 url 목록(fetchlist)을 입력받아 동작하며 이 목록은 &lt;strong&gt;Generator&lt;/strong&gt;가 생성한다.&lt;/li&gt;
+  &lt;li&gt;Generator는 url 메타정보를 가지고 있는 &lt;strong&gt;crawldb&lt;/strong&gt;를 참조하여 수집한 적이 없는 url들로 목록을 구성한다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;즉 Nutch가 어느 url들을 수집할 것인지는 Generator에 의해서 결정된다.
+Generator는 
+&lt;em&gt;사용자가 특정 url들을 추가하거나 외부로부터 데이터를 입력받아 목록을 생성할 수가 없다&lt;/em&gt;.
+(regex-urlfilter나 blacklist 등의 기능으로 필터링하는 것은 가능하다)&lt;/p&gt;
+
+&lt;h3 id=&quot;1-2-freegenerator&quot;&gt;1-2. FreeGenerator&lt;/h3&gt;
+&lt;p&gt;이러한 불편함을 해소하기 위해 Nutch는 사용자가 직접 url 목록을 입력할 수 있도록 &lt;strong&gt;FreeGenerator&lt;/strong&gt;라는 클래스를 제공하고 있다.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ bin/nutch freegen --help
+Usage: FreeGenerator &amp;lt;inputDir&amp;gt; &amp;lt;segmentsDir&amp;gt; [-filter] [-normalize] [-numFetchers &amp;lt;n&amp;gt;]
+        inputDir        input directory containing one or more input files.
+                        Each text file contains a list of URLs, one URL per line
+        segmentsDir     output directory, where new segment will be created
+        -filter         run current URLFilters on input URLs
+        -normalize      run current URLNormalizers on input URLs
+        -numFetchers &amp;lt;n&amp;gt;        number of generated fetch lists, determines number of fetcher tasks
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bin/nutch freegen&lt;/code&gt; 명령어로 동작하며 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;inputDir&amp;gt;&lt;/code&gt; 옵션에 디렉토리 경로를 명시해주면
+해당 경로의 텍스트 파일들을 읽어 url 목록을 생성한다.
+즉, 내가 수집하고 싶은 url들로 목록을 생성할 수 있다.&lt;/p&gt;
+
+&lt;h2 id=&quot;2-무엇이-원인이었나&quot;&gt;2. 무엇이 원인이었나?&lt;/h2&gt;
+
+&lt;h2 id=&quot;3-고치기&quot;&gt;3. 고치기&lt;/h2&gt;
+
+&lt;h2 id=&quot;4-공유하기&quot;&gt;4. 공유하기&lt;/h2&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://florianhartl.com/nutch-how-it-works.html&lt;/li&gt;
+  &lt;li&gt;https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=122916819&lt;/li&gt;
+  &lt;li&gt;https://github.com/apache/nutch/pull/519&lt;/li&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2810&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="java" /><category term="nutch" /><category term="jira" /><summary type="html">최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다. 이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.</summary></entry><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tuning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tuning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tuning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
 &lt;p&gt;Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다.
 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.&lt;/p&gt;
@@ -142,17 +193,47 @@ Nutch가 페이지를 저장하는 과정에서 중복 페이지는 알아서 �
 (Nutch는 politeness를 최대한 준수하기 위해 동일 서버에 대해 기본적으로 5초의 idle time을 갖는다.)&lt;/p&gt;
 
 &lt;p&gt;아래는 Nutch의 워크플로우 구조다.
-&lt;strong&gt;Inject&lt;/strong&gt; &amp;gt; [ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ]*n &amp;gt; &lt;strong&gt;invert links&lt;/strong&gt; &amp;gt; &lt;strong&gt;index&lt;/strong&gt; 순서로 작업이 진행된다.
+&lt;strong&gt;inject&lt;/strong&gt; &amp;gt; [ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ]*n &amp;gt; &lt;strong&gt;invert links&lt;/strong&gt; &amp;gt; &lt;strong&gt;index&lt;/strong&gt; 순서로 작업이 진행된다.
 &lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-workflow.png&quot; alt=&quot;nutch-workflow&quot; /&gt;&lt;/p&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- inject : seed url을 crawldb에 입력
-- generate : fetch할 url 리스트 생성
-- fetch : html 수집
-- parse : 수집된 html 파싱
-- update : crawldb 갱신
-- invert links : 페이지간 연결정보 갱신
-- index : 수집된 페이지 저장
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;name&lt;/th&gt;
+      &lt;th&gt;description&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;inject&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;- 수집의 시작점이 되는 seed url들을 crawldb에 입력한다&lt;br /&gt;- crawldb는 url들의 메타정보들을 저장한 DB이다&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;generate&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;- crawldb로부터 수집할 url 목록인 fetchlist를 생성한다.&lt;br /&gt;- fetchlist는 아직 수집하지 않은 url들로 구성된다.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;fetch&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;- 앞서 작성된 fetchlist의 url들에 대해 실제로 수집을 수행한다.&lt;br /&gt;- 각 url들의 컨텐츠(html)를 가져온다.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;parse&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;- 수집된 컨텐츠를 파싱한다.&lt;br /&gt;- 웹 페이지의 텍스트, html 속 href 태그들, 날짜/시간 정보 등을 추출한다.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;update&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;- 파싱 단계에서 새로 얻어진 url들을 crawldb에 추가한다.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;invert links&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;- 페이지간의 연결 정보를 linkdb에 갱신한다.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;index&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;-크롤링된 웹 페이지들을 Solr, Elasticsearch, Kafka 등에 인덱싱한다.&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
 &lt;p&gt;여기서 각 Nutch 배치가 이전 배치의 수집 url들을 제거하여 fetch list를 줄일 수 있도록 워크플로우를 수정했다.
  &lt;strong&gt;generate&lt;/strong&gt; ~ &lt;strong&gt;update&lt;/strong&gt;  의 사이클을 1회만 수행한다.
@@ -169,7 +250,7 @@ readdb, freegen은 Nutch 명령어이며 remove_existing은 파이썬으로 직�
 Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려줘서 고맙다고 답글을 달았다.
 금새 이슈가 생성됐고 지금은 해결되었다.
 이 부분은 다른 포스트로 자세히 다뤄볼 생각이다.
-해당 이슈는 (NUTCH-2810){https://issues.apache.org/jira/browse/NUTCH-2810}를 참고&lt;/p&gt;
+해당 이슈는 &lt;a href=&quot;https://issues.apache.org/jira/browse/NUTCH-2810&quot;&gt;NUTCH-2810&lt;/a&gt;를 참고&lt;/p&gt;
 
 &lt;h3 id=&quot;3-5-배치-작업-스케줄링&quot;&gt;3-5. 배치 작업 스케줄링&lt;/h3&gt;
 &lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;
@@ -427,7 +508,6 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h4 id=&quot;spark-envsh&quot;&gt;spark-env.sh&lt;/h4&gt;
-
 &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/spark-env.sh&lt;/code&gt; 파일에 다음 라인들을 추가한다.&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_MASTER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'{master 서버 IP}'&lt;/span&gt;
@@ -437,13 +517,26 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h4 id=&quot;slaves&quot;&gt;slaves&lt;/h4&gt;
-
 &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/slaves.template&lt;/code&gt; 파일 이름을 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/slaves&lt;/code&gt;로 변경하고 아래 라인들을 추가한다.&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{slave1 서버IP}
 {slave2 서버IP}
 {slave3 서버IP}
 ...(하략)...
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;spark_shuffle&quot;&gt;spark_shuffle&lt;/h4&gt;
+&lt;p&gt;이 부분은 Spark이 아니라 Ambari의 YARN 설정에서 수정해주어야 한다.&lt;/p&gt;
+
+&lt;p&gt;Spark이 dynamicAllocation을 사용하려면 YARN의 NodeManager 설정에서 spark_shuffle 옵션을 추가해주어야 한다.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;yarn.nodemanager.aux-services&lt;/code&gt; 항목에 spark_shuffle을 추가한다.&lt;/p&gt;
+
+&lt;p&gt;그 다음 YARN이 spark_shuffle 기능을 사용할 수 있도록 class path를 입력해주어야 한다.
+새로 설치한 Spark의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;${SPARK_HOME}/yarn&lt;/code&gt; 디렉토리에 spark-2.4.6-yarn-shuffle.jar 파일이 존재한다.
+따라서 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;yarn.nodemanager.aux-services.spark2_shuffle.classpath&lt;/code&gt; 항목과 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;yarn.nodemanager.aux-services.spark_shuffle.classpath&lt;/code&gt;항목에 경로를 class path로 입력해준다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-yarn-spark-shuffle-setting.png&quot; alt=&quot;spark_shuffle_setting&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;설정 완료 후 YARN을 재시작한다.&lt;/p&gt;
 
 &lt;h3 id=&quot;3-4-spark-cluster-설치&quot;&gt;3-4. Spark Cluster 설치&lt;/h3&gt;
 
@@ -488,6 +581,7 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
   &lt;li&gt;https://issues.apache.org/jira/browse/SPARK-15343&lt;/li&gt;
   &lt;li&gt;https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp&lt;/li&gt;
   &lt;li&gt;https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2&lt;/li&gt;
+  &lt;li&gt;https://kb.informatica.com/solution/23/pages/71/577764.aspx&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="scala" /><category term="hdp" /><category term="yarn" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/apache-spark/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/sparkshell-import-error/">&lt;h2 id=&quot;1-문제-발견&quot;&gt;1. 문제 발견&lt;/h2&gt;
 &lt;p&gt;Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다.
 아래는 “&lt;a href=&quot;https://github.com/sryza/aas/blob/master/ch08-geotime/src/main/scala/com/cloudera/datascience/geotime/RichGeometry.scala&quot;&gt;9가지 사례로 익히는 고급 스파크 분석&lt;/a&gt;” 책의 예제코드이다.&lt;/p&gt;
