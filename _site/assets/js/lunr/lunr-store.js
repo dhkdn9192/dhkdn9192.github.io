@@ -28,4 +28,10 @@ var store = [{
         "tags": ["java","nutch","jira"],
         "url": "http://localhost:4000/apache-nutch/opensource-bugfix-ssul/",
         "teaser": null
+      },{
+        "title": "[YARN] CPU 코어 할당을 위한 스케줄러 설정",
+        "excerpt":"1. YARN의 초기 CPU 스케줄링 문제 Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다. 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자. spark = SparkSession \\ .builder \\ .appName(\"Spark_Example\") \\ .master(\"yarn-client\") \\ .config(\"spark.executor.instances\", \"3\") \\ .config(\"spark.executor.memory\", \"10g\") \\ .config(\"spark.executor.cores\", \"5\") \\ .getOrCreate()...","categories": [],
+        "tags": ["yarn","spark"],
+        "url": "http://localhost:4000/yarn-resource-allocation/",
+        "teaser": null
       }]

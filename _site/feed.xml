@@ -1,4 +1,82 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-18T11:14:17+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">오픈 소스 bug-fix에 기여한 소소한 썰</title><link href="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/" rel="alternate" type="text/html" title="오픈 소스 bug-fix에 기여한 소소한 썰" /><published>2020-09-16T00:00:00+09:00</published><updated>2020-09-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/opensource-bugfix-ssul</id><content type="html" xml:base="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/">&lt;p&gt;최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-22T20:11:33+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">[YARN] CPU 코어 할당을 위한 스케줄러 설정</title><link href="http://localhost:4000/yarn-resource-allocation/" rel="alternate" type="text/html" title="[YARN] CPU 코어 할당을 위한 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
+&lt;p&gt;Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다.
+아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;spark&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SparkSession&lt;/span&gt; \
+	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt; \
+	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;appName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Spark_Example&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
+	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;master&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;yarn-client&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
+	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;spark.executor.instances&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;3&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
+	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;spark.executor.memory&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;10g&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
+	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;spark.executor.cores&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;5&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
+	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getOrCreate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.executor.cores&lt;/code&gt; 설정으로 executor 당 5개 코어를 쓰도록 설정했다.
+그러나 실제로 executor별로 할당된 코어수는 1개 뿐이다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cores-before.jpeg&quot; alt=&quot;yarn-cores-before&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;코어가 설정값대로 할당되지 않는 이유는 YARN의 디폴트 스케줄러 설정이 CPU 스케줄링을 지원하지 않기 때문이다.
+YARN의 스케줄링과 리소스 할당을 간단하게 살펴보자.&lt;/p&gt;
+
+&lt;h2 id=&quot;2-yarn-스케줄링&quot;&gt;2. YARN 스케줄링&lt;/h2&gt;
+&lt;p&gt;YARN은 애플리케이션의 요청에 따라 클러스터의 자원을 할당해주어야 한다.
+이러한 역할은 YARN 스케줄러가 수행한다.
+YARN은 다음 이미지와 같이 3가지 스케줄러 옵션을 제공한다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-scheduling.png&quot; alt=&quot;yarn_scheduling&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;a-fifo-scheduler&quot;&gt;(a) FIFO Scheduler&lt;/h3&gt;
+&lt;p&gt;모든 잡은 큐에 들어운 순서대로 실행되고 자기 차례가 될 때까지 대기해야 한다.
+간단하고 이해하기 쉽지만 하나의 잡이 모든 자원을 차지해버릴 수 있기 때문에 
+대규모 클러스터에서 사용하기에 적합하진 않다.&lt;/p&gt;
+
+&lt;h3 id=&quot;b-capacity-scheduler&quot;&gt;(b) Capacity Scheduler&lt;/h3&gt;
+&lt;p&gt;각각의 잡은 서로 구분되는 전용 큐에서 처리된다.
+잡을 위한 자원을 미리 예약해두어야 하므로 전체 클러스터 관점에선 자원 효율성이 떨어진다.
+보통 이 capacity scheduler를 기본적으로 사용하게 된다.&lt;/p&gt;
+
+&lt;h3 id=&quot;c-fair-scheduler&quot;&gt;(c) Fair Scheduler&lt;/h3&gt;
+&lt;p&gt;실행 중인 모든 잡에 대해 자원을 동적으로 할당해준다.
+이미 잡이 실행 중일 때 다른 잡이 추가되면 각 잡은 클러스터 자원을 절반씩 할당받는다.
+즉, 잡들이 공평하게 자원을 나눠가질 수 있다.&lt;/p&gt;
+
+&lt;h2 id=&quot;3-yarn-resource-allocation&quot;&gt;3. YARN Resource Allocation&lt;/h2&gt;
+&lt;p&gt;언급한대로 Capacity Scheduler를 디폴트로 사용한다.
+스케줄링의 기본 단위는 큐이며 각 잡은 전용 큐에서 처리된다.
+각 큐의 용량은 클러스터 가용 자원 중 애플리케이션이 제출한 비율만큼을 할당하여 정해진다.&lt;/p&gt;
+
+&lt;p&gt;이 과정에서 클러스터 자원 할당을 위해 Resource Calculator가 사용된다.
+YARN이 디폴트로 사용하는 것은 &lt;strong&gt;DefaultResourceCalculator&lt;/strong&gt;이다.
+DefaultResourceCalculator는 오직 메모리만을 기준으로 하여 자원을 할당한다.
+즉, CPU 코어 수는 스케줄링하지 않는다.
+처음 Hadoop 클러스터를 구성했을 때 YARN 애플리케이션에 CPU 코어 수를 원하는대로 할당할 수 없는 이유가 바로 이것이다.&lt;/p&gt;
+
+&lt;p&gt;CPU 자원을 할당하는 방법은 Resource Calculator를 &lt;strong&gt;DominantResourceCalculator&lt;/strong&gt;로 변경하는 것이다.
+YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;capacity-scheduler.xml&lt;/code&gt;를 열어보자.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# vim /etc/hadoop/conf/capacity-scheduler.xml&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;여러 property들 중에서 resource-calaulator 항목을 찾을 수 있다.
+최초 설치 시 DefaultResourceCalculator로 설정되어 있는데 이를 다음처럼 DominantResourceCalculator로 변경한다.&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;yarn.scheduler.capacity.resource-calculator&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+	&lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;org.apache.hadoop.yarn.util.resource.DominantResourceCalculator&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 모든 YARN 컴포넌트 서버들에 대해 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;capacity-scheduler.xml&lt;/code&gt;을 수정해준다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cpu-scheduling-config.jpeg&quot; alt=&quot;yarn_cpu_scheduling_config&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://towardsdatascience.com/schedulers-in-yarn-concepts-to-configurations-5dd7ced6c214&lt;/li&gt;
+  &lt;li&gt;https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.6.3/bk_yarn-resource-management/content/about_yarn_resource_allocation.html&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="yarn" /><category term="spark" /><summary type="html">1. YARN의 초기 CPU 스케줄링 문제 Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다. 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.</summary></entry><entry><title type="html">오픈 소스 bug-fix에 기여한 소소한 썰</title><link href="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/" rel="alternate" type="text/html" title="오픈 소스 bug-fix에 기여한 소소한 썰" /><published>2020-09-16T00:00:00+09:00</published><updated>2020-09-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/opensource-bugfix-ssul</id><content type="html" xml:base="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/">&lt;p&gt;최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다.
 이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.&lt;/p&gt;
 
 &lt;h2 id=&quot;1-문제의-발견&quot;&gt;1. 문제의 발견&lt;/h2&gt;
