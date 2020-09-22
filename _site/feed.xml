@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-22T20:11:33+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">[YARN] CPU 코어 할당을 위한 스케줄러 설정</title><link href="http://localhost:4000/yarn-resource-allocation/" rel="alternate" type="text/html" title="[YARN] CPU 코어 할당을 위한 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-22T20:15:36+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">[YARN] CPU 코어 할당을 위한 스케줄러 설정</title><link href="http://localhost:4000/apache-hadoop/yarn-resource-allocation/" rel="alternate" type="text/html" title="[YARN] CPU 코어 할당을 위한 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/apache-hadoop/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/apache-hadoop/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
 &lt;p&gt;Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다.
 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.&lt;/p&gt;
 
@@ -76,7 +76,7 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 &lt;co
 &lt;ul&gt;
   &lt;li&gt;https://towardsdatascience.com/schedulers-in-yarn-concepts-to-configurations-5dd7ced6c214&lt;/li&gt;
   &lt;li&gt;https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.6.3/bk_yarn-resource-management/content/about_yarn_resource_allocation.html&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="yarn" /><category term="spark" /><summary type="html">1. YARN의 초기 CPU 스케줄링 문제 Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다. 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.</summary></entry><entry><title type="html">오픈 소스 bug-fix에 기여한 소소한 썰</title><link href="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/" rel="alternate" type="text/html" title="오픈 소스 bug-fix에 기여한 소소한 썰" /><published>2020-09-16T00:00:00+09:00</published><updated>2020-09-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/opensource-bugfix-ssul</id><content type="html" xml:base="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/">&lt;p&gt;최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다.
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-hadoop" /><category term="yarn" /><category term="spark" /><summary type="html">1. YARN의 초기 CPU 스케줄링 문제 Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다. 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.</summary></entry><entry><title type="html">오픈 소스 bug-fix에 기여한 소소한 썰</title><link href="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/" rel="alternate" type="text/html" title="오픈 소스 bug-fix에 기여한 소소한 썰" /><published>2020-09-16T00:00:00+09:00</published><updated>2020-09-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/opensource-bugfix-ssul</id><content type="html" xml:base="http://localhost:4000/apache-nutch/opensource-bugfix-ssul/">&lt;p&gt;최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다.
 이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.&lt;/p&gt;
 
 &lt;h2 id=&quot;1-문제의-발견&quot;&gt;1. 문제의 발견&lt;/h2&gt;
@@ -329,6 +329,189 @@ Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려�
 금새 이슈가 생성됐고 지금은 해결되었다.
 이 부분은 다른 포스트로 자세히 다뤄볼 생각이다.
 해당 이슈는 &lt;a href=&quot;https://issues.apache.org/jira/browse/NUTCH-2810&quot;&gt;NUTCH-2810&lt;/a&gt;를 참고&lt;/p&gt;
+
+&lt;h3 id=&quot;3-5-배치-작업-스케줄링&quot;&gt;3-5. 배치 작업 스케줄링&lt;/h3&gt;
+&lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;https://cwiki.apache.org/confluence/display/NUTCH/NutchTutorial&lt;/li&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2706&lt;/li&gt;
+  &lt;li&gt;https://www.slideshare.net/sebastian_nagel/aceu2014-snagelwebcrawlingnutch&lt;/li&gt;
+  &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2810&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><category term="airflow" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tunning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tunning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tunning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
+&lt;p&gt;Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
+현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다.
+최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-logo.png&quot; alt=&quot;nutch-logo&quot; /&gt;&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;name&lt;/th&gt;
+      &lt;th&gt;version&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Nutch&lt;/td&gt;
+      &lt;td&gt;1.17&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;OpenJDK&lt;/td&gt;
+      &lt;td&gt;1.8.0_265&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Hadoop&lt;/td&gt;
+      &lt;td&gt;2.7.3 (hdp 2.6.3)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;2-what-to-crawl&quot;&gt;2. What to crawl&lt;/h2&gt;
+&lt;p&gt;구축할 웹 크롤러의 목적은 타겟 해외 사이트들을 주기적으로 수집하는 것이다.
+주식 관련 뉴스들을 제공해주는 소스 사이트들이 존재하는데,
+이들 사이트를 seed로 하여 페이지 내의 뉴스 링크들을 수집하는 것이다.&lt;/p&gt;
+
+&lt;p&gt;Nutch는 방대한 인터넷 세계를 깊이 탐색하며 수집할 수 있도록 설계된 범용성 있는 크롤러다.
+때문에 내 요구사항에 그대로 맞춰 사용하기에는 어려운 점들이 많아 일부 튜닝이 필요했다.&lt;/p&gt;
+
+&lt;h2 id=&quot;3-tunning&quot;&gt;3. Tunning&lt;/h2&gt;
+&lt;h3 id=&quot;3-1-이전-페이지의-url-저장하기&quot;&gt;3-1. 이전 페이지의 url 저장하기&lt;/h3&gt;
+&lt;p&gt;Nutch는 웹 페이지를 저장(indexing)할 때 해당 페이지로 연결되는 &lt;strong&gt;이전 페이지의 링크 텍스트&lt;/strong&gt;(anchor)를 함께 기록한다.
+아래처럼 뉴스 타이틀에 하이퍼링크가 걸려있어서 뉴스 페이지로 연결될 경우, anchor 필드에 뉴스 타이틀이 들어오게 된다.
+혹은 “다음 기사”와 같이 버튼을 눌러 뉴스 페이지로 연결될 수도 있다.&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;tstamp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2020-06-30T01:58:26.987Z&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;anchor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Facebook Sales at Risk as Starbucks Bails&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Next Article&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;title&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Facebook Sales at Risk as Starbucks Bails&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;url&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://...&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;여기서 내가 수집하고 싶은 정보는 링크 텍스트가 아니라 &lt;strong&gt;이전 페이지의 url&lt;/strong&gt;이다.
+즉 아래처럼 anchor 필드에는 현재 페이지로 연결되는 url들이 들어와야 한다.&lt;/p&gt;
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;tstamp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2020-06-30T01:58:26.987Z&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;anchor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://first.link.url/quote.ashx?q=facebook&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://second.link.url/quote.ashx?q=facebook&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;title&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Facebook Sales at Risk as Starbucks Bails&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;url&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://...&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;위처럼 이전페이지 url을 넣는 방법은 간단하다.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/java/org/apache/nutch/crawl/Inlinks.java&lt;/code&gt; 코드에서 
+Inlinks 클래스의 getAnchors 메소드를 수정해주면 된다.
+while문의 마지막 if문에서 anchor 대신 fromUrl을 results에 입력해준다.&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainToAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Inlink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlinks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;nc&quot;&gt;Inlink&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlink&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+      &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;anchor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getAnchor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+      &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getFromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;anchor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// skip empty anchors&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// extract domain name&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;URL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getHost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;MalformedURLException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;nc&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainToAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HashSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;domainToAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// 이전 페이지의 url 입력&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()]);&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;소스코드 수정 후 Nutch를 다시 빌드해준다.
+이제부턴 anchor 필드에 이전 페이지 url이 입력될 것이다.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ant runtime
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;3-2-원본-html-저장하기&quot;&gt;3-2. 원본 html 저장하기&lt;/h3&gt;
+&lt;p&gt;Nutch는 자체 parser로 html의 텍스트를 추출/파싱해준다.
+하지만 파싱되지 않은 원본 그대로의 html을 저장하고 싶을 경우,
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-addBinaryContent&lt;/code&gt; 옵션을 사용하면 된다.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nutch index &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;crawldb 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;-linkdb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;linkdb 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;대상 segment 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;-filter&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;-normalize&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;-deleteGone&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;-addBinaryContent&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;-base64&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;인코딩 문제를 방지하기 위해 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-base64&lt;/code&gt; 인코딩 옵션을 함께 사용하는 것이 좋다.
+주의할 점은, 1.15 버전에선 버그로 인하여 해당 옵션을 사용할 경우 에러가 발생하게 된다는 것이다.
+이 버그는 1.16 버전부터는 개선되었으며 최신 버전을 사용한다면 문제 없다.
+자세한 사항은 &lt;a href=&quot;https://issues.apache.org/jira/browse/NUTCH-2706&quot;&gt;NUTCH-2706&lt;/a&gt; 이슈를 참고&lt;/p&gt;
+
+&lt;h3 id=&quot;3-3-batch-수행간-중복-url-제거&quot;&gt;3-3. batch 수행간 중복 url 제거&lt;/h3&gt;
+&lt;p&gt;Nutch는 실행되는 동안 한 번이라도 수집된 페이지는 다시 수집하지 않는다.
+timeout을 설정하면 수집된 페이지도 일정 시간 뒤 재수집이 가능하지만 특정 페이지만 재수집하는 것은 불가능하다.&lt;/p&gt;
+
+&lt;p&gt;나의 개발요건은 seed url들을 주기적으로 반복 수집하며 신규 페이지들을 수집하는 것이다.
+그러나 Nutch의 특성상 seed url들만 재수집할 수는 없으므로,
+매번 crawldb를 리셋시키고 처음부터 crawling을 수행해야 했다.&lt;/p&gt;
+
+&lt;p&gt;그 결과, 매번 crawldb가 리셋되므로 각 Nutch 배치잡은 이전 배치에서 수집했던 페이지들을 중복으로 수집했다.
+Nutch가 페이지를 저장하는 과정에서 중복 페이지는 알아서 제거되지만,
+문제는 불필요한 중복 페이지 수집 때문에 fetch time이 너무 오래걸린다는 것이다.
+(Nutch는 politeness를 최대한 준수하기 위해 동일 서버에 대해 기본적으로 5초의 idle time을 갖는다.)&lt;/p&gt;
+
+&lt;p&gt;아래는 Nutch의 워크플로우 구조다.
+&lt;strong&gt;Inject&lt;/strong&gt; &amp;gt; [ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ]*n &amp;gt; &lt;strong&gt;invert links&lt;/strong&gt; &amp;gt; &lt;strong&gt;index&lt;/strong&gt; 순서로 작업이 진행된다.
+&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-workflow.png&quot; alt=&quot;nutch-workflow&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- inject : seed url을 crawldb에 입력
+- generate : fetch할 url 리스트 생성
+- fetch : html 수집
+- parse : 수집된 html 파싱
+- update : crawldb 갱신
+- invert links : 페이지간 연결정보 갱신
+- index : 수집된 페이지 저장
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;여기서 각 Nutch 배치가 이전 배치의 수집 url들을 제거하여 fetch list를 줄일 수 있도록 워크플로우를 수정했다.
+ &lt;strong&gt;generate&lt;/strong&gt; ~ &lt;strong&gt;update&lt;/strong&gt;  의 사이클을 1회만 수행한다.
+그 후, 갱신된 crawldb를 읽어(&lt;strong&gt;readdb&lt;/strong&gt;) 이전 배치에서 수집한 url들을 제거하고 (&lt;strong&gt;remove_existing&lt;/strong&gt;) 중복 제거된 fetch list를 생성한다(&lt;strong&gt;freegen&lt;/strong&gt;).
+readdb, freegen은 Nutch 명령어이며 remove_existing은 파이썬으로 직접 구현했다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-my-workflow.png&quot; alt=&quot;my-workflow&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;수정된 워크플로우에선 중복 fetch가 모두 사라지면서 수집시간이 2시간에서 30분 내외로 획기적으로 줄었다.
+(그동안 중복 페이지들을 얼마나 많이 수집했던건지…ㄷㄷ)&lt;/p&gt;
+
+&lt;h3 id=&quot;3-4-mapreduce-병렬처리-문제&quot;&gt;3-4. MapReduce 병렬처리 문제&lt;/h3&gt;
+&lt;p&gt;위의 freegen 명령어를 사용하다가 Nutch 소스코드에 버그가 있다는 것을 발견했다.
+Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려줘서 고맙다고 답글을 달았다.
+금새 이슈가 생성됐고 지금은 해결되었다.
+이 부분은 다른 포스트로 자세히 다뤄볼 생각이다.
+해당 이슈는 (NUTCH-2810){https://issues.apache.org/jira/browse/NUTCH-2810}를 참고&lt;/p&gt;
 
 &lt;h3 id=&quot;3-5-배치-작업-스케줄링&quot;&gt;3-5. 배치 작업 스케줄링&lt;/h3&gt;
 &lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;

@@ -4,7 +4,8 @@ comments: true
 toc: true
 toc_sticky: true
 toc_label: 목차
-categories: []
+categories:
+- apache-hadoop
 tags:
 - yarn
 - spark
