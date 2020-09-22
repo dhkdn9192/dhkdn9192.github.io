@@ -42,23 +42,24 @@ YARN은 다음 이미지와 같이 3가지 스케줄러 옵션을 제공한다.
 
 ![yarn_scheduling](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-scheduling.png)
 
-### (a) FIFO Scheduler
+### 2-1. FIFO Scheduler
 모든 잡은 큐에 들어운 순서대로 실행되고 자기 차례가 될 때까지 대기해야 한다.
 간단하고 이해하기 쉽지만 하나의 잡이 모든 자원을 차지해버릴 수 있기 때문에 
 대규모 클러스터에서 사용하기에 적합하진 않다.
 
-### (b) Capacity Scheduler
+### 2-2. Capacity Scheduler
 각각의 잡은 서로 구분되는 전용 큐에서 처리된다.
 잡을 위한 자원을 미리 예약해두어야 하므로 전체 클러스터 관점에선 자원 효율성이 떨어진다.
 보통 이 capacity scheduler를 기본적으로 사용하게 된다.
 
-### (c) Fair Scheduler
+### 2-3. Fair Scheduler
 실행 중인 모든 잡에 대해 자원을 동적으로 할당해준다.
 이미 잡이 실행 중일 때 다른 잡이 추가되면 각 잡은 클러스터 자원을 절반씩 할당받는다.
 즉, 잡들이 공평하게 자원을 나눠가질 수 있다.
 
 
 ## 3. YARN Resource Allocation
+### 3-1. Default Resource Calculator
 언급한대로 Capacity Scheduler를 디폴트로 사용한다.
 스케줄링의 기본 단위는 큐이며 각 잡은 전용 큐에서 처리된다.
 각 큐의 용량은 클러스터 가용 자원 중 애플리케이션이 제출한 비율만큼을 할당하여 정해진다.
@@ -69,6 +70,7 @@ DefaultResourceCalculator는 오직 메모리만을 기준으로 하여 자원�
 즉, CPU 코어 수는 스케줄링하지 않는다.
 처음 Hadoop 클러스터를 구성했을 때 YARN 애플리케이션에 CPU 코어 수를 원하는대로 할당할 수 없는 이유가 바로 이것이다.
 
+### 3-2. Dominant Resource Calculator
 CPU 자원을 할당하는 방법은 Resource Calculator를 **DominantResourceCalculator**로 변경하는 것이다.
 YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 ```capacity-scheduler.xml```를 열어보자.
 
@@ -87,6 +89,7 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 ```cap
 </property>
 ```
 
+### 3-3. HDP의 Resource Calculator 수정하기
 
 HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 모든 YARN 컴포넌트 서버들에 대해 ```capacity-scheduler.xml```가 일괄적을 수정된다.
 
