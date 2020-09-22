@@ -94,3 +94,4 @@ HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 �
 ## References
 - https://towardsdatascience.com/schedulers-in-yarn-concepts-to-configurations-5dd7ced6c214
 - https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.6.3/bk_yarn-resource-management/content/about_yarn_resource_allocation.html
+- "하둡 완벽 가이드 (4판)", 한빛미디어, 톰 화이트 지음
