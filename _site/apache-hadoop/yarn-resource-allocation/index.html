@@ -397,7 +397,7 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 <code 
 </code></pre></div></div>
 
 <p>여러 property들 중에서 resource-calaulator 항목을 찾을 수 있다.
-최초 설치 시 DefaultResourceCalculator로 설정되어 있는데 이를 다음처럼 DominantResourceCalculator로 변경한다.</p>
+최초 설치 시 DefaultResourceCalculator로 설정되어 있는데 이를 다음처럼 DominantResourceCalculator로 변경하면 된다.</p>
 
 <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;property&gt;</span>
 	<span class="nt">&lt;name&gt;</span>yarn.scheduler.capacity.resource-calculator<span class="nt">&lt;/name&gt;</span>
@@ -405,9 +405,13 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 <code 
 <span class="nt">&lt;/property&gt;</span>
 </code></pre></div></div>
 
-<p>HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 모든 YARN 컴포넌트 서버들에 대해 <code class="language-plaintext highlighter-rouge">capacity-scheduler.xml</code>을 수정해준다.</p>
+<p>HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 모든 YARN 컴포넌트 서버들에 대해 <code class="language-plaintext highlighter-rouge">capacity-scheduler.xml</code>가 일괄적을 수정된다.</p>
 
 <p><img src="https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cpu-scheduling-config.jpeg" alt="yarn_cpu_scheduling_config" /></p>
+
+<p>맨 처음 실행했던 pyspark 코드를 다시 실행하면 아래와 같이 설정대로 executor별 코어가 할당되는 것을 확인할 수 있다.</p>
+
+<p><img src="https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cores-after.jpeg" alt="yarn-cores-after" /></p>
 
 <h2 id="references">References</h2>
 <ul>
@@ -557,49 +561,6 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 <code 
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/apache-nutch/nutch-tunning/" rel="permalink">Apache Nutch 튜닝하기
-</a>
-      
-    </h2>
-    
-
-
-  <p class="page__meta">
-
-    
-
-    
-
-    
-      
-      
-
-      <i class="far fa-clock" aria-hidden="true"></i>
-      
-        3 분 소요
-      
-    
-
-  </p>
-
-    <p class="archive__item-excerpt" itemprop="description">1. Apache Nutch
-Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
-현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다.
-최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.
-</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
         <a href="/apache-nutch/nutch-tuning/" rel="permalink">Apache Nutch 튜닝하기
 </a>
       
@@ -672,6 +633,47 @@ Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
 기존에 사용하던 Spark을 2.2.0 -&gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다.
 실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.
 </p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/apache-spark/hdp-spark-upgrade/" rel="permalink">HDP 2.6에서 Spark 업그레이드하기
+</a>
+      
+    </h2>
+    
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        4 분 소요
+      
+    
+
+  </p>
+
+    <p class="archive__item-excerpt" itemprop="description">1. Spark 2.2의 import 버그
+현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다.
+해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 ...</p>
   </article>
 </div>
 

@@ -23,12 +23,6 @@ var store = [{
         "url": "http://localhost:4000/apache-nutch/nutch-tuning/",
         "teaser": null
       },{
-        "title": "Apache Nutch 튜닝하기",
-        "excerpt":"1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다. name version Nutch 1.17 OpenJDK 1.8.0_265 Hadoop 2.7.3 (hdp 2.6.3) 2. What to crawl 구축할 웹 크롤러의 목적은 타겟...","categories": ["apache-nutch"],
-        "tags": ["nutch","java","crawler","airflow"],
-        "url": "http://localhost:4000/apache-nutch/nutch-tunning/",
-        "teaser": null
-      },{
         "title": "오픈 소스 bug-fix에 기여한 소소한 썰",
         "excerpt":"최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다. 이를 해결하고 contributor에게 공유했던 경험을 기록해보았다. 1. 문제의 발견 1-1. Nutch Workflow Apache Nutch는 Hadoop 위에서 동작하는 분산형 웹 크롤러다. (이전 포스트) 웹 페이지를 수집하기 위한 다양한 컴포넌트들로 구성되며 아래와 같은 워크플로우로 동작한다. 워크플로우에서 웹 페이지의 수집은...","categories": ["apache-nutch"],
         "tags": ["java","nutch","jira"],

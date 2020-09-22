@@ -76,8 +76,9 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 ```cap
 # vim /etc/hadoop/conf/capacity-scheduler.xml
 ```
 
+
 여러 property들 중에서 resource-calaulator 항목을 찾을 수 있다.
-최초 설치 시 DefaultResourceCalculator로 설정되어 있는데 이를 다음처럼 DominantResourceCalculator로 변경한다.
+최초 설치 시 DefaultResourceCalculator로 설정되어 있는데 이를 다음처럼 DominantResourceCalculator로 변경하면 된다.
 
 ```xml
 <property>
@@ -86,10 +87,15 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 ```cap
 </property>
 ```
 
-HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 모든 YARN 컴포넌트 서버들에 대해 ```capacity-scheduler.xml```을 수정해준다.
+
+HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 모든 YARN 컴포넌트 서버들에 대해 ```capacity-scheduler.xml```가 일괄적을 수정된다.
 
 ![yarn_cpu_scheduling_config](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cpu-scheduling-config.jpeg)
 
+
+맨 처음 실행했던 pyspark 코드를 다시 실행하면 아래와 같이 설정대로 executor별 코어가 할당되는 것을 확인할 수 있다.
+
+![yarn-cores-after](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cores-after.jpeg)
 
 ## References
 - https://towardsdatascience.com/schedulers-in-yarn-concepts-to-configurations-5dd7ced6c214
