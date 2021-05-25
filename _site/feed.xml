@@ -1,4 +1,100 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-09-22T20:35:26+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">[YARN] CPU 코어 할당을 위한 스케줄러 설정</title><link href="http://localhost:4000/apache-hadoop/yarn-resource-allocation/" rel="alternate" type="text/html" title="[YARN] CPU 코어 할당을 위한 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/apache-hadoop/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/apache-hadoop/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-25T22:28:01+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Spark Executor의 메모리 구조</title><link href="http://localhost:4000/apache-spark/spark_executor_memory_structure/" rel="alternate" type="text/html" title="Spark Executor의 메모리 구조" /><published>2021-05-25T00:00:00+09:00</published><updated>2021-05-25T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/spark_executor_memory_structure</id><content type="html" xml:base="http://localhost:4000/apache-spark/spark_executor_memory_structure/">&lt;p&gt;Spark 1.6 이상부턴 메모리 관리가 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UnifiedMemoryManager&lt;/code&gt; class에 의해 이뤄진다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/spark_executor_memory_distribution.png&quot; alt=&quot;executor_memory_distribution&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;1-reserved-memory&quot;&gt;1. Reserved Memory&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;시스템에 의해 관리되는 메모리 영역으로 크기가 300MB로 고정되어 있다.&lt;/li&gt;
+  &lt;li&gt;Spark의 internal object들이 저장된다.&lt;/li&gt;
+  &lt;li&gt;Executor에 할당해준 메모리가 Reserved Memory 크기의 1.5배 미만이면 “&lt;em&gt;please use larger heap size&lt;/em&gt;“라는 문구와 함께 에러가 발생한다.&lt;/li&gt;
+  &lt;li&gt;메모리 사이즈 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;300 MB (고정)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-user-memory&quot;&gt;2. User Memory&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;사용자가 정의한 데이터구조, UDF가 저장되는 공간이다.&lt;/li&gt;
+  &lt;li&gt;Spark에 의해 관리되지 않으며 Spark은 User Memory 공간을 인지하지 않는다.&lt;/li&gt;
+  &lt;li&gt;Java Heap 메모리에서 Reserved Memory를 제외한 공간 중에서 Spark Memory 가 아닌 나머지 부분이다.&lt;/li&gt;
+  &lt;li&gt;메모리 사이즈 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(Java Heap Memory - Reserved Memory) * (1 - spark.memory.fraction)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-spark-memory&quot;&gt;3. Spark Memory&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Spark에 의해 관리되는 메모리 영역이다.&lt;/li&gt;
+  &lt;li&gt;join과 같은 연산들이 실행되는 동안의 내부 상태가 저장되거나 broadcast 변수 등이 저장되는 영역이다.&lt;/li&gt;
+  &lt;li&gt;cache/persist에 의해 캐싱된 데이터가 저장되는 영역이다.&lt;/li&gt;
+  &lt;li&gt;Storage Memory 영역과 Execution Memory의 두 영역으로 나뉜다.&lt;/li&gt;
+  &lt;li&gt;메모리 사이즈 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(Java Heap Memory - Reserved Memory) * spark.memory.fraction&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-1-storage-memory&quot;&gt;3-1. Storage Memory&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;cache된 데이터, broadcast 변수가 저장된다.&lt;/li&gt;
+  &lt;li&gt;persist 옵션이 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MEMORY&lt;/code&gt;이면 이 영역에 데이터가 캐싱된다.&lt;/li&gt;
+  &lt;li&gt;캐싱할 공간이 부족하여 오래된 캐시 데이터를 지울 경우엔 &lt;strong&gt;LRU(Least Recently Used) 방식으로 제거&lt;/strong&gt;한다. (즉, 블록이 디스크로 강제 추방될 수 있다.)&lt;/li&gt;
+  &lt;li&gt;캐싱된 데이터가 메모리에서 벗어날 경우에는 디스크에 저장되거나 새로 계산되어야 한다.&lt;/li&gt;
+  &lt;li&gt;메모리 사이즈 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(Java Heap Memory - Reserved Memory) * spark.memory.fraction * spark.memory.storageFraction&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-2-execution-memory&quot;&gt;3-2. Execution Memory&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Spark이 task를 실행(execute)하는 동안 생성되는 object 들이 저장된다.&lt;/li&gt;
+  &lt;li&gt;예시) Hash aggregation step에서 해쉬 테이블을 저장하거나, Map 수행 시 Shuffle intermediate buffer를 저장한다.&lt;/li&gt;
+  &lt;li&gt;메모리가 충분하지 않을 경우, 디스크로의 spilling을 지원한다.&lt;/li&gt;
+  &lt;li&gt;단, 이 영역의 블록은 다른 task에 의해 강제로 추방될 수는 없다. (Storage Memory와 다른 점)&lt;/li&gt;
+  &lt;li&gt;메모리 사이즈 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(Java Heap Memory - Reserved Memory) * spark.memory.fraction * (1 - spark.memory.storageFraction)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-3-storage-memory-vs-execution-memory-비교&quot;&gt;3-3. Storage Memory vs Execution Memory 비교&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;Storage Memory는 Execution Memory가 사용되지 않는 경우에만 Execution Memory 영역을 빌릴 수 있다.&lt;/li&gt;
+  &lt;li&gt;Execution Memory 역시 Storage Memory가 사용되지 않을 경우 Storage Memory 영역을 빌릴 수 있다.&lt;/li&gt;
+  &lt;li&gt;Storage Memory가 점유한 Execution Memory 블록은 Execution이 요청할 경우, &lt;strong&gt;강제로 추방될 수 있다&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;Execution Memory가 점유한 Storage Memory 블록은 Storage가 요청하더라도, &lt;strong&gt;강제로 추방될 수 없다&lt;/strong&gt;. (Spark이 Execution의 블록을 release할 때까지 기다려야 한다.)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;em&gt;즉, 블록 추방 우선도는 Storage Memory &amp;lt; Execution Memory라 할 수 있다.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;4-executor-메모리-할당-예시&quot;&gt;4. Executor 메모리 할당 예시&lt;/h2&gt;
+
+&lt;p&gt;Executor 메모리 설정이 다음 표와 같을 경우, 각 메모리 영역에 할당되는 실제 사이즈 계산&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;conf&lt;/th&gt;
+      &lt;th&gt;value&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;spark.executor.memory&lt;/td&gt;
+      &lt;td&gt;4g&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;spark.memory.fraction&lt;/td&gt;
+      &lt;td&gt;0.75&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;spark.memory.storageFraction&lt;/td&gt;
+      &lt;td&gt;0.5&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Reserved Memory : &lt;strong&gt;300MB&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;User Memory : (4096MB - 300MB) * (1 - 0.75) = &lt;strong&gt;949MB&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;Spark Memory : (4096MB - 300MB) * 0.75 = &lt;strong&gt;2847MB&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;Storage Memory : (4096MB - 300MB) * 0.75 * 0.5 = &lt;strong&gt;1423MB&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;Execution Memory : (4096MB - 300MB) * 0.75 * (1 - 0.5) = &lt;strong&gt;1423MB&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://medium.com/analytics-vidhya/apache-spark-memory-management-49682ded3d42&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="java" /><category term="jvm" /><summary type="html">Spark 1.6 이상부턴 메모리 관리가 UnifiedMemoryManager class에 의해 이뤄진다.</summary></entry><entry><title type="html">[YARN] CPU 코어 할당을 위한 스케줄러 설정</title><link href="http://localhost:4000/apache-hadoop/yarn-resource-allocation/" rel="alternate" type="text/html" title="[YARN] CPU 코어 할당을 위한 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/apache-hadoop/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/apache-hadoop/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
 &lt;p&gt;Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다.
 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.&lt;/p&gt;
 

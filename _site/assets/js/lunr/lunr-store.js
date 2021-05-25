@@ -34,4 +34,10 @@ var store = [{
         "tags": ["yarn","spark"],
         "url": "http://localhost:4000/apache-hadoop/yarn-resource-allocation/",
         "teaser": null
+      },{
+        "title": "Spark Executor의 메모리 구조",
+        "excerpt":"Spark 1.6 이상부턴 메모리 관리가 UnifiedMemoryManager class에 의해 이뤄진다. 1. Reserved Memory 시스템에 의해 관리되는 메모리 영역으로 크기가 300MB로 고정되어 있다. Spark의 internal object들이 저장된다. Executor에 할당해준 메모리가 Reserved Memory 크기의 1.5배 미만이면 “please use larger heap size“라는 문구와 함께 에러가 발생한다. 메모리 사이즈 : 300 MB (고정) 2. User...","categories": ["apache-spark"],
+        "tags": ["spark","java","jvm"],
+        "url": "http://localhost:4000/apache-spark/spark_executor_memory_structure/",
+        "teaser": null
       }]
