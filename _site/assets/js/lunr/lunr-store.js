@@ -42,14 +42,20 @@ var store = [{
         "teaser": null
       },{
         "title": "Garbage Collection 개념 정리",
-        "excerpt":"Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다. GC가 발생하는 예시로, Java의 String 연산을 빈번하게 수행하면 불필요한 객체가 많이 생성되므로 잦은 GC를 유발하게 되고 성능이 저하될 수 있다. 1. JVM의 Runtime Data Area JVM의 Runtime Data Area는 다음과 같이 크게 5가지 요소로 구성된다. method...","categories": ["java"],
-        "tags": ["jvm","gc"],
-        "url": "http://localhost:4000/java/garbage-collection/",
+        "excerpt":"Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다. GC가 발생하는 예시로, Java의 String 연산을 빈번하게 수행하면 불필요한 객체가 많이 생성되므로 잦은 GC를 유발하게 되고 성능이 저하될 수 있다. 1. JVM의 Runtime Data Area JVM의 Runtime Data Area는 다음과 같이 크게 5가지 요소로 구성된다. method...","categories": ["computer_science"],
+        "tags": ["jvm","gc","java"],
+        "url": "http://localhost:4000/computer_science/garbage-collection/",
         "teaser": null
       },{
         "title": "효율적인 Spark Join 전략",
         "excerpt":"Spark에서 join을 수행하는 경우는 크게 두 가지로 나눌 수 있다. (1) 큰 테이블과 작은 테이블을 조인 또는 (2) 큰 테이블과 큰 테이블을 조인. Spark은 join을 수행하기 위해 Sort Merge Join, Broadcast Join, Shuffle Hash Join 등의 방법을 제공한다. 핵심 키워드 : sort merge join, shuffle hash join, broadcast join, straggler...","categories": ["apache-spark"],
         "tags": ["spark","jvm"],
         "url": "http://localhost:4000/apache-spark/spark-join-strategy/",
+        "teaser": null
+      },{
+        "title": "Python의 GIL",
+        "excerpt":"CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다. 이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하지 않기 때문이다. 핵심 키워드: mutex, thread-safe, synchronized, race-condition 1. CPython의 메모리 관리: Reference Counting CPython은 각 object별로 reference count를 기록하는 방식으로 메모리를 관리한다. reference...","categories": ["computer_science"],
+        "tags": ["python","gil"],
+        "url": "http://localhost:4000/computer_science/python-gil/",
         "teaser": null
       }]

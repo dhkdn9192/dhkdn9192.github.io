@@ -20,7 +20,7 @@
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="오류동 개발자">
 <meta property="og:title" content="Garbage Collection 개념 정리">
-<meta property="og:url" content="http://localhost:4000/java/garbage-collection/">
+<meta property="og:url" content="http://localhost:4000/computer_science/garbage-collection/">
 
 
   <meta property="og:description" content="Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.">
@@ -42,7 +42,7 @@
   
 
 
-<link rel="canonical" href="http://localhost:4000/java/garbage-collection/">
+<link rel="canonical" href="http://localhost:4000/computer_science/garbage-collection/">
 
 
 
@@ -570,6 +570,10 @@
     
       
       
+      <a href="/tags/#java" class="page__taxonomy-item" rel="tag">java</a><span class="sep">, </span>
+    
+      
+      
       <a href="/tags/#jvm" class="page__taxonomy-item" rel="tag">jvm</a>
     
     </span>
@@ -591,7 +595,7 @@
     
       
       
-      <a href="/categories/#java" class="page__taxonomy-item" rel="tag">java</a>
+      <a href="/categories/#computer-science" class="page__taxonomy-item" rel="tag">computer_science</a>
     
     </span>
   </p>
@@ -608,11 +612,11 @@
     <h4 class="page__share-title">공유하기</h4>
   
 
-  <a href="https://twitter.com/intent/tweet?text=Garbage+Collection+%EA%B0%9C%EB%85%90+%EC%A0%95%EB%A6%AC%20http%3A%2F%2Flocalhost%3A4000%2Fjava%2Fgarbage-collection%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Garbage+Collection+%EA%B0%9C%EB%85%90+%EC%A0%95%EB%A6%AC%20http%3A%2F%2Flocalhost%3A4000%2Fcomputer_science%2Fgarbage-collection%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
 
-  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fjava%2Fgarbage-collection%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fcomputer_science%2Fgarbage-collection%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
 
-  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fjava%2Fgarbage-collection%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fcomputer_science%2Fgarbage-collection%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
 </section>
 
 
@@ -638,6 +642,46 @@
     <div class="page__related">
       <h4 class="page__related-title">참고</h4>
       <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/computer_science/python-gil/" rel="permalink">Python의 GIL
+</a>
+      
+    </h2>
+    
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        1 분 소요
+      
+    
+
+  </p>
+
+    <p class="archive__item-excerpt" itemprop="description">CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다.
+이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하...</p>
+  </article>
+</div>
+
         
           
 
@@ -760,47 +804,6 @@ Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 C
 </div>
 
         
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/apache-nutch/opensource-bugfix-ssul/" rel="permalink">오픈 소스 bug-fix에 기여한 소소한 썰
-</a>
-      
-    </h2>
-    
-
-
-  <p class="page__meta">
-
-    
-
-    
-
-    
-      
-      
-
-      <i class="far fa-clock" aria-hidden="true"></i>
-      
-        1 분 소요
-      
-    
-
-  </p>
-
-    <p class="archive__item-excerpt" itemprop="description">최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다.
-이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.
-</p>
-  </article>
-</div>
-
-        
       </div>
     </div>
   
@@ -865,8 +868,8 @@ Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 C
     
   <script>
     var disqus_config = function () {
-      this.page.url = "http://localhost:4000/java/garbage-collection/";  /* Replace PAGE_URL with your page's canonical URL variable */
-      this.page.identifier = "/java/garbage-collection"; /* Replace PAGE_IDENTIFIER with your page's unique identifier variable */
+      this.page.url = "http://localhost:4000/computer_science/garbage-collection/";  /* Replace PAGE_URL with your page's canonical URL variable */
+      this.page.identifier = "/computer_science/garbage-collection"; /* Replace PAGE_IDENTIFIER with your page's unique identifier variable */
     };
     (function() { /* DON'T EDIT BELOW THIS LINE */
       var d = document, s = d.createElement('script');

@@ -5,10 +5,11 @@ toc: true
 toc_sticky: true
 toc_label: 목차
 categories:
-- java
+- computer_science
 tags:
 - jvm
 - gc
+- java
 ---
 
 Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.

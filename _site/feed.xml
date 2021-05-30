@@ -1,4 +1,166 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-29T15:23:41+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Garbage Collection 개념 정리</title><link href="http://localhost:4000/java/garbage-collection/" rel="alternate" type="text/html" title="Garbage Collection 개념 정리" /><published>2021-05-29T00:00:00+09:00</published><updated>2021-05-29T00:00:00+09:00</updated><id>http://localhost:4000/java/garbage-collection</id><content type="html" xml:base="http://localhost:4000/java/garbage-collection/">&lt;p&gt;Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-30T14:36:17+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Python의 GIL</title><link href="http://localhost:4000/computer_science/python-gil/" rel="alternate" type="text/html" title="Python의 GIL" /><published>2021-05-30T00:00:00+09:00</published><updated>2021-05-30T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/python-gil</id><content type="html" xml:base="http://localhost:4000/computer_science/python-gil/">&lt;p&gt;CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다.
+이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하지 않기 때문이다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;핵심 키워드: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mutex&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;thread-safe&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;synchronized&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;race-condition&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-cpython의-메모리-관리-reference-counting&quot;&gt;1. CPython의 메모리 관리: Reference Counting&lt;/h2&gt;
+&lt;p&gt;CPython은 각 object별로 reference count를 기록하는 방식으로 메모리를 관리한다.
+reference count가 0이되는 object는 메모리 할당이 해제된다.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# Python object의 reference count를 확인하는 예제
+&lt;/span&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;sys&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getrefcount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# 출력결과는 3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;a&lt;/code&gt;가 최초 생성되었을 때 reference 개수는 1이 됨&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;b&lt;/code&gt;가 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;a&lt;/code&gt;를 참조하여 reference 개수는 2가 됨&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sys.getrefcount()&lt;/code&gt; 자체가 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;a&lt;/code&gt;를 참조하므로 출력되는 값은 3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-cpython의-thread-safe-여부&quot;&gt;2. CPython의 thread-safe 여부&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;thread-safe란 멀티스레드 프로그래밍에서 여러 thread가 객체, 변수 등에 접근하더라도 프로그램의 실행에 문제가 없는 경우를 뜻한다.&lt;/li&gt;
+  &lt;li&gt;thread-safe한 코드를 만들기 위해선 mutex 등으로 객체에 lock을 걸어 동시 접근을 막아야 한다.&lt;/li&gt;
+  &lt;li&gt;CPython은 C로 만들어졌으며 C에서 thread를 사용할 때의 race condition 문제를 제어하는 것은 온전히 사용자의 몫이다.&lt;/li&gt;
+  &lt;li&gt;때문에 CPython은 thead 레벨에서의 메모리 관리가 기본적으로 thread-safe하지 않다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-python에서의-임계영역과-동기화-문제&quot;&gt;3. Python에서의 임계영역과 동기화 문제&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;thread들은 한 process 내에서 같은 힙 메모리 영역을 공유하며 같은 python object들에 접근할 수 있다.&lt;/li&gt;
+  &lt;li&gt;즉, thread들에 대해 &lt;strong&gt;각 python object들은 critical section에 해당&lt;/strong&gt;한다.&lt;/li&gt;
+  &lt;li&gt;각 python object들의 reference count 값을 여러 thread들이 동시에 접근하여 동기화 문제가 발생할 경우, &lt;strong&gt;메모리 할당이 해제되지 않아 메모리 누수가 발생&lt;/strong&gt;할 수 있다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;object &quot;foo&quot;를 서로 다른 두 thread가 상호배제 없이 동시에 접근하는 경우
+1. thread A가 foo를 참조 =&amp;gt; A가 읽은 reference count는 2
+2. thread B가 foo를 참조 =&amp;gt; B가 읽은 reference count는 3
+3. thread A가 foo 참조를 해제 =&amp;gt; A는 foo의 reference count 2에서 1을 제거한 값인 1을 저장
+4. thread B가 foo 참조를 해제 =&amp;gt; B는 foo의 reference count 3에서 1을 제거한 값인 2를 저장
+5. 최종적으로 foo는 참조하는 thread가 없음에도 reference count 2값을 지니게 되어 메모리 할당이 해제되지 않음 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;4-mutex로-임계영역-문제-해결하기&quot;&gt;4. mutex로 임계영역 문제 해결하기&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;위와 같은 문제를 해결하려면 mutex로 상호배제를 적용해야 한다.&lt;/li&gt;
+  &lt;li&gt;그러나 각 python object에 mutex로 lock을 거는 것은 매우 비효율적이다.&lt;/li&gt;
+  &lt;li&gt;여러개의 mutex를 사용하는 것은 성능적으로도 손해가 많을 뿐만 아니라, deadlock이 발생할 위험이 있다.&lt;/li&gt;
+  &lt;li&gt;따라서 Python은 interpreter에 대해 mutex를 걸어 동시에 한 thread만이 python object에 접근할 수 있도록 lock을 거는 방식을 선택했다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://dgkim5360.tistory.com/entry/understanding-the-global-interpreter-lock-of-cpython&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="python" /><category term="gil" /><summary type="html">CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다. 이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하지 않기 때문이다.</summary></entry><entry><title type="html">효율적인 Spark Join 전략</title><link href="http://localhost:4000/apache-spark/spark-join-strategy/" rel="alternate" type="text/html" title="효율적인 Spark Join 전략" /><published>2021-05-29T00:00:00+09:00</published><updated>2021-05-29T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/spark-join-strategy</id><content type="html" xml:base="http://localhost:4000/apache-spark/spark-join-strategy/">&lt;p&gt;Spark에서 join을 수행하는 경우는 크게 두 가지로 나눌 수 있다. (1) &lt;em&gt;큰 테이블과 작은 테이블을 조인&lt;/em&gt; 또는 (2) &lt;em&gt;큰 테이블과 큰 테이블을 조인&lt;/em&gt;. Spark은 join을 수행하기 위해 Sort Merge Join, Broadcast Join, Shuffle Hash Join 등의 방법을 제공한다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;핵심 키워드 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sort merge join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shuffle hash join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;broadcast join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;straggler&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;1-sort-merge-join&quot;&gt;1. Sort Merge Join&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/sort_merge_join.png&quot; alt=&quot;data_engineer_should_know/sort_merge_join.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;1-1-개요&quot;&gt;1-1. 개요&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;모든 노드 간의 &lt;strong&gt;all-to-all communication&lt;/strong&gt; 방식이다.&lt;/li&gt;
+  &lt;li&gt;다음과 같이 두 단계로 수행된다.
+    &lt;ul&gt;
+      &lt;li&gt;(1) 먼저 실제 join 작업을 수행하기 전에 파티션들을 정렬한다. (이 작업만으로도 비용이 크다)&lt;/li&gt;
+      &lt;li&gt;(2) 정렬된 데이터들을 병합하면서 join key가 같은 row들을 join한다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Sort Merge Join은 Shuffle Hash Join과 비교할 때, 클러스터 내 데이터 이동이 더 적은 경향이 있다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Spark 2.3부터 디폴트 join 알고리즘으로 사용되고 있다. (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.sql.join.perferSortMergeJoin=true&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-2-이상적인-성능을-발휘하려면&quot;&gt;1-2. 이상적인 성능을 발휘하려면&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Join될 파티션들이 최대한 같은 곳에 위치해야 한다. 그렇지 않으면 파티션들을 이동시키기 위해 대량의 shuffle이 발생한다.&lt;/li&gt;
+  &lt;li&gt;DataFrame의 데이터가 클러스터에 균등하게 분배되어 있어야 한다. 그렇지 않으면 특정 노드에 부하가 집중되고 연산 속도가 느려진다.&lt;/li&gt;
+  &lt;li&gt;병렬처리가 이뤄지려면 일정한 수의 고유키가 존재해야 한다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;2-broadcast-join&quot;&gt;2. Broadcast Join&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/broadcast_join.png&quot; alt=&quot;data_engineer_should_know/broadcast_join.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-1-개요&quot;&gt;2-1. 개요&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;join할 두 테이블 중 작은 것을 모든 executor에 복사(broadcast)한다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;따라서 all-to-all communication 방법으로 shuffle할 필요가 없다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;각 executor에선 보유하고 있는 큰 테이블의 일부와 broadcast된 테이블을 join한다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;코드 샘플&lt;/p&gt;
+
+    &lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.spark.sql.functions.broadcast&lt;/span&gt;
+  
+&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;joinDF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;bigDF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;broadcast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;smallDF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;joinKey&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;3-shuffle-hash-join&quot;&gt;3. Shuffle Hash Join&lt;/h2&gt;
+
+&lt;h3 id=&quot;3-1-개요&quot;&gt;3-1. 개요&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;map-reduce에 기반한 join 방식이다.&lt;/li&gt;
+  &lt;li&gt;맵 단계에선 join 칼럼을 기준으로 DataFrame을 매핑하고, 리듀스 단계에서 DataFrame을 shuffle하여 join key가 같은 것끼리 join을 수행한다.&lt;/li&gt;
+  &lt;li&gt;Spark은 디폴트로 Sort Merge Join을 사용하므로 Shuffle Hash Join을 사용하려면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.sql.join.perferSortMergeJoin&lt;/code&gt; 옵션을 false로 변경해야 한다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;효율적인-join을-방해하는-것들&quot;&gt;효율적인 Join을 방해하는 것들&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Data Skewness&lt;/strong&gt; : join key가 클러스터에 균일하게 분포해 있지 않으면 특정 파티션이 매우 커질 수 있다. 이는 Spark이 parallel하게 연산을 수행하는 것을 방해한다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;All-to-all communication&lt;/strong&gt; : broadcast join이 아닐 경우, 두 DF의 데이터 모두에서 대규모 shuffle이 발생한다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Limited executor memory&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;data-skewness를-해결하려면&quot;&gt;Data Skewness를 해결하려면?&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Repartitioning&lt;/strong&gt; : 단순히 repartition을 수행하는 것으로 데이터를 파티션들에 더 골고루 분배할 수 있다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Key Salting&lt;/strong&gt; : 근본적으로 파티셔닝되는 칼럼 키값에 salting을 적용하여 키가 고르게 분배될 수 있도록 할 수 있다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;https://towardsdatascience.com/the-art-of-joining-in-spark-dcbd33d693c&lt;/li&gt;
+  &lt;li&gt;https://medium.com/datakaresolutions/optimize-spark-sql-joins-c81b4e3ed7da&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="jvm" /><summary type="html">Spark에서 join을 수행하는 경우는 크게 두 가지로 나눌 수 있다. (1) 큰 테이블과 작은 테이블을 조인 또는 (2) 큰 테이블과 큰 테이블을 조인. Spark은 join을 수행하기 위해 Sort Merge Join, Broadcast Join, Shuffle Hash Join 등의 방법을 제공한다.</summary></entry><entry><title type="html">Garbage Collection 개념 정리</title><link href="http://localhost:4000/computer_science/garbage-collection/" rel="alternate" type="text/html" title="Garbage Collection 개념 정리" /><published>2021-05-29T00:00:00+09:00</published><updated>2021-05-29T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/garbage-collection</id><content type="html" xml:base="http://localhost:4000/computer_science/garbage-collection/">&lt;p&gt;Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.&lt;/p&gt;
 
 &lt;p&gt;GC가 발생하는 예시로, Java의 String 연산을 빈번하게 수행하면 불필요한 객체가 많이 생성되므로 잦은 GC를 유발하게 되고 성능이 저하될 수 있다.&lt;/p&gt;
 
@@ -200,109 +362,7 @@
   &lt;li&gt;https://d2.naver.com/helloworld/37111&lt;/li&gt;
   &lt;li&gt;https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/G1GettingStarted/index.html&lt;/li&gt;
   &lt;li&gt;https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-15921907-B297-43A4-8C48-DC88035BC7CF&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="java" /><category term="jvm" /><category term="gc" /><summary type="html">Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.</summary></entry><entry><title type="html">효율적인 Spark Join 전략</title><link href="http://localhost:4000/apache-spark/spark-join-strategy/" rel="alternate" type="text/html" title="효율적인 Spark Join 전략" /><published>2021-05-29T00:00:00+09:00</published><updated>2021-05-29T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/spark-join-strategy</id><content type="html" xml:base="http://localhost:4000/apache-spark/spark-join-strategy/">&lt;p&gt;Spark에서 join을 수행하는 경우는 크게 두 가지로 나눌 수 있다. (1) &lt;em&gt;큰 테이블과 작은 테이블을 조인&lt;/em&gt; 또는 (2) &lt;em&gt;큰 테이블과 큰 테이블을 조인&lt;/em&gt;. Spark은 join을 수행하기 위해 Sort Merge Join, Broadcast Join, Shuffle Hash Join 등의 방법을 제공한다.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;핵심 키워드 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sort merge join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shuffle hash join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;broadcast join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;straggler&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;1-sort-merge-join&quot;&gt;1. Sort Merge Join&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/sort_merge_join.png&quot; alt=&quot;data_engineer_should_know/sort_merge_join.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;1-1-개요&quot;&gt;1-1. 개요&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;모든 노드 간의 &lt;strong&gt;all-to-all communication&lt;/strong&gt; 방식이다.&lt;/li&gt;
-  &lt;li&gt;다음과 같이 두 단계로 수행된다.
-    &lt;ul&gt;
-      &lt;li&gt;(1) 먼저 실제 join 작업을 수행하기 전에 파티션들을 정렬한다. (이 작업만으로도 비용이 크다)&lt;/li&gt;
-      &lt;li&gt;(2) 정렬된 데이터들을 병합하면서 join key가 같은 row들을 join한다.&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Sort Merge Join은 Shuffle Hash Join과 비교할 때, 클러스터 내 데이터 이동이 더 적은 경향이 있다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Spark 2.3부터 디폴트 join 알고리즘으로 사용되고 있다. (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.sql.join.perferSortMergeJoin=true&lt;/code&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;1-2-이상적인-성능을-발휘하려면&quot;&gt;1-2. 이상적인 성능을 발휘하려면&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Join될 파티션들이 최대한 같은 곳에 위치해야 한다. 그렇지 않으면 파티션들을 이동시키기 위해 대량의 shuffle이 발생한다.&lt;/li&gt;
-  &lt;li&gt;DataFrame의 데이터가 클러스터에 균등하게 분배되어 있어야 한다. 그렇지 않으면 특정 노드에 부하가 집중되고 연산 속도가 느려진다.&lt;/li&gt;
-  &lt;li&gt;병렬처리가 이뤄지려면 일정한 수의 고유키가 존재해야 한다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;2-broadcast-join&quot;&gt;2. Broadcast Join&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/broadcast_join.png&quot; alt=&quot;data_engineer_should_know/broadcast_join.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;2-1-개요&quot;&gt;2-1. 개요&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;join할 두 테이블 중 작은 것을 모든 executor에 복사(broadcast)한다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;따라서 all-to-all communication 방법으로 shuffle할 필요가 없다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;각 executor에선 보유하고 있는 큰 테이블의 일부와 broadcast된 테이블을 join한다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;코드 샘플&lt;/p&gt;
-
-    &lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.spark.sql.functions.broadcast&lt;/span&gt;
-  
-&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;joinDF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;bigDF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;broadcast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;smallDF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;joinKey&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;3-shuffle-hash-join&quot;&gt;3. Shuffle Hash Join&lt;/h2&gt;
-
-&lt;h3 id=&quot;3-1-개요&quot;&gt;3-1. 개요&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;map-reduce에 기반한 join 방식이다.&lt;/li&gt;
-  &lt;li&gt;맵 단계에선 join 칼럼을 기준으로 DataFrame을 매핑하고, 리듀스 단계에서 DataFrame을 shuffle하여 join key가 같은 것끼리 join을 수행한다.&lt;/li&gt;
-  &lt;li&gt;Spark은 디폴트로 Sort Merge Join을 사용하므로 Shuffle Hash Join을 사용하려면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.sql.join.perferSortMergeJoin&lt;/code&gt; 옵션을 false로 변경해야 한다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;효율적인-join을-방해하는-것들&quot;&gt;효율적인 Join을 방해하는 것들&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Data Skewness&lt;/strong&gt; : join key가 클러스터에 균일하게 분포해 있지 않으면 특정 파티션이 매우 커질 수 있다. 이는 Spark이 parallel하게 연산을 수행하는 것을 방해한다.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;All-to-all communication&lt;/strong&gt; : broadcast join이 아닐 경우, 두 DF의 데이터 모두에서 대규모 shuffle이 발생한다.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;Limited executor memory&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;data-skewness를-해결하려면&quot;&gt;Data Skewness를 해결하려면?&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Repartitioning&lt;/strong&gt; : 단순히 repartition을 수행하는 것으로 데이터를 파티션들에 더 골고루 분배할 수 있다.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;Key Salting&lt;/strong&gt; : 근본적으로 파티셔닝되는 칼럼 키값에 salting을 적용하여 키가 고르게 분배될 수 있도록 할 수 있다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;https://towardsdatascience.com/the-art-of-joining-in-spark-dcbd33d693c&lt;/li&gt;
-  &lt;li&gt;https://medium.com/datakaresolutions/optimize-spark-sql-joins-c81b4e3ed7da&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="jvm" /><summary type="html">Spark에서 join을 수행하는 경우는 크게 두 가지로 나눌 수 있다. (1) 큰 테이블과 작은 테이블을 조인 또는 (2) 큰 테이블과 큰 테이블을 조인. Spark은 join을 수행하기 위해 Sort Merge Join, Broadcast Join, Shuffle Hash Join 등의 방법을 제공한다.</summary></entry><entry><title type="html">Spark Executor의 메모리 구조</title><link href="http://localhost:4000/apache-spark/spark_executor_memory_structure/" rel="alternate" type="text/html" title="Spark Executor의 메모리 구조" /><published>2021-05-25T00:00:00+09:00</published><updated>2021-05-25T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/spark_executor_memory_structure</id><content type="html" xml:base="http://localhost:4000/apache-spark/spark_executor_memory_structure/">&lt;p&gt;Spark 1.6 이상부턴 메모리 관리가 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UnifiedMemoryManager&lt;/code&gt; class에 의해 이뤄진다.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="jvm" /><category term="gc" /><category term="java" /><summary type="html">Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.</summary></entry><entry><title type="html">Spark Executor의 메모리 구조</title><link href="http://localhost:4000/apache-spark/spark_executor_memory_structure/" rel="alternate" type="text/html" title="Spark Executor의 메모리 구조" /><published>2021-05-25T00:00:00+09:00</published><updated>2021-05-25T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/spark_executor_memory_structure</id><content type="html" xml:base="http://localhost:4000/apache-spark/spark_executor_memory_structure/">&lt;p&gt;Spark 1.6 이상부턴 메모리 관리가 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UnifiedMemoryManager&lt;/code&gt; class에 의해 이뤄진다.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/spark_executor_memory_distribution.png&quot; alt=&quot;executor_memory_distribution&quot; /&gt;&lt;/p&gt;
 &lt;h2 id=&quot;1-reserved-memory&quot;&gt;1. Reserved Memory&lt;/h2&gt;
