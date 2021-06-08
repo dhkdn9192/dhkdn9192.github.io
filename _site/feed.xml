@@ -1,4 +1,64 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-05-30T14:36:17+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Python의 GIL</title><link href="http://localhost:4000/computer_science/python-gil/" rel="alternate" type="text/html" title="Python의 GIL" /><published>2021-05-30T00:00:00+09:00</published><updated>2021-05-30T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/python-gil</id><content type="html" xml:base="http://localhost:4000/computer_science/python-gil/">&lt;p&gt;CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-08T22:48:44+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Kafka + Spark Streaming Integration</title><link href="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/" rel="alternate" type="text/html" title="Kafka + Spark Streaming Integration" /><published>2021-06-08T00:00:00+09:00</published><updated>2021-06-08T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration</id><content type="html" xml:base="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/">&lt;p&gt;Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Receiver-based Approach&lt;/li&gt;
+  &lt;li&gt;Direct Approach (No Receivers)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;1-receiver-based-approach&quot;&gt;1. Receiver-based Approach&lt;/h2&gt;
+
+&lt;p&gt;이 통합 방식에서는 데이터 전달 과정에서 더 나은 &lt;strong&gt;Fault-tolerance 수준을 보장&lt;/strong&gt;하기 위해 Spark 1.2부터 도입된 &lt;strong&gt;Write Ahead Log&lt;/strong&gt; (&lt;strong&gt;WAL&lt;/strong&gt;)를 사용한다.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Spark Executor에 존재하는 Receiver가 Kafka로부터 데이터를 consume한다. Kafka의 high-level consumer API를 사용한다.&lt;/li&gt;
+  &lt;li&gt;수신된 데이터는 WAL에 저장된다(HDFS)&lt;/li&gt;
+  &lt;li&gt;WAL에 기록이 완료되면, Receiver는 Zookeeper 상의 Kafka offsetㅇ르 업데이트한다.&lt;/li&gt;
+  &lt;li&gt;장애가 발생할 경우, WAL의 기록을 읽어 데이터가 손실되지 않도록 복구한다.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_sparkstreaming_receiver_approach.png&quot; alt=&quot;kafka_sparkstreaming_receiver_approach&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Receiver-based Approach는 데이터의 손실은 막을 수 있지만 장애가 발생하면 데이터가 두 번 이상 중복으로 처리될 수 있다는 문제가 있다. 즉, &lt;strong&gt;at-least-once&lt;/strong&gt; 방식이다.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Receiver가 WAL에 기록을 완료한 뒤 Zookeeper의 offset을 업데이트하기 전에 장애가 발생&lt;/li&gt;
+  &lt;li&gt;Receiver는 다시 Kafka를 consume 할 때 Zookeeper의 업데이트되지 않은 offset을 참조&lt;/li&gt;
+  &lt;li&gt;이렇게 읽어온 데이터는 이미 WAL에 기록되어 있으므로 같은 데이터를 두 번 처리하게 됨&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;2-direct-approach-no-receivers&quot;&gt;2. Direct Approach (No Receivers)&lt;/h2&gt;
+
+&lt;p&gt;위와 같은 문제 때문에 Spark 1.3부터 Direct approach가 도입되었다. Receiver와 WAL을 사용하지 않으며, offset을 Zookeeper에 갱신하지 않고 직접 checkpoint로 관리한다. Receiver approach와 비교하여 아래와 같은 이점을 갖는다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Simplified Prallelism&lt;/strong&gt; : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;directStream&lt;/code&gt; 은 Kafka partition 수만큼 RDD partition을 생성해준다. 따라서 여러개의 input Kafka stream을 생성하여 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;union&lt;/code&gt; 해줄 필요가 없다. 덕분에 사용하기 쉽고 설정하기도 용이하다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Efficiency&lt;/strong&gt; : Receiver approach에선 WAL 사용으로 인해 데이터가 중복 처리되는 비효율 문제가 있었다. Direct approach에선 Receiver가 없으므로 WAL 또한 사용하지 않는다. 장애가 생길 경우엔 Kafka로부터 손실된 메시지를 가져온다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Exactly-once semantics&lt;/strong&gt; : offset을 Spark Streaming이 직접 &lt;strong&gt;checkpoint&lt;/strong&gt;를 통해 관리하며 Zookeeper를 사용하지 않는다. 이로 인해 장애가 발생하더라도 Spark Streaming과 Zookeeper/Kafka 사이의 inconsistency가 생기지 않는다. 즉, &lt;strong&gt;exactly-once&lt;/strong&gt; 가 보장된다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_sparkstreaming_direct_approach.png&quot; alt=&quot;kafka_sparkstreaming_direct_approach&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;반면, Zookeeper를 통해 offset이 관리되지 않으므로 다음과 같은 단점을 가진다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;전통적으로 Zookeeper를 사용하는 Kafka 모니터링 도구에서 Spark Streaming이 consume하고 있는 offset을 볼 수 없다. offset을 Zookeeper에 기록하지 않고 checkpoint를 통해 자체적으로 관리하기 때문이다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;https://tommypagy.tistory.com/155&lt;/li&gt;
+  &lt;li&gt;https://spark.apache.org/docs/2.4.6/streaming-kafka-0-8-integration.html&lt;/li&gt;
+  &lt;li&gt;https://databricks.com/blog/2015/03/30/improvements-to-kafka-integration-of-spark-streaming.html&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="apache-kafka" /><category term="spark" /><category term="kafka" /><category term="spark-streaming" /><summary type="html">Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.</summary></entry><entry><title type="html">Python의 GIL</title><link href="http://localhost:4000/computer_science/python-gil/" rel="alternate" type="text/html" title="Python의 GIL" /><published>2021-05-30T00:00:00+09:00</published><updated>2021-05-30T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/python-gil</id><content type="html" xml:base="http://localhost:4000/computer_science/python-gil/">&lt;p&gt;CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다.
 이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하지 않기 때문이다.&lt;/p&gt;
 
 &lt;ul&gt;
@@ -1128,113 +1188,4 @@ yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.
   &lt;li&gt;https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp&lt;/li&gt;
   &lt;li&gt;https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2&lt;/li&gt;
   &lt;li&gt;https://kb.informatica.com/solution/23/pages/71/577764.aspx&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="scala" /><category term="hdp" /><category term="yarn" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry><entry><title type="html">Spark Shell import 에러</title><link href="http://localhost:4000/apache-spark/sparkshell-import-error/" rel="alternate" type="text/html" title="Spark Shell import 에러" /><published>2020-09-07T00:00:00+09:00</published><updated>2020-09-07T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/sparkshell-import-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/sparkshell-import-error/">&lt;h2 id=&quot;1-문제-발견&quot;&gt;1. 문제 발견&lt;/h2&gt;
-&lt;p&gt;Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다.
-아래는 “&lt;a href=&quot;https://github.com/sryza/aas/blob/master/ch08-geotime/src/main/scala/com/cloudera/datascience/geotime/RichGeometry.scala&quot;&gt;9가지 사례로 익히는 고급 스파크 분석&lt;/a&gt;” 책의 예제코드이다.&lt;/p&gt;
-
-&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.esri.core.geometry.Geometry&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RichGeometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;geometry&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;위 코드를 Zeppelin에서 수행하게 되면 아래와 같은 에러가 뜬다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/07/2020-09-07-zeppelin-error.png&quot; alt=&quot;zeppelin-error&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;첫 줄의 java esri 라이브러리는 Zeppelin의 Spark interpreter 옵션에서 Dependencies 항목에 jar 파일 경로로 추가했다.
-import 자체는 문제 없이 수행된다.
-문제는 import되었음에도 Spark interpreter가 인식을 못 하는 것이다. (심지어 같은 paragraph에서 실행했다!)&lt;/p&gt;
-
-&lt;p&gt;위 문제가 발생한 환경은 다음과 같다&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: center&quot;&gt;name&lt;/th&gt;
-      &lt;th style=&quot;text-align: center&quot;&gt;version&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;OpenJDK&lt;/td&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;1.8.0_191&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;Scala&lt;/td&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;2.11.8&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;Spark&lt;/td&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;2.2.0&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;HDP&lt;/td&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;2.6.3.0-235&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;Zeppelin&lt;/td&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;0.7.3&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h2 id=&quot;2-stackoverflow-검색&quot;&gt;2. StackOverflow 검색&lt;/h2&gt;
-
-&lt;p&gt;Stackoverflow에서 검색을 하다 크게 2가지 해결 방법을 찾았다.&lt;/p&gt;
-
-&lt;h3 id=&quot;2-1-세미콜론으로-라인-이어붙이기&quot;&gt;2-1. 세미콜론으로 라인 이어붙이기&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;세미콜론&lt;/em&gt;을 이용하여 import 구문과 class 선언 구문을 한 라인으로 이어 붙이는 방법이다. (…)
-정상적으로 수행은 가능하지만 코드가 매우 기괴해진다.&lt;/p&gt;
-
-&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.esri.core.geometry.Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RichGeometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;geometry&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,...)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;2-2-싱글톤으로-감싸기&quot;&gt;2-2. 싱글톤으로 감싸기&lt;/h3&gt;
-
-&lt;p&gt;import 구문부터 class 선언구문 전체를 하나의 싱글톤으로 감싼다.
-싱글톤 내부에서 import하므로 정상적으로 class 선언이 가능해진다.
-그러나 클래스를 직접 호출할 수 없고 싱글톤 내부에서 가져와야 한다.&lt;/p&gt;
-
-&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.esri.core.geometry.Geometry&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RichGeometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;geometry&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Geometry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;br /&gt;
-두 가지 모두 마음에 드는 해결책은 아니다.
-구체적으로 원인이 무엇인지, 근본적인 해결책은 어떤건지 자세히 알아봐야겠다.&lt;/p&gt;
-
-&lt;h2 id=&quot;3-근본적인-원인과-해결책&quot;&gt;3. 근본적인 원인과 해결책&lt;/h2&gt;
-&lt;p&gt;Zeppelin 상에서 발견해서 당연히 Zeppelin 상의 버그인 줄 알았는데 알고보니 Spark-Shell의 오류였다.
-(좀 더 깊게 들어가면 Scala까지 가게 된다.)&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://issues.apache.org/jira/browse/SPARK-22393&quot;&gt;SPARK-22393&lt;/a&gt; 이슈에 따르면 Spark 2.x대에 들어서면서 발생한 버그다.
-Scala 언어에서 2.11~2.12 버전 사이에 importHandler 관련 버그 픽스(&lt;a href=&quot;https://github.com/scala/bug/issues/9881&quot;&gt;SI-9880&lt;/a&gt;)가 있었는데 해당 이슈로 인해 Spark에도 import 관련 버그가 발생한 것으로 보인다.&lt;/p&gt;
-
-&lt;p&gt;컨트리뷰터들 사이에서도 굉장히 난해한 버그였던 것 같다. 핵심만 정리하자면&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Scala 2.11 에서 동작하는 Spark에서 해당 버그 발생함&lt;/li&gt;
-  &lt;li&gt;Scala 2.12 에서는 importHandler 이슈가 해결됨에 따라 spark-shell 역시 정상적으로 동작함&lt;/li&gt;
-  &lt;li&gt;spark-shell의 버그를 고치기 위해 Scala까지 수정하는 것은 매우 큰 작업이고 리스크가 크므로 실용적이지 않음&lt;/li&gt;
-  &lt;li&gt;따라서 Scala의 fix를 적절히 이용하여 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SparkExprTyper&lt;/code&gt; 및 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SparkILoopInterpreter&lt;/code&gt;를 spark-shell에 추가하여 버그픽스함&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;즉, Spark 2.3부터는 해당 이슈가 해결되었다.
-Spark의 버전을 업그레이드하는 것이 가장 합리적인 해결책이다.&lt;/p&gt;
-
-&lt;p&gt;문제가 있다면 내가 사용하는 HDP에서는 Spark 버전이 2.2라는 것이다.
-HDP와는 별도로 Spark 최신버전을 설치하고 Zeppelin에 연동하는 방식으로 사용해야할 것 같다.&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;https://github.com/sryza/aas&lt;/li&gt;
-  &lt;li&gt;https://issues.apache.org/jira/browse/SPARK-22393&lt;/li&gt;
-  &lt;li&gt;https://github.com/scala/bug/issues/9881&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="zeppelin" /><category term="scala" /><summary type="html">1. 문제 발견 Zeppelin에서 Spark을 사용하다가 이해할 수 없는 에러를 보게 되었다. 아래는 “9가지 사례로 익히는 고급 스파크 분석” 책의 예제코드이다.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="scala" /><category term="hdp" /><category term="yarn" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry></feed>

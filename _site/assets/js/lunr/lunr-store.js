@@ -58,4 +58,10 @@ var store = [{
         "tags": ["python","gil"],
         "url": "http://localhost:4000/computer_science/python-gil/",
         "teaser": null
+      },{
+        "title": "Kafka + Spark Streaming Integration",
+        "excerpt":"Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다. Receiver-based Approach Direct Approach (No Receivers) 1. Receiver-based Approach 이 통합 방식에서는 데이터 전달 과정에서 더 나은 Fault-tolerance 수준을 보장하기 위해 Spark 1.2부터 도입된 Write Ahead Log (WAL)를 사용한다. Spark Executor에 존재하는 Receiver가 Kafka로부터 데이터를 consume한다. Kafka의 high-level consumer API를 사용한다. 수신된...","categories": ["apache-spark","apache-kafka"],
+        "tags": ["spark","kafka","spark-streaming"],
+        "url": "http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/",
+        "teaser": null
       }]
