@@ -1,4 +1,106 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-08T22:48:44+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Kafka + Spark Streaming Integration</title><link href="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/" rel="alternate" type="text/html" title="Kafka + Spark Streaming Integration" /><published>2021-06-08T00:00:00+09:00</published><updated>2021-06-08T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration</id><content type="html" xml:base="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/">&lt;p&gt;Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-14T22:19:28+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Java : String vs StringBuffer, StringBuilder</title><link href="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/" rel="alternate" type="text/html" title="Java : String vs StringBuffer, StringBuilder" /><published>2021-06-14T00:00:00+09:00</published><updated>2021-06-14T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/java-stringbuffer-stringbuilder</id><content type="html" xml:base="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/">&lt;h2 id=&quot;java의-string&quot;&gt;Java의 String&lt;/h2&gt;
+
+&lt;p&gt;문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;select * &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;from atable &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;limit 100; &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;최종적으로 myQuery 문자열에 저장되는 값은 “select * from atable limit 100;” 이라는 sql 쿼리문이다. 그러나 각 라인을 수행하면서 각각의 부분 문자열 객체들을 생성해야하고 이는 연산 후에 곧바로 사용되지 않는 garbage가 된다. &lt;strong&gt;garbage가 많이 생성될 수록 메모리 사용량도 늘어나고, GC 또한 빈번하게 발생하므로 속도도 느려지게된다&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;다음처럼 매번 다른 메모리 주소 상에 새로운 객체가 저장된다. 즉, 직전까지의 객체는 garbage가 된다.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;메모리 주소&lt;/th&gt;
+      &lt;th&gt;값&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;“select * “&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;150&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;“select * from atable”&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;200&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;“select * from atable limit 100;”&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;string-대신-stringbuffer-stringbuilder&quot;&gt;String 대신 StringBuffer, StringBuilder&lt;/h2&gt;
+
+&lt;p&gt;위의 예시를 Java의 StringBuffer 또는 StringBuilder를 사용할 경우 아래처럼 작성할 수 있다.&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;StringBuffer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strBuff&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;StringBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;strBuff&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;select * &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;strBuff&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;from atable &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;strBuff&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;limit 100; &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strBuff&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;StringBuffer나 StringBuilder는 String과는 달리 &lt;strong&gt;새로운 객체를 생성하지 않는다&lt;/strong&gt;. append() 연산을 통해 기존 객체에 데이터를 추가한다. 매 연산마다 garbage가 생성되지 않으므로 GC 또한 빈번하게 발생하지 않는다.&lt;/p&gt;
+
+&lt;p&gt;메모리 상에 데이터가 저장될 때에는 다음처럼 동일한 주소의 객체에 추가된다.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;메모리 주소&lt;/th&gt;
+      &lt;th&gt;값&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;“select * “&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;“select * from atable”&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;“select * from atable limit 100;”&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;stringbuffer-vs-stringbuilder&quot;&gt;StringBuffer vs StringBuilder&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;StringBuffer는 thread-safe하게 설계되어 여러개의 thread가 접근하는 환경에서도 사용할 수 있다.&lt;/li&gt;
+  &lt;li&gt;StringBuilder는 단일 thread에서의 안전성만 보전하므로 여러개의 thread가 접근하면 문제가 발생할 수 있다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;결론&quot;&gt;결론&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;String은 가급적이면 문자열 연산이 없는 경우에 사용한다.&lt;/li&gt;
+  &lt;li&gt;StringBuffer는 thread-safe한 프로그래밍이 필요한 경우(static 선언된 문자열을 변경하는 등)에 사용한다.&lt;/li&gt;
+  &lt;li&gt;StringBuilder는 thread-safe 여부와 관계 없이 프로그래밍할 경우(메소드 내에서 선언된 문자열을 변경한는 등)에 사용한다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;도서 “자바 성능 튜닝 이야기”, 인사이트, 이상민 지음&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="jvm" /><category term="gc" /><category term="java" /><summary type="html">Java의 String</summary></entry><entry><title type="html">Kafka + Spark Streaming Integration</title><link href="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/" rel="alternate" type="text/html" title="Kafka + Spark Streaming Integration" /><published>2021-06-08T00:00:00+09:00</published><updated>2021-06-08T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration</id><content type="html" xml:base="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/">&lt;p&gt;Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Receiver-based Approach&lt;/li&gt;
@@ -937,255 +1039,4 @@ py4j의 java_import 함수를 사용하여 필요한 클래스들을 jvm에 impo
 
 &lt;p&gt;요구하는 버전을 설치하여 정말 간단하게 해결할 수 있는 문제였다.&lt;/p&gt;
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;pip &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;py4j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;0.10.7
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="pyspark" /><category term="py4j" /><summary type="html">1. Py4JError 기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다. 실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.</summary></entry><entry><title type="html">HDP 2.6에서 Spark 업그레이드하기</title><link href="http://localhost:4000/apache-spark/hdp-spark-upgrade/" rel="alternate" type="text/html" title="HDP 2.6에서 Spark 업그레이드하기" /><published>2020-09-08T00:00:00+09:00</published><updated>2020-09-08T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/hdp-spark-upgrade</id><content type="html" xml:base="http://localhost:4000/apache-spark/hdp-spark-upgrade/">&lt;h2 id=&quot;1-spark-22의-import-버그&quot;&gt;1. Spark 2.2의 import 버그&lt;/h2&gt;
-&lt;p&gt;현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다.
-해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(&lt;a href=&quot;https://issues.apache.org/jira/browse/SPARK-22393&quot;&gt;SPARK-22393&lt;/a&gt;)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다.
-따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.&lt;/p&gt;
-
-&lt;h2 id=&quot;2-hdp에-외부-spark-연동하기-yarn-client&quot;&gt;2. HDP에 외부 Spark 연동하기 (yarn-client)&lt;/h2&gt;
-&lt;h3 id=&quot;2-1-spark-246-다운로드-및-설치&quot;&gt;2-1. Spark 2.4.6 다운로드 및 설치&lt;/h3&gt;
-
-&lt;p&gt;우선 Apache Ambari 관리모드에서 기존 Spark을 삭제한 뒤, Spark 신규 버전을 Master 노드에 다운로드하였다.
-HDP 2.6에선 Hadoop 2.7을 사용하므로 &lt;strong&gt;Pre-built for Apache Hadoop 2.7&lt;/strong&gt;을 선택한다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-download-spark.png&quot; alt=&quot;download-spark&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;2-2-spark-envsh-및-spark_home-설정&quot;&gt;2-2. spark-env.sh 및 SPARK_HOME 설정&lt;/h3&gt;
-&lt;p&gt;원하는 곳에 압축 해제한 뒤 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/spark-env.sh&lt;/code&gt; 파일을 열어 아래와 같이 수정한다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/hdp/2.6.3.0-235/hadoop
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_CONF_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/etc/hadoop/conf
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HADOOP_HOME&lt;/code&gt;은 HDP Hadoop이 설치된 경로이다.
-Spark은 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HADOOP_CONF_DIR}&lt;/code&gt; 하위의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;yarn-site.xml&lt;/code&gt; 파일을 이용해 YARN과 연결할 수 있게 된다.&lt;/p&gt;
-
-&lt;p&gt;또한, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.bashrc&lt;/code&gt; 파일을 열어 아래와 같이 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SPARK_HOME&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PATH&lt;/code&gt; 환경변수를 설정해준다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;설치한 Spark 디렉토리 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$SPARK_HOME&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;2-3-spark-shell-실행&quot;&gt;2-3. spark-shell 실행&lt;/h3&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bin/spark-shell&lt;/code&gt;을 실행하면 REPL 환경에서 Spark 프로그래밍을 할 수 있다.
-별도의 옵션 없이 수행하면 standalone 모드로 동작한다. YARN과 연동하여 하둡 클러스터를 이용하려면 yarn-client 모드로 동작해야 한다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./bin/spark-shell &lt;span class=&quot;nt&quot;&gt;--master&lt;/span&gt; yarn &lt;span class=&quot;nt&quot;&gt;--deploy-mode&lt;/span&gt; client
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;2-4-yarn-timeline-service-이슈&quot;&gt;2-4. YARN timeline-service 이슈&lt;/h3&gt;
-
-&lt;p&gt;hdp에서 위와 같이 yarn-client 모드를 수행하면 다음과 같은 에러가  발생한다.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;java.lang.NoClassDefFoundError: com/sun/jersey/api/client/config/ClientConfig
-  at org.apache.hadoop.yarn.client.api.TimelineClient.createTimelineClient(TimelineClient.java:55)
-  at org.apache.hadoop.yarn.client.api.impl.YarnClientImpl.createTimelineClient(YarnClientImpl.java:181)
-  at org.apache.hadoop.yarn.client.api.impl.YarnClientImpl.serviceInit(YarnClientImpl.java:168)
-  at org.apache.hadoop.service.AbstractService.init(AbstractService.java:163)
-  at org.apache.spark.deploy.yarn.Client.submitApplication(Client.scala:161)
-  at org.apache.spark.scheduler.cluster.YarnClientSchedulerBackend.start(YarnClientSchedulerBackend.scala:57)
-  at org.apache.spark.scheduler.TaskSchedulerImpl.start(TaskSchedulerImpl.scala:188)
-  at org.apache.spark.SparkContext.&amp;lt;init&amp;gt;(SparkContext.scala:501)
-  at org.apache.spark.SparkContext$.getOrCreate(SparkContext.scala:2520)
-  at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:930)
-  at org.apache.spark.sql.SparkSession$Builder$$anonfun$7.apply(SparkSession.scala:921)
-  at scala.Option.getOrElse(Option.scala:121)
-  at org.apache.spark.sql.SparkSession$Builder.getOrCreate(SparkSession.scala:921)
-  at org.apache.spark.repl.Main$.createSparkSession(Main.scala:106)
-  ... 62 elided
-Caused by: java.lang.ClassNotFoundException: com.sun.jersey.api.client.config.ClientConfig
-  at java.net.URLClassLoader.findClass(URLClassLoader.java:382)
-  at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-  at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:349)
-  at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-  ... 76 more
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;다행히도 이 오류는 &lt;a href=&quot;https://issues.apache.org/jira/browse/SPARK-15343&quot;&gt;SPARK-15343&lt;/a&gt;에서 다뤄진 적이 있다.
-이슈 내용을 정라하자면 핵심은 다음과 같다.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;YARN의 timeline-service 기능과 관련하여 jersey 라이브러리를 사용하고 있다.&lt;/li&gt;
-  &lt;li&gt;기존에 사용하던 HDP 환경에선 YARN과 Spark 모두 jersey 1.9 버전을 사용하고 있었으나, &lt;strong&gt;Spark 2.4는 2.22.2 버전을 사용하므로 서로 호환되지 않는다&lt;/strong&gt;.&lt;/li&gt;
-  &lt;li&gt;YARN은 디폴트로 timeline-service 기능이 켜져있으므로 &lt;strong&gt;항상 jersey 호환성으로 인한 NoClassDefFoundError를 일으키게 된다&lt;/strong&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;jira 이슈에서 제시되는 몇가지 해결책들이 있다.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;timeline-service를 중지하기 위해 YARN 설정에서 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;yarn.timeline-service.enabled&lt;/code&gt; 옵션을 false로 변경하거나&lt;/li&gt;
-  &lt;li&gt;spark-shell을 수행할 때 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--conf spark.timeline-service.enabled=false&lt;/code&gt; 옵션을 추가해주거나&lt;/li&gt;
-  &lt;li&gt;spark의 jars 디렉토리에 jersey 1.9 라이브러리를 넣어서 버전을 통일시켜주는 방법이 있다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;YARN에 제출되는 다양한 애플리케이션들 중 오직 Spark만을 위해서 timeline-service 기능을 끄는 것은 다소 실용성이 떨어진다.
-jersey의 버전을 강제적으로 통일했을 땐 부가적인 문제가 생길 가능성이 있으므로 여기서는 두번째 방안을 채택하기로 했다.
-옵션을 디폴트로 설정하려면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/spark-defaults.conf&lt;/code&gt; 파일에 아래와 같이 추가해준다.&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spark.hadoop.yarn.timeline-service.enabled   false
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;2-5-yarn-application-has-already-ended-hdpversion-이슈&quot;&gt;2-5. YARN application has already ended! (hdp.version 이슈)&lt;/h3&gt;
-
-&lt;p&gt;timeline-service 이슈를 해결했더니 이번에는 다음과 같은 에러가 발생했다.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;20/09/08 19:42:53 ERROR cluster.YarnClientSchedulerBackend: The YARN application has already ended! Itmight have been killed or the Application Master may have failed to start. Check the YARN application logs for more details.
-20/09/08 19:42:53 ERROR spark.SparkContext: Error initializing SparkContext.
-org.apache.spark.SparkException: Application application_1599556837475_0006 failed 2 times due to AM Container for appattempt_1599556837475_0006_000002 exited with  exitCode: 1
-For more detailed output, check the application tracking page: http://불라불라불라/cluster/app/application_1599556837475_0006 Then click on links to logs of each attempt.
-Diagnostics: Exception from container-launch.
-Container id: container_e16_1599556837475_0006_02_000001
-Exit code: 1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;YARN에 작업이 제출된 즉시 애플리케이션이 종료된다.
-원인을 찾느라 한참 헤맸는데 사실은 정말 단순한 이유였다.
-HDP에선 Spark job을 제출할 때 java 옵션으로 HDP 버전을 명시해줘야 하는데,
-HDP와는 별개로 설치한 Spark 패키지여서 이 부분을 생략했던 것이다.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp&quot;&gt;스택오버플로우&lt;/a&gt;에 올라온 답변을 참조하여 다음과 같이 옵션을 추가하였다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./bin/spark-shell &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;--master&lt;/span&gt; yarn &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;--deploy-mode&lt;/span&gt; client &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;--conf&lt;/span&gt; spark.hadoop.yarn.timeline-service.enabled&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;--conf&lt;/span&gt; spark.driver.extraJavaOptions&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'-Dhdp.version=2.6.3.0-235'&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;--conf&lt;/span&gt; spark.yarn.am.extraJavaOptions&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'-Dhdp.version=2.6.3.0-235'&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;--conf&lt;/span&gt; spark.executor.extraJavaOptions&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'-Dhdp.version=2.6.3.0-235'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;여기까지 수행한 끝에 HDP 2.6에서 yarn-client 모드로 Spark 2.4 버전을 사용할 수 있게 되었다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-spark-shell-result.jpeg&quot; alt=&quot;result&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;해당 옵션을 디폴트로 사용하려면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/spark-defaults.conf&lt;/code&gt;에 아래 라인들을 추가해준다.
-참고로 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.yarn.am.extraJavaOptions&lt;/code&gt; 옵션은 yarn-cluster 모드에선 효과가 없다.&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spark.driver.extraJavaOptions    -Dhdp.version=2.6.3.0-235
-spark.yarn.am.extraJavaOptions   -Dhdp.version=2.6.3.0-235
-spark.executor.extraJavaOptions  -Dhdp.version=2.6.3.0-235
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;3-hdp에-spark-cluster-설치하기-yarn-cluster&quot;&gt;3. HDP에 Spark Cluster 설치하기 (yarn-cluster)&lt;/h2&gt;
-&lt;h3 id=&quot;3-1-yarn-client-vs-yarn-cluster&quot;&gt;3-1. yarn-client vs. yarn-cluster&lt;/h3&gt;
-
-&lt;p&gt;위처럼 yarn-client 모드로 사용할 땐 master 노드에만 spark을 설치하면 된다.
-그러나 yarn-cluster 모드를 사용하려면 slave 노드들에도 spark이 설치되어야 한다.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;yarn-client&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/11/2020-09-11-yarn-client-mode.png&quot; alt=&quot;yarn-client&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;yarn-cluster&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/11/2020-09-11-yarn-cluster-mode.png&quot; alt=&quot;yarn-cluster&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;위 이미지에서 보듯이, client 모드와 cluster 모드의 가장 큰 차이는 spark driver의 위치다.
-cluster 모드에선 spark driver가 application master에서 동작한다.
-즉 클러스터 내부에서 spark driver가 생성되어야 한다.
-모든 slave 노드들에 spark을 설치해줘야 하는 이유다.&lt;/p&gt;
-
-&lt;h3 id=&quot;3-2-ssh-연결-설정&quot;&gt;3-2. ssh 연결 설정&lt;/h3&gt;
-
-&lt;p&gt;spark cluster가 구성되려면 각 노드의 spark 계정끼리 ssh로 연결 가능해햐 한다.
-ssh 키가 없다면 아래 명령어로 생성해준다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ssh-keygen
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;master 노드의 ssh public 키를 나머지 노드들에 복사해준다.&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ssh-copy-id &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;계정&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;@&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;서버IP&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;ssh포트번호&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;그 후, 각 slave 장비에 접속하여 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.ssh/authorized_keys&lt;/code&gt; 파일의 권한을 확인해준다.&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;chmod &lt;/span&gt;600 ~/.ssh/authorized_keys
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;3-3-spark-cluster를-위한-설정&quot;&gt;3-3. Spark Cluster를 위한 설정&lt;/h3&gt;
-
-&lt;p&gt;slave 노드들에 spark을 설치해주기 전에 master 노드의 spark에 몇가지 설정을 변경해주어야 한다.&lt;/p&gt;
-
-&lt;h4 id=&quot;java-opts&quot;&gt;java-opts&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/java-opts&lt;/code&gt; 파일을 생성하고 아래 라인을 추가한다.
-yarn-cluster 모드에서도 hdp.version을 맞추기 위한 설정파일이다.&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-Dhdp.version=2.6.3.0-235
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;spark-envsh&quot;&gt;spark-env.sh&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/spark-env.sh&lt;/code&gt; 파일에 다음 라인들을 추가한다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_MASTER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'{master 서버 IP}'&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_WORKER_PORT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;ssh포트번호&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_SSH_OPTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'-p {ssh포트번호}'&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;JAVA_HOME&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;slaves&quot;&gt;slaves&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/slaves.template&lt;/code&gt; 파일 이름을 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/slaves&lt;/code&gt;로 변경하고 아래 라인들을 추가한다.&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{slave1 서버IP}
-{slave2 서버IP}
-{slave3 서버IP}
-...(하략)...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;spark_shuffle&quot;&gt;spark_shuffle&lt;/h4&gt;
-&lt;p&gt;이 부분은 Spark이 아니라 Ambari의 YARN 설정에서 수정해주어야 한다.&lt;/p&gt;
-
-&lt;p&gt;Spark이 dynamicAllocation을 사용하려면 YARN의 NodeManager 설정에서 spark_shuffle 옵션을 추가해주어야 한다.&lt;/p&gt;
-
-&lt;p&gt;그 다음 YARN이 spark_shuffle 기능을 사용할 수 있도록 class path를 입력해주어야 한다.
-새로 설치한 Spark의 yarn 디렉토리에 spark-2.4.6-yarn-shuffle.jar 파일이 존재하므로
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;${SPARK_HOME}/yarn/*&lt;/code&gt; 와 같이 classpath를 입력해준다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/08/2020-09-08-yarn-spark-shuffle-setting.png&quot; alt=&quot;spark_shuffle_setting&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;설정 완료 후 YARN을 재시작한다.&lt;/p&gt;
-
-&lt;h3 id=&quot;3-4-spark-cluster-설치&quot;&gt;3-4. Spark Cluster 설치&lt;/h3&gt;
-
-&lt;p&gt;이제 master 노드의 spark을 압축하여 모든 slave 노드들의 동일한 경로에 복사/압축해제해준다.
-각 노드의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.bashrc&lt;/code&gt;파일에 master 노드와 동일한 설정을 추가해준다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;설치한 Spark 디렉토리 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$SPARK_HOME&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;끝으로 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;JAVA_HOME&lt;/code&gt; 역시 확인해준다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;3-5-spark-cluster-실행&quot;&gt;3-5. Spark Cluster 실행&lt;/h3&gt;
-
-&lt;p&gt;master 노드의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SPARK_HOME&lt;/code&gt;에서 다음 명령어로 spark cluster를 실행해준다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./sbin/start-all.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;기존에 개발된 spark 프로그램이 yarn-cluster 모드에서 정상 동작하는 것까지 확인하였다.
-여기까지 수행하면 Spark 2.4.6 설치가 완료된 것이다.&lt;/p&gt;
-
-&lt;p&gt;웬만하면 Ambari나 Cloudera Manager가 제공해주는 버전을 그냥 쓰는게 정신건강에 이로울 것 같다.&lt;/p&gt;
-
-&lt;h3 id=&quot;부록-zeppelin-설치&quot;&gt;(부록) Zeppelin 설치&lt;/h3&gt;
-&lt;p&gt;hdp 2.6에서 제공하는 Zeppelin의 Spark interpreter는 2.4.6 버전을 지원하지 않으므로 Zeppelin 역시 삭제하고 별도로 설치해야 한다.
-최신 버전인 &lt;strong&gt;0.9.0-preview2-bin-netinst&lt;/strong&gt; 으로 설치하고 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conf/zeppelin-env.sh&lt;/code&gt;에 아래와 같은 설정들을 추가해줬다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;Java home 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_MASTER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;yarn-client
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ZEPPELIN_JAVA_OPTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;-Dhdp.version=2.6.3.0-235&quot;&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SPARK_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;Spark 설치경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_CONF_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/etc/hadoop/conf
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;https://issues.apache.org/jira/browse/SPARK-22393&lt;/li&gt;
-  &lt;li&gt;https://issues.apache.org/jira/browse/SPARK-15343&lt;/li&gt;
-  &lt;li&gt;https://stackoverflow.com/questions/55931970/how-can-i-run-spark-in-headless-mode-in-my-custom-version-on-hdp&lt;/li&gt;
-  &lt;li&gt;https://medium.com/@goyalsaurabh66/running-spark-jobs-on-yarn-809163fc57e2&lt;/li&gt;
-  &lt;li&gt;https://kb.informatica.com/solution/23/pages/71/577764.aspx&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="scala" /><category term="hdp" /><category term="yarn" /><summary type="html">1. Spark 2.2의 import 버그 현재 사용 중인 하둡 클러스터는 HDP 2.6이며 Spark은 2.2 버전을 제공하고 있다. 해당 버전은 spark-shell에서 정상적으로 import가 작동하지 않는 버그(SPARK-22393)가 존재하므로 Zeppelin에서 제대로 Spark 코드를 수행할 수가 없었다. 따라서 해당 버그가 수정된 버전인 Spark 2.4 버전을 HDP 2.6에 설치해 보고자 한다.</summary></entry></feed>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="pyspark" /><category term="py4j" /><summary type="html">1. Py4JError 기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다. 실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.</summary></entry></feed>

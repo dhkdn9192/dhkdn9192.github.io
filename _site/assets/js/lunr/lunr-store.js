@@ -64,4 +64,10 @@ var store = [{
         "tags": ["spark","kafka","spark-streaming"],
         "url": "http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/",
         "teaser": null
+      },{
+        "title": "Java : String vs StringBuffer, StringBuilder",
+        "excerpt":"Java의 String 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자 String myQuery = \"\"; myQuery += \"select * \"; myQuery += \"from atable \"; myQuery += \"limit 100; \"; 최종적으로 myQuery 문자열에 저장되는 값은 “select * from atable limit 100;” 이라는 sql 쿼리문이다. 그러나 각 라인을 수행하면서 각각의 부분...","categories": ["computer_science"],
+        "tags": ["jvm","gc","java"],
+        "url": "http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/",
+        "teaser": null
       }]
