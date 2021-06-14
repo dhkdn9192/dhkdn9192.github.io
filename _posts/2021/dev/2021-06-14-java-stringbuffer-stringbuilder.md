@@ -12,9 +12,7 @@ tags:
 - java
 ---
 
-## Java의 String
-
-문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자
+Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자
 
 ```java
 String myQuery = "";

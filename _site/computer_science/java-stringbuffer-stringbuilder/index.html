@@ -10,7 +10,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>Java : String vs StringBuffer, StringBuilder | 오류동 개발자</title>
-<meta name="description" content="Java의 String">
+<meta name="description" content="Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자">
 
 
   <meta name="author" content="김동혁">
@@ -23,7 +23,7 @@
 <meta property="og:url" content="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/">
 
 
-  <meta property="og:description" content="Java의 String">
+  <meta property="og:description" content="Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자">
 
 
 
@@ -281,7 +281,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="Java : String vs StringBuffer, StringBuilder">
-    <meta itemprop="description" content="Java의 String">
+    <meta itemprop="description" content="Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자">
     <meta itemprop="datePublished" content="2021-06-14T00:00:00+09:00">
     
 
@@ -320,7 +320,6 @@
             <nav class="toc">
               <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> 목차</h4></header>
               <ul class="toc__menu">
-  <li><a href="#java의-string">Java의 String</a></li>
   <li><a href="#string-대신-stringbuffer-stringbuilder">String 대신 StringBuffer, StringBuilder</a></li>
   <li><a href="#stringbuffer-vs-stringbuilder">StringBuffer vs StringBuilder</a></li>
   <li><a href="#결론">결론</a></li>
@@ -330,9 +329,7 @@
             </nav>
           </aside>
         
-        <h2 id="java의-string">Java의 String</h2>
-
-<p>문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자</p>
+        <p>Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">myQuery</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
 <span class="n">myQuery</span> <span class="o">+=</span> <span class="s">"select * "</span><span class="o">;</span>
