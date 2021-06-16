@@ -70,4 +70,10 @@ var store = [{
         "tags": ["jvm","gc","java"],
         "url": "http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/",
         "teaser": null
+      },{
+        "title": "Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?",
+        "excerpt":"컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다. 모든 컨슈머는 특정 컨슈머 그룹에 소속된다. 만약 같은 그룹의 컨슈머들이 같은 토픽을 subscribe한다면 각 컨슈머는 서로 겹치지...","categories": ["apache-kafka"],
+        "tags": ["spark","kafka"],
+        "url": "http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/",
+        "teaser": null
       }]

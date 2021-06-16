@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>Java : String vs StringBuffer, StringBuilder | 오류동 개발자</title>
-<meta name="description" content="Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자">
+<!-- begin _includes/seo.html --><title>Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면? | 오류동 개발자</title>
+<meta name="description" content="컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.">
 
 
   <meta name="author" content="김동혁">
@@ -19,30 +19,30 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="오류동 개발자">
-<meta property="og:title" content="Java : String vs StringBuffer, StringBuilder">
-<meta property="og:url" content="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/">
+<meta property="og:title" content="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?">
+<meta property="og:url" content="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/">
 
 
-  <meta property="og:description" content="Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2021-06-14T00:00:00+09:00">
+  <meta property="og:description" content="컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.">
 
 
 
 
 
-  
+
+
+  <meta property="article:published_time" content="2021-06-16T00:00:00+09:00">
+
+
+
+
 
   
 
+  
 
-<link rel="canonical" href="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/">
+
+<link rel="canonical" href="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/">
 
 
 
@@ -280,15 +280,15 @@
 
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="Java : String vs StringBuffer, StringBuilder">
-    <meta itemprop="description" content="Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자">
-    <meta itemprop="datePublished" content="2021-06-14T00:00:00+09:00">
+    <meta itemprop="headline" content="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?">
+    <meta itemprop="description" content="컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.">
+    <meta itemprop="datePublished" content="2021-06-16T00:00:00+09:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
-          <h1 id="page-title" class="page__title" itemprop="headline">Java : String vs StringBuffer, StringBuilder
+          <h1 id="page-title" class="page__title" itemprop="headline">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?
 </h1>
           
 
@@ -320,107 +320,84 @@
             <nav class="toc">
               <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> 목차</h4></header>
               <ul class="toc__menu">
-  <li><a href="#string-대신-stringbuffer-stringbuilder">String 대신 StringBuffer, StringBuilder</a></li>
-  <li><a href="#stringbuffer-vs-stringbuilder">StringBuffer vs StringBuilder</a></li>
-  <li><a href="#결론">결론</a></li>
+  <li><a href="#1-read-kafka--partitions-and-consumers">1. Read Kafka : Partitions and Consumers</a>
+    <ul>
+      <li><a href="#1-1-n-partitions-and-one-consumer">1-1. N Partitions and One Consumer</a></li>
+      <li><a href="#1-2-partitions--consumers">1-2. Partitions &gt; Consumers</a></li>
+      <li><a href="#1-3-partitions--consumers">1-3. Partitions = Consumers</a></li>
+      <li><a href="#1-4-partitions--consumers">1-4. Partitions &lt; Consumers</a></li>
+      <li><a href="#1-5-another-consumer-group">1-5. Another Consumer Group</a></li>
+    </ul>
+  </li>
+  <li><a href="#2-spark-streaming에서-kafka-메시지-읽기">2. Spark Streaming에서 Kafka 메시지 읽기</a></li>
   <li><a href="#reference">Reference</a></li>
 </ul>
 
             </nav>
           </aside>
         
-        <p>Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자</p>
+        <p>컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">myQuery</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
-<span class="n">myQuery</span> <span class="o">+=</span> <span class="s">"select * "</span><span class="o">;</span>
-<span class="n">myQuery</span> <span class="o">+=</span> <span class="s">"from atable "</span><span class="o">;</span>
-<span class="n">myQuery</span> <span class="o">+=</span> <span class="s">"limit 100; "</span><span class="o">;</span>
-</code></pre></div></div>
-
-<p>최종적으로 myQuery 문자열에 저장되는 값은 “select * from atable limit 100;” 이라는 sql 쿼리문이다. 그러나 각 라인을 수행하면서 각각의 부분 문자열 객체들을 생성해야하고 이는 연산 후에 곧바로 사용되지 않는 garbage가 된다. <strong>garbage가 많이 생성될 수록 메모리 사용량도 늘어나고, GC 또한 빈번하게 발생하므로 속도도 느려지게된다</strong>.</p>
-
-<p>다음처럼 매번 다른 메모리 주소 상에 새로운 객체가 저장된다. 즉, 직전까지의 객체는 garbage가 된다.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>메모리 주소</th>
-      <th>값</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>100</td>
-      <td>“select * “</td>
-    </tr>
-    <tr>
-      <td><strong>150</strong></td>
-      <td>“select * from atable”</td>
-    </tr>
-    <tr>
-      <td><strong>200</strong></td>
-      <td>“select * from atable limit 100;”</td>
-    </tr>
-  </tbody>
-</table>
+<p>모든 컨슈머는 특정 컨슈머 그룹에 소속된다. 만약 같은 그룹의 컨슈머들이 같은 토픽을 subscribe한다면 각 컨슈머는 서로 겹치지 않게 파티션의 데이터를 읽게 된다.</p>
 
 <p><br /></p>
 
-<h2 id="string-대신-stringbuffer-stringbuilder">String 대신 StringBuffer, StringBuilder</h2>
+<h2 id="1-read-kafka--partitions-and-consumers">1. Read Kafka : Partitions and Consumers</h2>
 
-<p>위의 예시를 Java의 StringBuffer 또는 StringBuilder를 사용할 경우 아래처럼 작성할 수 있다.</p>
+<h3 id="1-1-n-partitions-and-one-consumer">1-1. N Partitions and One Consumer</h3>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">StringBuffer</span> <span class="n">strBuff</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuffer</span><span class="o">();</span>
-<span class="n">strBuff</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"select * "</span><span class="o">);</span>
-<span class="n">strBuff</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"from atable "</span><span class="o">);</span>
-<span class="n">strBuff</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"limit 100; "</span><span class="o">);</span>
-<span class="nc">String</span> <span class="n">myQuery</span> <span class="o">=</span> <span class="n">strBuff</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
-</code></pre></div></div>
+<p><img src="https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_one_consumer_with_multiple_partitions.png" alt="data_engineer_should_know/kafka_one_consumer_with_multiple_partitions.png at master · dhkdn9192/data_engineer_should_know (github.com)" /></p>
 
-<p>StringBuffer나 StringBuilder는 String과는 달리 <strong>새로운 객체를 생성하지 않는다</strong>. append() 연산을 통해 기존 객체에 데이터를 추가한다. 매 연산마다 garbage가 생성되지 않으므로 GC 또한 빈번하게 발생하지 않는다.</p>
-
-<p>메모리 상에 데이터가 저장될 때에는 다음처럼 동일한 주소의 객체에 추가된다.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>메모리 주소</th>
-      <th>값</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>100</td>
-      <td>“select * “</td>
-    </tr>
-    <tr>
-      <td>100</td>
-      <td>“select * from atable”</td>
-    </tr>
-    <tr>
-      <td>100</td>
-      <td>“select * from atable limit 100;”</td>
-    </tr>
-  </tbody>
-</table>
+<p>컨슈머 그룹 내에 컨슈머가 하나 뿐일 경우, 혼자서 토픽의 모든 파티션을 subscribe한다.</p>
 
 <p><br /></p>
 
-<h2 id="stringbuffer-vs-stringbuilder">StringBuffer vs StringBuilder</h2>
+<h3 id="1-2-partitions--consumers">1-2. Partitions &gt; Consumers</h3>
+
+<p><img src="https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_two_consumers_with_multiple_partitions.png" alt="data_engineer_should_know/kafka_two_consumers_with_multiple_partitions.png at master · dhkdn9192/data_engineer_should_know (github.com)" /></p>
+
+<p>컨슈머가 2개 일 경우, 각자 파티션 2개씩 subscribe하여 겹치지 않게 메시지를 읽어온다.</p>
+
+<p><br /></p>
+
+<h3 id="1-3-partitions--consumers">1-3. Partitions = Consumers</h3>
+
+<p><img src="https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_n_consumers_n_partitions.png" alt="data_engineer_should_know/kafka_n_consumers_n_partitions.png at master · dhkdn9192/data_engineer_should_know (github.com)" /></p>
+
+<p>파티션 수와 컨슈머 수가 동일할 경우, 일대일 연결로 메시지를 읽어온다.</p>
+
+<p><br /></p>
+
+<h3 id="1-4-partitions--consumers">1-4. Partitions &lt; Consumers</h3>
+
+<p><img src="https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_more_consumers.png" alt="data_engineer_should_know/kafka_more_consumers.png at master · dhkdn9192/data_engineer_should_know (github.com)" /></p>
+
+<p>만약 컨슈머 수가 파티션 수보다 많다면, 일대일 연결이 되지 못한 컨슈머는 메시지를 읽지 못하고 idle 상태가 된다.</p>
+
+<p><br /></p>
+
+<h3 id="1-5-another-consumer-group">1-5. Another Consumer Group</h3>
+
+<p><img src="https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_multiple_consumer_groups.png" alt="data_engineer_should_know/kafka_multiple_consumer_groups.png at master · dhkdn9192/data_engineer_should_know (github.com)" /></p>
+
+<p>같은 토픽을 subscribe하더라도 컨슈머 그룹이 서로 다르다면 서로의 subscribe 정보에 상관 없이 메시지를 처음부터 읽어오게 된다.</p>
+
+<p><br /></p>
+
+<h2 id="2-spark-streaming에서-kafka-메시지-읽기">2. Spark Streaming에서 Kafka 메시지 읽기</h2>
+
+<p>Spark Streaming 애플리케이션이 서로 다른 Kafka 토픽 4개로부터 메시지를 읽어야 한다. 각 토픽은 모두 파티션 수가 3개 이다. 어떻게 해야 Kafka 파티션 수와 컨슈머 수가 일대일 매핑이 될 수 있을까? (Executor의 core 수는 Kafka 파티션을 읽기 위한 것만 고려)</p>
 
 <ul>
-  <li>StringBuffer는 thread-safe하게 설계되어 여러개의 thread가 접근하는 환경에서도 사용할 수 있다.</li>
-  <li>StringBuilder는 단일 thread에서의 안전성만 보전하므로 여러개의 thread가 접근하면 문제가 발생할 수 있다.</li>
-</ul>
-
-<p><br /></p>
-
-<h2 id="결론">결론</h2>
-
-<ul>
-  <li>String은 가급적이면 문자열 연산이 없는 경우에 사용한다.</li>
-  <li>StringBuffer는 thread-safe한 프로그래밍이 필요한 경우(static 선언된 문자열을 변경하는 등)에 사용한다.</li>
-  <li>StringBuilder는 thread-safe 여부와 관계 없이 프로그래밍할 경우(메소드 내에서 선언된 문자열을 변경한는 등)에 사용한다.</li>
+  <li><strong>Kafka의 각 파티션은 Spark Streaming Job의 각 core와 매핑된다</strong>. (Executor와 매핑되는게 아니다!)</li>
+  <li>토픽별 파티션 수가 3개, 토픽의 수는 4개 이므로 읽어야 할 파티션의 수는 총 12개이다.</li>
+  <li>따라서 전체 코어수는 12개여야 한다.</li>
+  <li>코어 수 12개를 구성하는 방법은 다음과 같이 2가지 방법이 있다.
+    <ul>
+      <li>(1) Executor 1개에 core를 12개 할당 : <code class="language-plaintext highlighter-rouge">spark.executor.instances=1</code> and <code class="language-plaintext highlighter-rouge">spark.executor.cores=12</code></li>
+      <li>(2) Executor 12개에 core를 1개씩 할당 : <code class="language-plaintext highlighter-rouge">spark.executor.instances=12</code> and <code class="language-plaintext highlighter-rouge">spark.executor.cores=1</code></li>
+    </ul>
+  </li>
 </ul>
 
 <p><br /></p>
@@ -428,7 +405,9 @@
 <h2 id="reference">Reference</h2>
 
 <ul>
-  <li>도서 “자바 성능 튜닝 이야기”, 인사이트, 이상민 지음</li>
+  <li>https://oreilly.com/library/view/kafka-the-definitive/9781491936153/ch04.html</li>
+  <li>https://stackoverflow.com/questions/55474645/how-to-optimize-number-of-executor-instances-in-spark-structured-streaming-app</li>
+  <li>https://community.cloudera.com/t5/Support-Questions/What-s-the-right-number-of-cores-and-executors-for-a-spark/m-p/61943</li>
 </ul>
 
         
@@ -450,15 +429,11 @@
     
       
       
-      <a href="/tags/#gc" class="page__taxonomy-item" rel="tag">gc</a><span class="sep">, </span>
+      <a href="/tags/#kafka" class="page__taxonomy-item" rel="tag">kafka</a><span class="sep">, </span>
     
       
       
-      <a href="/tags/#java" class="page__taxonomy-item" rel="tag">java</a><span class="sep">, </span>
-    
-      
-      
-      <a href="/tags/#jvm" class="page__taxonomy-item" rel="tag">jvm</a>
+      <a href="/tags/#spark" class="page__taxonomy-item" rel="tag">spark</a>
     
     </span>
   </p>
@@ -479,14 +454,14 @@
     
       
       
-      <a href="/categories/#computer-science" class="page__taxonomy-item" rel="tag">computer_science</a>
+      <a href="/categories/#apache-kafka" class="page__taxonomy-item" rel="tag">apache-kafka</a>
     
     </span>
   </p>
 
 
         
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> 업데이트:</strong> <time datetime="2021-06-14T00:00:00+09:00">June 14, 2021</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> 업데이트:</strong> <time datetime="2021-06-16T00:00:00+09:00">June 16, 2021</time></p>
 
 
       </footer>
@@ -496,23 +471,22 @@
     <h4 class="page__share-title">공유하기</h4>
   
 
-  <a href="https://twitter.com/intent/tweet?text=Java+%3A+String+vs+StringBuffer%2C+StringBuilder%20http%3A%2F%2Flocalhost%3A4000%2Fcomputer_science%2Fjava-stringbuffer-stringbuilder%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Spark+Streaming%EC%97%90%EC%84%9C+Kafka+%EB%A9%94%EC%8B%9C%EC%A7%80%EB%A5%BC+%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C+%EC%9D%BD%EC%9C%BC%EB%A0%A4%EB%A9%B4%3F%20http%3A%2F%2Flocalhost%3A4000%2Fapache-kafka%2Fkafka-consuming-in-sparkstreaming%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
 
-  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fcomputer_science%2Fjava-stringbuffer-stringbuilder%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fapache-kafka%2Fkafka-consuming-in-sparkstreaming%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
 
-  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fcomputer_science%2Fjava-stringbuffer-stringbuilder%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fapache-kafka%2Fkafka-consuming-in-sparkstreaming%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
 </section>
 
 
       
   <nav class="pagination">
     
-      <a href="/apache-spark/apache-kafka/kafka-sparkstreaming-integration/" class="pagination--pager" title="Kafka + Spark Streaming Integration
+      <a href="/computer_science/java-stringbuffer-stringbuilder/" class="pagination--pager" title="Java : String vs StringBuffer, StringBuilder
 ">이전</a>
     
     
-      <a href="/apache-kafka/kafka-consuming-in-sparkstreaming/" class="pagination--pager" title="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?
-">다음</a>
+      <a href="#" class="pagination--pager disabled">다음</a>
     
   </nav>
 
@@ -536,7 +510,7 @@
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/apache-kafka/kafka-consuming-in-sparkstreaming/" rel="permalink">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?
+        <a href="/computer_science/java-stringbuffer-stringbuilder/" rel="permalink">Java : String vs StringBuffer, StringBuilder
 </a>
       
     </h2>
@@ -561,7 +535,8 @@
 
   </p>
 
-    <p class="archive__item-excerpt" itemprop="description">컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 ...</p>
+    <p class="archive__item-excerpt" itemprop="description">Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자
+</p>
   </article>
 </div>
 
@@ -749,8 +724,8 @@
     
   <script>
     var disqus_config = function () {
-      this.page.url = "http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/";  /* Replace PAGE_URL with your page's canonical URL variable */
-      this.page.identifier = "/computer_science/java-stringbuffer-stringbuilder"; /* Replace PAGE_IDENTIFIER with your page's unique identifier variable */
+      this.page.url = "http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/";  /* Replace PAGE_URL with your page's canonical URL variable */
+      this.page.identifier = "/apache-kafka/kafka-consuming-in-sparkstreaming"; /* Replace PAGE_IDENTIFIER with your page's unique identifier variable */
     };
     (function() { /* DON'T EDIT BELOW THIS LINE */
       var d = document, s = d.createElement('script');

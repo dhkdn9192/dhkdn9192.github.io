@@ -1,4 +1,76 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-14T22:22:44+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Java : String vs StringBuffer, StringBuilder</title><link href="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/" rel="alternate" type="text/html" title="Java : String vs StringBuffer, StringBuilder" /><published>2021-06-14T00:00:00+09:00</published><updated>2021-06-14T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/java-stringbuffer-stringbuilder</id><content type="html" xml:base="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/">&lt;p&gt;Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-16T18:47:45+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?</title><link href="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/" rel="alternate" type="text/html" title="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?" /><published>2021-06-16T00:00:00+09:00</published><updated>2021-06-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/">&lt;p&gt;컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.&lt;/p&gt;
+
+&lt;p&gt;모든 컨슈머는 특정 컨슈머 그룹에 소속된다. 만약 같은 그룹의 컨슈머들이 같은 토픽을 subscribe한다면 각 컨슈머는 서로 겹치지 않게 파티션의 데이터를 읽게 된다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;1-read-kafka--partitions-and-consumers&quot;&gt;1. Read Kafka : Partitions and Consumers&lt;/h2&gt;
+
+&lt;h3 id=&quot;1-1-n-partitions-and-one-consumer&quot;&gt;1-1. N Partitions and One Consumer&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_one_consumer_with_multiple_partitions.png&quot; alt=&quot;data_engineer_should_know/kafka_one_consumer_with_multiple_partitions.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;컨슈머 그룹 내에 컨슈머가 하나 뿐일 경우, 혼자서 토픽의 모든 파티션을 subscribe한다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;1-2-partitions--consumers&quot;&gt;1-2. Partitions &amp;gt; Consumers&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_two_consumers_with_multiple_partitions.png&quot; alt=&quot;data_engineer_should_know/kafka_two_consumers_with_multiple_partitions.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;컨슈머가 2개 일 경우, 각자 파티션 2개씩 subscribe하여 겹치지 않게 메시지를 읽어온다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;1-3-partitions--consumers&quot;&gt;1-3. Partitions = Consumers&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_n_consumers_n_partitions.png&quot; alt=&quot;data_engineer_should_know/kafka_n_consumers_n_partitions.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;파티션 수와 컨슈머 수가 동일할 경우, 일대일 연결로 메시지를 읽어온다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;1-4-partitions--consumers&quot;&gt;1-4. Partitions &amp;lt; Consumers&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_more_consumers.png&quot; alt=&quot;data_engineer_should_know/kafka_more_consumers.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;만약 컨슈머 수가 파티션 수보다 많다면, 일대일 연결이 되지 못한 컨슈머는 메시지를 읽지 못하고 idle 상태가 된다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;1-5-another-consumer-group&quot;&gt;1-5. Another Consumer Group&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_multiple_consumer_groups.png&quot; alt=&quot;data_engineer_should_know/kafka_multiple_consumer_groups.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;같은 토픽을 subscribe하더라도 컨슈머 그룹이 서로 다르다면 서로의 subscribe 정보에 상관 없이 메시지를 처음부터 읽어오게 된다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;2-spark-streaming에서-kafka-메시지-읽기&quot;&gt;2. Spark Streaming에서 Kafka 메시지 읽기&lt;/h2&gt;
+
+&lt;p&gt;Spark Streaming 애플리케이션이 서로 다른 Kafka 토픽 4개로부터 메시지를 읽어야 한다. 각 토픽은 모두 파티션 수가 3개 이다. 어떻게 해야 Kafka 파티션 수와 컨슈머 수가 일대일 매핑이 될 수 있을까? (Executor의 core 수는 Kafka 파티션을 읽기 위한 것만 고려)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Kafka의 각 파티션은 Spark Streaming Job의 각 core와 매핑된다&lt;/strong&gt;. (Executor와 매핑되는게 아니다!)&lt;/li&gt;
+  &lt;li&gt;토픽별 파티션 수가 3개, 토픽의 수는 4개 이므로 읽어야 할 파티션의 수는 총 12개이다.&lt;/li&gt;
+  &lt;li&gt;따라서 전체 코어수는 12개여야 한다.&lt;/li&gt;
+  &lt;li&gt;코어 수 12개를 구성하는 방법은 다음과 같이 2가지 방법이 있다.
+    &lt;ul&gt;
+      &lt;li&gt;(1) Executor 1개에 core를 12개 할당 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.executor.instances=1&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.executor.cores=12&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;(2) Executor 12개에 core를 1개씩 할당 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.executor.instances=12&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.executor.cores=1&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;https://oreilly.com/library/view/kafka-the-definitive/9781491936153/ch04.html&lt;/li&gt;
+  &lt;li&gt;https://stackoverflow.com/questions/55474645/how-to-optimize-number-of-executor-instances-in-spark-structured-streaming-app&lt;/li&gt;
+  &lt;li&gt;https://community.cloudera.com/t5/Support-Questions/What-s-the-right-number-of-cores-and-executors-for-a-spark/m-p/61943&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-kafka" /><category term="spark" /><category term="kafka" /><summary type="html">컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.</summary></entry><entry><title type="html">Java : String vs StringBuffer, StringBuilder</title><link href="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/" rel="alternate" type="text/html" title="Java : String vs StringBuffer, StringBuilder" /><published>2021-06-14T00:00:00+09:00</published><updated>2021-06-14T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/java-stringbuffer-stringbuilder</id><content type="html" xml:base="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/">&lt;p&gt;Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자&lt;/p&gt;
 
 &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;select * &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
@@ -969,72 +1041,4 @@ Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려�
   &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2706&lt;/li&gt;
   &lt;li&gt;https://www.slideshare.net/sebastian_nagel/aceu2014-snagelwebcrawlingnutch&lt;/li&gt;
   &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2810&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><category term="airflow" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry><entry><title type="html">PySpark의 py4j 호환성 오류</title><link href="http://localhost:4000/apache-spark/pyspark-py4j-error/" rel="alternate" type="text/html" title="PySpark의 py4j 호환성 오류" /><published>2020-09-09T00:00:00+09:00</published><updated>2020-09-09T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/pyspark-py4j-error</id><content type="html" xml:base="http://localhost:4000/apache-spark/pyspark-py4j-error/">&lt;h2 id=&quot;1-py4jerror&quot;&gt;1. Py4JError&lt;/h2&gt;
-&lt;p&gt;기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다.
-실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.&lt;/p&gt;
-
-&lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pyspark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;sql&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;SparkSession&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;spark&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;SparkSession&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;getOrCreate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;SparkSession을 생성하려고 하면 다음과 같이 Py4JError가 발생한다.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Py4JError                                 Traceback (most recent call last)
-&amp;lt;ipython-input-3-ce55329f3d67&amp;gt; in &amp;lt;module&amp;gt;()
-----&amp;gt; 1 spark = SparkSession.builder.getOrCreate()
-      2 spark
-
-/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/sql/session.py in getOrCreate(self)
-/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/context.py in getOrCreate(cls, conf)
-/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/context.py in __init__(self, master, appName, sparkHome, pyFiles, environment, batchSize, serializer, conf, gateway, jsc, profiler_cls)
-/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/context.py in _ensure_initialized(cls, instance, gateway, conf)
-/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/java_gateway.py in launch_gateway(conf)
-/opt/spark-2.4.6-bin-hadoop2.7/python/pyspark/java_gateway.py in _launch_gateway(conf, insecure)
-/data/venv/lib64/python3.6/site-packages/py4j/java_gateway.py in java_import(jvm_view, import_str)
-/data/venv/lib64/python3.6/site-packages/py4j/protocol.py in get_return_value(answer, gateway_client, target_id, name)
-    321                 raise Py4JError(
-    322                     &quot;An error occurred while calling {0}{1}{2}. Trace:\n{3}\n&quot;.
---&amp;gt; 323                     format(target_id, &quot;.&quot;, name, value))
-    324         else:
-    325             raise Py4JError(
-
-Py4JError: An error occurred while calling None.None. Trace:
-Authentication error: unexpected command. 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;2-pyspark의-jvm-연동&quot;&gt;2. PySpark의 JVM 연동&lt;/h2&gt;
-&lt;p&gt;위 현상은 새로 설치한 spark의 pyspark shell에서는 발생하지 않는다.
-기존에 사용하던 python 가상환경에서 pyspark을 import하여 사용할 때에만 발생한다.&lt;/p&gt;
-
-&lt;p&gt;PySpark은 python으로 작성된 코드를 jvm에서 수행하기 위해 py4j 라이브러리를 사용한다.
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;${SPARK_HOME}/python/pyspark/java_gateway.py&lt;/code&gt;를 보면 
-py4j의 java_import 함수를 사용하여 필요한 클래스들을 jvm에 import한다.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;c1&quot;&gt;# Import the classes used by PySpark
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.SparkConf&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.api.java.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.api.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.ml.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.mllib.api.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# TODO(davies): move into sql
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.sql.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.sql.api.python.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;org.apache.spark.sql.hive.*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;java_import&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gateway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jvm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;scala.Tuple2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;3-원인과-해결책&quot;&gt;3. 원인과 해결책&lt;/h2&gt;
-
-&lt;p&gt;여기서 오류가 발생한 이유는 정말 사소한 것 때문이었다.
-기존에 사용하던 PySpark을 위해 py4j를 설치했었는데,
-신규 설치한 Spark이 요구하는 버전과 달라서 오류가 발생했던 것이다.&lt;/p&gt;
-
-&lt;p&gt;기존 사용하던 python 가상환경에는 py4j 0.10.4 버전이 설치되어 있었다.
-반면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;${SPARK_HOME}/python/setup.py&lt;/code&gt;에서 신규 설치한 pyspark이 요구하는 py4j 버전은 다음과 같다.&lt;/p&gt;
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;install_requires&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'py4j==0.10.7'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;요구하는 버전을 설치하여 정말 간단하게 해결할 수 있는 문제였다.&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;pip &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;py4j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;0.10.7
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="pyspark" /><category term="py4j" /><summary type="html">1. Py4JError 기존에 사용하던 Spark을 2.2.0 -&amp;gt; 2.4.6으로 변경했더니 Jupyter에서 PySpark이 정상적으로 동작하지 않는 오류가 발생했다. 실행한 코드는 아래와 같이 SparkSession을 생성하는 간단한 내용이다.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><category term="airflow" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry></feed>
