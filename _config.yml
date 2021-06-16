@@ -95,7 +95,7 @@ analytics:
 author:
   name             : "김동혁"
   avatar           : "assets/images/author/dhkim_photo.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "데이터 엔지니어 / 데이터 분석가 / 개발자"
+  bio              : "데이터 엔지니어 / 개발자"
   location         : "Seoul, Republic of Korea"
   email            : "dhkdn9192@naver.com"
   links:
