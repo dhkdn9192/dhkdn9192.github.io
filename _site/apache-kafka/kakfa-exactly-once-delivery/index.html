@@ -1,0 +1,871 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.20.1 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="ko" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Kafka’s exactly-once delivery | 오류동 개발자</title>
+<meta name="description" content="Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?">
+
+
+  <meta name="author" content="김동혁">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="오류동 개발자">
+<meta property="og:title" content="Kafka’s exactly-once delivery">
+<meta property="og:url" content="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">
+
+
+  <meta property="og:description" content="Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-06-18T00:00:00+09:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "김동혁",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="오류동 개발자 Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          오류동 개발자
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/">카테고리</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">태그</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">토글 메뉴</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/author/dhkim_photo.png" alt="김동혁" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">김동혁</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>데이터 엔지니어 / 개발자</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">팔로우</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Seoul, Republic of Korea</span>
+        </li>
+      
+
+      
+        
+          
+        
+          
+            <li><a href="https://dhkdn9192.github.io" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">Website</span></a></li>
+          
+        
+          
+        
+          
+        
+          
+            <li><a href="https://github.com/dhkdn9192" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+        
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:dhkdn9192@naver.com">
+            <meta itemprop="email" content="dhkdn9192@naver.com" />
+            <i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">이메일</span>
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Kafka’s exactly-once delivery">
+    <meta itemprop="description" content="Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?">
+    <meta itemprop="datePublished" content="2021-06-18T00:00:00+09:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Kafka’s exactly-once delivery
+</h1>
+          
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        4 분 소요
+      
+    
+
+  </p>
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> 목차</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#1-messaging-sementics">1. Messaging sementics</a></li>
+  <li><a href="#2-kafka의-at-least-once-구현">2. Kafka의 at-least-once 구현</a></li>
+  <li><a href="#3-kafka에서-메시지가-중복-처리되는-경우">3. Kafka에서 메시지가 중복 처리되는 경우</a>
+    <ul>
+      <li><a href="#3-1-producer-broker-사이의-ack-소실">3-1. Producer-Broker 사이의 ack 소실</a></li>
+      <li><a href="#3-2-consumer-side의-offset-갱신-실패">3-2. Consumer side의 offset 갱신 실패</a></li>
+    </ul>
+  </li>
+  <li><a href="#4-producer-side의-exactly-once-구현">4. Producer side의 exactly-once 구현</a>
+    <ul>
+      <li><a href="#4-1-transaction-api-in-producer">4-1. Transaction API in Producer</a></li>
+      <li><a href="#4-2-transaction-api-in-consumer">4-2. Transaction API in Consumer</a></li>
+      <li><a href="#4-3-transaction-status">4-3. Transaction status</a></li>
+      <li><a href="#4-4-broker-offset">4-4. Broker offset</a></li>
+    </ul>
+  </li>
+  <li><a href="#5-consumer-side의-exactly-once-구현">5. Consumer side의 exactly-once 구현</a></li>
+  <li><a href="#6-conclusion">6. Conclusion</a></li>
+  <li><a href="#reference">Reference</a></li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <p>Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?</p>
+
+<p><br /></p>
+
+<h2 id="1-messaging-sementics">1. Messaging sementics</h2>
+<p>카프카와 같은 메시징 시스템은 특정 수준의 메시지 보증 전략을 가지고 있다.</p>
+<ul>
+  <li><strong>at-most-once</strong> : 실패나 타임아웃 등이 발생하면 메시지를 버릴 수 있다. 데이터가 일부 누락되더라도 영향이 없는 경우엔 대량처리 및 짧은 주기의 전송 서비스에 유용할 수 있다.</li>
+  <li><strong>exactly-once</strong> : 메시지가 정확하게 한 번만 전달되는 것을 보장한다. 손실이나 중복 없이, 순서대로 메시지를 전송하는 것은 구현 난이도가 높고 비용이 많이 든다.</li>
+  <li><strong>at-least-once</strong> : 메시지가 최소 1번 이상 전달되는 것을 보장한다. 실패나 타임아웃 등이 발생하면 메시지를 다시 전송하며, 이 경우엔 동일한 메시지가 중복으로 처리될 수 있다.</li>
+</ul>
+
+<p>exactly-once가 가장 이상적인 메시지 처리 방식이지만 난이도와 비용으로 인해 at-least-once로 타협하는 경우가 보편적이다. Kafka의 경우 at-least-once를 보장하며 일정 버전 이후에서만 옵션을 통해 exactly-once를 적용할 수 있다.</p>
+
+<p><br /></p>
+
+<h2 id="2-kafka의-at-least-once-구현">2. Kafka의 at-least-once 구현</h2>
+
+<p>Kafka의 경우 Producer가 메시지를 전송하고 나서 Broker로부터 ack를 받는 수준을 조절함으로써 <strong>at-least-once</strong>를 보장할 수 있다.</p>
+
+<ul>
+  <li><strong>ack=0</strong> : Producer가 메시지 전송 후, ack를 기다리지 않고 바로 다음 메시지를 전송한다. 만약 Broker가 다운된다면 이 기간 동안 전송된 메시지들은 모두 손실된다. 메시지가 손실되더라도 빠른 전송이 필요한 경우에 사용할 수 있다.</li>
+  <li><strong>ack=1</strong> : Producer가 메시지 전송 후, partition leader로부터 일정시간 ack를 기다린다. 손실 가능성이 적고 적당한 전송 속도를 가지게 된다. ack 전송 직후 partition leader의 Broker가 follower들이 복사해가기 전에 다운되면 해당 메시지는 손실된다.</li>
+  <li><strong>ack=all</strong> : Producer가 메시지 전송 후, partition의 leader, follower 모두로부터 ack를 기다린다. 손실이 없지만 전송 속도가 느리다.</li>
+</ul>
+
+<p><br /></p>
+
+<h2 id="3-kafka에서-메시지가-중복-처리되는-경우">3. Kafka에서 메시지가 중복 처리되는 경우</h2>
+
+<p>Kafka에서 메시지들은 순차적으로 증가하는 offset 값을 가지고 순서대로 추가된다. 
+<img src="https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_sequence_of_offset.png" width="500px" /></p>
+
+<p>Producer는 Kafka에 메시지를 입력하고, Consumer는 메시지를 읽어 DB 등의 저장소에 저장한다. 이 경우 다음과 같은 파이프라인이 형성된다.
+<img src="https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_producer_to_consumer_pipeline.png" width="600px" /></p>
+
+<p>위의 파이프라인에서 메시지가 중복 처리되는 경우, 즉 at-least-once에 해당하는 경우는 다음과 같이 2가지가 있다.</p>
+
+<h3 id="3-1-producer-broker-사이의-ack-소실">3-1. Producer-Broker 사이의 ack 소실</h3>
+<ul>
+  <li>Producer는 Broker에 메시지를 전송하고 ack를 수신받는다.</li>
+  <li>만약 네트워크 상에서 ack가 소실/지연되어 수신받는데에 실패할 경우, Producer는 메시지 전송이 실패했다고 판단하여 재전송하게 된다.</li>
+  <li>즉, 동일한 메시지가 중복 전송될 수 있다.</li>
+</ul>
+
+<h3 id="3-2-consumer-side의-offset-갱신-실패">3-2. Consumer side의 offset 갱신 실패</h3>
+<ul>
+  <li>Consumer가 메시지를 읽고 DB에 저장한 후에 offset을 갱신하기 전에 장애가 발생할 경우, Consumer는 재시작되었을 때 갱신되지 않은 offset을 기준으로 메시지를 읽어오게 된다.</li>
+  <li>즉, 이미 DB에 저장된 메시지를 중복으로 가져오게 된다.</li>
+  <li>예시) Spark Streaming의 Receiver 기반 모델에서 WAL을 사용하는 경우</li>
+</ul>
+
+<p><br /></p>
+
+<h2 id="4-producer-side의-exactly-once-구현">4. Producer side의 exactly-once 구현</h2>
+
+<p>Kafka는 at-least-once 방식을 지원했으나, 0.11.0.0 이상부터는 트랜잭션을 적용하여 exactly-once를 구현할 수 있다. Producer가 트랜잭션에서 처리한 데이터의 offset을 커밋함으로써, Consumer에 정확하게 메시지를 전달할 을 수 있다.</p>
+
+<p>Producer side에서 트랜잭션을 적용하려면 Consumer side에서도 트랜잭션 기반으로 메시지를 읽어야 한다. 즉, Consumer 에도 트랜잭션 API를 적용해야 한다.</p>
+
+<h3 id="4-1-transaction-api-in-producer">4-1. Transaction API in Producer</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">KafkaProducer</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">producer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">KafkaProducer</span><span class="o">&lt;&gt;(</span><span class="n">configs</span><span class="o">);</span>
+<span class="nc">ProducerRecord</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">record</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ProducerRecord</span><span class="o">&lt;&gt;(</span><span class="no">TOPIC_NAME</span><span class="o">,</span> <span class="s">"data"</span><span class="o">);</span>
+
+<span class="n">producer</span><span class="o">.</span><span class="na">initTransactions</span><span class="o">();</span>  <span class="c1">// 트랜잭션 준비</span>
+
+<span class="n">producer</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>  <span class="c1">// 트랜잭션 시작</span>
+<span class="n">producer</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">record</span><span class="o">);</span>        <span class="c1">// 메시지 전송</span>
+<span class="n">producer</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+<span class="n">producer</span><span class="o">.</span><span class="na">commitTransaction</span><span class="o">();</span> <span class="c1">// 트랜잭션 커밋</span>
+
+<span class="n">producer</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</code></pre></div></div>
+
+<ul>
+  <li>initTransactions()로 트랜잭션을 준비한다.</li>
+  <li>beginTransaction()과 commitTransaction() 사이에 send() 메소드가 위치하여 전송된 메시지가 커밋되도록 한다.</li>
+</ul>
+
+<h3 id="4-2-transaction-api-in-consumer">4-2. Transaction API in Consumer</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">configs</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">ConsumerConfig</span><span class="o">.</span><span class="na">ENABLE_AUTO_COMMIT_CONFIG</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>           <span class="c1">// 명시적 오프셋 커밋</span>
+<span class="n">configs</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">ConsumerConfig</span><span class="o">.</span><span class="na">ISOLATION_LEVEL_CONFIG</span><span class="o">,</span> <span class="s">"read_committed"</span><span class="o">);</span>   <span class="c1">// 커밋된 메시지만 읽기</span>
+
+<span class="nc">KafkaConsumer</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">consumer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">KafkaConsumer</span><span class="o">&lt;&gt;(</span><span class="n">configs</span><span class="o">);</span>
+<span class="n">consumer</span><span class="o">.</span><span class="na">subscribe</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="no">TOPIC_NAME</span><span class="o">));</span>
+
+<span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">ConsumerRecords</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">records</span> <span class="o">=</span> <span class="n">consumer</span><span class="o">.</span><span class="na">poll</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofSeconds</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+  <span class="k">for</span> <span class="o">(</span><span class="nc">ConsumerRecord</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">record</span> <span class="o">:</span> <span class="n">records</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"{}"</span><span class="o">,</span> <span class="n">record</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+  <span class="o">}</span>
+  <span class="n">consumer</span><span class="o">.</span><span class="na">commitSync</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ISOLATION_LEVEL_CONFIG</code> 옵션을 <code class="language-plaintext highlighter-rouge">read_committed</code>로 설정하여 트랜잭션이 완벽하게 완료된 메시지만 읽어온다.</li>
+</ul>
+
+<h3 id="4-3-transaction-status">4-3. Transaction status</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./kafka-console-consumer.sh <span class="nt">--consumer</span>.config consumer.config <span class="nt">--formatter</span> <span class="s2">"kafka.coordinator.transaction.TransactionLog</span><span class="se">\$</span><span class="s2">TransactionLogMessageFormatter"</span> <span class="nt">--bootstrap-server</span> localhost:9092 <span class="nt">--topic</span> __transaction_state <span class="nt">--from-beginning</span>
+13c2df10-1a3c-4024-b28d-d155e24b941a::TransactionMetadata<span class="o">(</span><span class="nv">transactionalId</span><span class="o">=</span>13c2df10-1a3c-4024-b28d-d155e24b941a, <span class="nv">producerId</span><span class="o">=</span>1000, <span class="nv">producerEpoch</span><span class="o">=</span>28, <span class="nv">txnTimeoutMs</span><span class="o">=</span>60000, <span class="nv">state</span><span class="o">=</span>Ongoing, <span class="nv">pendingState</span><span class="o">=</span>None, <span class="nv">topicPartitions</span><span class="o">=</span>Set<span class="o">(</span>test-1<span class="o">)</span>, <span class="nv">txnStartTimestamp</span><span class="o">=</span>1594967312702, <span class="nv">txnLastUpdateTimestamp</span><span class="o">=</span>1594967312702<span class="o">)</span>
+13c2df10-1a3c-4024-b28d-d155e24b941a::TransactionMetadata<span class="o">(</span><span class="nv">transactionalId</span><span class="o">=</span>13c2df10-1a3c-4024-b28d-d155e24b941a, <span class="nv">producerId</span><span class="o">=</span>1000, <span class="nv">producerEpoch</span><span class="o">=</span>28, <span class="nv">txnTimeoutMs</span><span class="o">=</span>60000, <span class="nv">state</span><span class="o">=</span>PrepareCommit, <span class="nv">pendingState</span><span class="o">=</span>None, <span class="nv">topicPartitions</span><span class="o">=</span>Set<span class="o">(</span>test-1<span class="o">)</span>, <span class="nv">txnStartTimestamp</span><span class="o">=</span>1594967312702, <span class="nv">txnLastUpdateTimestamp</span><span class="o">=</span>1594967312712<span class="o">)</span>
+13c2df10-1a3c-4024-b28d-d155e24b941a::TransactionMetadata<span class="o">(</span><span class="nv">transactionalId</span><span class="o">=</span>13c2df10-1a3c-4024-b28d-d155e24b941a, <span class="nv">producerId</span><span class="o">=</span>1000, <span class="nv">producerEpoch</span><span class="o">=</span>28, <span class="nv">txnTimeoutMs</span><span class="o">=</span>60000, <span class="nv">state</span><span class="o">=</span>CompleteCommit, <span class="nv">pendingState</span><span class="o">=</span>None, <span class="nv">topicPartitions</span><span class="o">=</span>Set<span class="o">()</span>, <span class="nv">txnStartTimestamp</span><span class="o">=</span>1594967312702, <span class="nv">txnLastUpdateTimestamp</span><span class="o">=</span>1594967312713<span class="o">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">__transaction_state</code> 토픽은 Producer가 전송한 각 트랜잭션의 상태 정보를 기록하며 Consumer가 이 정보를 참조한다.</li>
+  <li>트랜잭션의 상태가 <code class="language-plaintext highlighter-rouge">Ongoing</code> -&gt; <code class="language-plaintext highlighter-rouge">PrepareCommit</code> -&gt; <code class="language-plaintext highlighter-rouge">CompleteCommit</code>순서로 갱신된다.</li>
+  <li>커밋 완료 상태의 트랜잭션에 대해서만 메시지를 읽어올 수 있다.</li>
+</ul>
+
+<h3 id="4-4-broker-offset">4-4. Broker offset</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./kafka-dump-log.sh <span class="nt">--files</span> /path/to/kafka/kafka_2.12-2.5.0/data/test-1/00000000000000000000.log <span class="nt">--deep-iteration</span>
+baseOffset: 16 lastOffset: 16 count: 1 baseSequence: 0 lastSequence: 0 producerId: 1000 producerEpoch: 21 partitionLeaderEpoch: 0 isTransactional: <span class="nb">true </span>isControl: <span class="nb">false </span>position: 1680 CreateTime: 1594965813907 size: 122 magic: 2 compresscodec: NONE crc: 3909138376 isvalid: <span class="nb">true</span>
+| offset: 16 CreateTime: 1594965813907 keysize: <span class="nt">-1</span> valuesize: 54 sequence: 0 headerKeys: <span class="o">[]</span>
+baseOffset: 17 lastOffset: 17 count: 1 baseSequence: <span class="nt">-1</span> lastSequence: <span class="nt">-1</span> producerId: 1000 producerEpoch: 21 partitionLeaderEpoch: 0 isTransactional: <span class="nb">true </span>isControl: <span class="nb">true </span>position: 1802 CreateTime: 1594965813942 size: 78 magic: 2 compresscodec: NONE crc: 3102183917 isvalid: <span class="nb">true</span>
+| offset: 17 CreateTime: 1594965813942 keysize: 4 valuesize: 6 sequence: <span class="nt">-1</span> headerKeys: <span class="o">[]</span> endTxnMarker: COMMIT coordinatorEpoch: 0
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>위 예시에선 토픽의 특정 파티션에 메시지가 입력되어 16번, 17번 offset에 각각 기록되었다.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th> </th>
+          <th>isTransactional</th>
+          <th>isControl</th>
+          <th>endTxnMarker</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>16번 offset</td>
+          <td>true</td>
+          <td>false</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>17번 offset</td>
+          <td>true</td>
+          <td>true</td>
+          <td>COMMIT</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <p>Producer는 메시지를 전송하고(16번 offset) 트랜잭션이 완료되면 COMMIT 메시지를 입력한다(17번 offset).</p>
+  </li>
+  <li>
+    <p>즉, 한 트랜잭션에 대해 실제 메시지와 COMMIT 메시지를 위해 offset이 2개 소모되었다.</p>
+  </li>
+  <li>
+    <p>Consumer는 데이터를 가져갈 때 <strong>트랜잭션의 실제 데이터인 16번 offset만 가져가고, COMMIT 명시 데이터인 17번 offset은 무시</strong>한다.</p>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h2 id="5-consumer-side의-exactly-once-구현">5. Consumer side의 exactly-once 구현</h2>
+
+<ul>
+  <li>Consumer에서 메시지를 읽고 나서 <strong>DB에 저장하는 단계</strong>와 <strong>offset을 갱신하는 단계</strong> 사이에서 장애가 발생할 경우에 메시지 중복 처리가 발생한다.</li>
+  <li><a href="https://github.com/dhkdn9192/data_engineer_should_know/blob/master/interview/hadoop/kafka_sparkstreaming_integration.md">Kafka + Spark Streaming Integration의 Receiver-based Approach</a> 의 예시에선 Receiver와 WAL을 제거하고 directStream 및 자체 offset checkpoint (with HDFS/HBase)를 사용하여 동일 메시지를 중복으로 읽지 않도록 할 수 있다. (자세한 건 링크 참조)</li>
+</ul>
+
+<p><br /></p>
+
+<h2 id="6-conclusion">6. Conclusion</h2>
+
+<ul>
+  <li>Kafka는 0.11.0.0 버전부터 트랜잭션을 이용한 exactly-once를 지원하게 되었다.</li>
+  <li>offset 소모, 약간의 성능저하 등 일정 부분을 희생한 trade-off가 존재한다.</li>
+  <li>파이프라인 전체에 대해 exactly-once를 지원하려면 Kafka 외부의 애플리케이션단에서도 중복 처리 이슈까지 해결되어야 한다. (예: Spark Streaming의 Receiver-based Approach 이슈)</li>
+  <li>데이터 처리에 있어 동일 데이터의 중복이 허용되지 않는 경우엔 exactly-once가 필수적이나, 그렇지 않은 경우에는 기존의 at-least-once를 사용하면 된다.</li>
+</ul>
+
+<p><br /></p>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li>https://medium.com/@jaykreps/exactly-once-support-in-apache-kafka-55e1fdd0a35f</li>
+  <li>https://www.joinc.co.kr/w/man/12/Kafka/exactlyonce</li>
+  <li>https://blog.voidmainvoid.net/354</li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> 태그: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#kafka" class="page__taxonomy-item" rel="tag">kafka</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> 카테고리: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#apache-kafka" class="page__taxonomy-item" rel="tag">apache-kafka</a>
+    
+    </span>
+  </p>
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> 업데이트:</strong> <time datetime="2021-06-18T00:00:00+09:00">June 18, 2021</time></p>
+
+
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">공유하기</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Kafka%27s+exactly-once+delivery%20http%3A%2F%2Flocalhost%3A4000%2Fapache-kafka%2Fkakfa-exactly-once-delivery%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fapache-kafka%2Fkakfa-exactly-once-delivery%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fapache-kafka%2Fkakfa-exactly-once-delivery%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/apache-kafka/kafka-consuming-in-sparkstreaming/" class="pagination--pager" title="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?
+">이전</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">다음</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">참고</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/apache-kafka/kafka-consuming-in-sparkstreaming/" rel="permalink">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?
+</a>
+      
+    </h2>
+    
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        1 분 소요
+      
+    
+
+  </p>
+
+    <p class="archive__item-excerpt" itemprop="description">컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 ...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/computer_science/java-stringbuffer-stringbuilder/" rel="permalink">Java : String vs StringBuffer, StringBuilder
+</a>
+      
+    </h2>
+    
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        1 분 소요
+      
+    
+
+  </p>
+
+    <p class="archive__item-excerpt" itemprop="description">Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/apache-spark/apache-kafka/kafka-sparkstreaming-integration/" rel="permalink">Kafka + Spark Streaming Integration
+</a>
+      
+    </h2>
+    
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        1 분 소요
+      
+    
+
+  </p>
+
+    <p class="archive__item-excerpt" itemprop="description">Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/computer_science/python-gil/" rel="permalink">Python의 GIL
+</a>
+      
+    </h2>
+    
+
+
+  <p class="page__meta">
+
+    
+
+    
+
+    
+      
+      
+
+      <i class="far fa-clock" aria-hidden="true"></i>
+      
+        1 분 소요
+      
+    
+
+  </p>
+
+    <p class="archive__item-excerpt" itemprop="description">CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다.
+이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>팔로우:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+          <li><a href="https://github.com/dhkdn9192" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <li><a href="mailto:dhkdn9192@naver.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> 피드</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 김동혁. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+    
+  <script>
+    var disqus_config = function () {
+      this.page.url = "http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/";  /* Replace PAGE_URL with your page's canonical URL variable */
+      this.page.identifier = "/apache-kafka/kakfa-exactly-once-delivery"; /* Replace PAGE_IDENTIFIER with your page's unique identifier variable */
+    };
+    (function() { /* DON'T EDIT BELOW THIS LINE */
+      var d = document, s = d.createElement('script');
+      s.src = 'https://dhkdn9192.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+  
+
+
+
+
+
+  </body>
+</html>

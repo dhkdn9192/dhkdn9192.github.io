@@ -1,4 +1,196 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-16T18:47:45+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?</title><link href="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/" rel="alternate" type="text/html" title="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?" /><published>2021-06-16T00:00:00+09:00</published><updated>2021-06-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/">&lt;p&gt;컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-18T14:06:19+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Kafka’s exactly-once delivery</title><link href="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/" rel="alternate" type="text/html" title="Kafka’s exactly-once delivery" /><published>2021-06-18T00:00:00+09:00</published><updated>2021-06-18T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">&lt;p&gt;Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;1-messaging-sementics&quot;&gt;1. Messaging sementics&lt;/h2&gt;
+&lt;p&gt;카프카와 같은 메시징 시스템은 특정 수준의 메시지 보증 전략을 가지고 있다.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;at-most-once&lt;/strong&gt; : 실패나 타임아웃 등이 발생하면 메시지를 버릴 수 있다. 데이터가 일부 누락되더라도 영향이 없는 경우엔 대량처리 및 짧은 주기의 전송 서비스에 유용할 수 있다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;exactly-once&lt;/strong&gt; : 메시지가 정확하게 한 번만 전달되는 것을 보장한다. 손실이나 중복 없이, 순서대로 메시지를 전송하는 것은 구현 난이도가 높고 비용이 많이 든다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;at-least-once&lt;/strong&gt; : 메시지가 최소 1번 이상 전달되는 것을 보장한다. 실패나 타임아웃 등이 발생하면 메시지를 다시 전송하며, 이 경우엔 동일한 메시지가 중복으로 처리될 수 있다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;exactly-once가 가장 이상적인 메시지 처리 방식이지만 난이도와 비용으로 인해 at-least-once로 타협하는 경우가 보편적이다. Kafka의 경우 at-least-once를 보장하며 일정 버전 이후에서만 옵션을 통해 exactly-once를 적용할 수 있다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;2-kafka의-at-least-once-구현&quot;&gt;2. Kafka의 at-least-once 구현&lt;/h2&gt;
+
+&lt;p&gt;Kafka의 경우 Producer가 메시지를 전송하고 나서 Broker로부터 ack를 받는 수준을 조절함으로써 &lt;strong&gt;at-least-once&lt;/strong&gt;를 보장할 수 있다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;ack=0&lt;/strong&gt; : Producer가 메시지 전송 후, ack를 기다리지 않고 바로 다음 메시지를 전송한다. 만약 Broker가 다운된다면 이 기간 동안 전송된 메시지들은 모두 손실된다. 메시지가 손실되더라도 빠른 전송이 필요한 경우에 사용할 수 있다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;ack=1&lt;/strong&gt; : Producer가 메시지 전송 후, partition leader로부터 일정시간 ack를 기다린다. 손실 가능성이 적고 적당한 전송 속도를 가지게 된다. ack 전송 직후 partition leader의 Broker가 follower들이 복사해가기 전에 다운되면 해당 메시지는 손실된다.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;ack=all&lt;/strong&gt; : Producer가 메시지 전송 후, partition의 leader, follower 모두로부터 ack를 기다린다. 손실이 없지만 전송 속도가 느리다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;3-kafka에서-메시지가-중복-처리되는-경우&quot;&gt;3. Kafka에서 메시지가 중복 처리되는 경우&lt;/h2&gt;
+
+&lt;p&gt;Kafka에서 메시지들은 순차적으로 증가하는 offset 값을 가지고 순서대로 추가된다. 
+&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_sequence_of_offset.png&quot; width=&quot;500px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Producer는 Kafka에 메시지를 입력하고, Consumer는 메시지를 읽어 DB 등의 저장소에 저장한다. 이 경우 다음과 같은 파이프라인이 형성된다.
+&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/kafka_producer_to_consumer_pipeline.png&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;위의 파이프라인에서 메시지가 중복 처리되는 경우, 즉 at-least-once에 해당하는 경우는 다음과 같이 2가지가 있다.&lt;/p&gt;
+
+&lt;h3 id=&quot;3-1-producer-broker-사이의-ack-소실&quot;&gt;3-1. Producer-Broker 사이의 ack 소실&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Producer는 Broker에 메시지를 전송하고 ack를 수신받는다.&lt;/li&gt;
+  &lt;li&gt;만약 네트워크 상에서 ack가 소실/지연되어 수신받는데에 실패할 경우, Producer는 메시지 전송이 실패했다고 판단하여 재전송하게 된다.&lt;/li&gt;
+  &lt;li&gt;즉, 동일한 메시지가 중복 전송될 수 있다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-2-consumer-side의-offset-갱신-실패&quot;&gt;3-2. Consumer side의 offset 갱신 실패&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Consumer가 메시지를 읽고 DB에 저장한 후에 offset을 갱신하기 전에 장애가 발생할 경우, Consumer는 재시작되었을 때 갱신되지 않은 offset을 기준으로 메시지를 읽어오게 된다.&lt;/li&gt;
+  &lt;li&gt;즉, 이미 DB에 저장된 메시지를 중복으로 가져오게 된다.&lt;/li&gt;
+  &lt;li&gt;예시) Spark Streaming의 Receiver 기반 모델에서 WAL을 사용하는 경우&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;4-producer-side의-exactly-once-구현&quot;&gt;4. Producer side의 exactly-once 구현&lt;/h2&gt;
+
+&lt;p&gt;Kafka는 at-least-once 방식을 지원했으나, 0.11.0.0 이상부터는 트랜잭션을 적용하여 exactly-once를 구현할 수 있다. Producer가 트랜잭션에서 처리한 데이터의 offset을 커밋함으로써, Consumer에 정확하게 메시지를 전달할 을 수 있다.&lt;/p&gt;
+
+&lt;p&gt;Producer side에서 트랜잭션을 적용하려면 Consumer side에서도 트랜잭션 기반으로 메시지를 읽어야 한다. 즉, Consumer 에도 트랜잭션 API를 적용해야 한다.&lt;/p&gt;
+
+&lt;h3 id=&quot;4-1-transaction-api-in-producer&quot;&gt;4-1. Transaction API in Producer&lt;/h3&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;KafkaProducer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;producer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;KafkaProducer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nc&quot;&gt;ProducerRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ProducerRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;TOPIC_NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;data&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;producer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;initTransactions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// 트랜잭션 준비&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;producer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;beginTransaction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// 트랜잭션 시작&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;producer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;        &lt;span class=&quot;c1&quot;&gt;// 메시지 전송&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;producer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;flush&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;producer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;commitTransaction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 트랜잭션 커밋&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;producer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;initTransactions()로 트랜잭션을 준비한다.&lt;/li&gt;
+  &lt;li&gt;beginTransaction()과 commitTransaction() 사이에 send() 메소드가 위치하여 전송된 메시지가 커밋되도록 한다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-2-transaction-api-in-consumer&quot;&gt;4-2. Transaction API in Consumer&lt;/h3&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;configs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ConsumerConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ENABLE_AUTO_COMMIT_CONFIG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;           &lt;span class=&quot;c1&quot;&gt;// 명시적 오프셋 커밋&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;configs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ConsumerConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ISOLATION_LEVEL_CONFIG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;read_committed&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;   &lt;span class=&quot;c1&quot;&gt;// 커밋된 메시지만 읽기&lt;/span&gt;
+
+&lt;span class=&quot;nc&quot;&gt;KafkaConsumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;consumer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;KafkaConsumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;consumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;TOPIC_NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nc&quot;&gt;ConsumerRecords&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;records&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;consumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;poll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ofSeconds&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ConsumerRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;records&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;consumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;commitSync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ISOLATION_LEVEL_CONFIG&lt;/code&gt; 옵션을 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;read_committed&lt;/code&gt;로 설정하여 트랜잭션이 완벽하게 완료된 메시지만 읽어온다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-3-transaction-status&quot;&gt;4-3. Transaction status&lt;/h3&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./kafka-console-consumer.sh &lt;span class=&quot;nt&quot;&gt;--consumer&lt;/span&gt;.config consumer.config &lt;span class=&quot;nt&quot;&gt;--formatter&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;kafka.coordinator.transaction.TransactionLog&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\$&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;TransactionLogMessageFormatter&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--bootstrap-server&lt;/span&gt; localhost:9092 &lt;span class=&quot;nt&quot;&gt;--topic&lt;/span&gt; __transaction_state &lt;span class=&quot;nt&quot;&gt;--from-beginning&lt;/span&gt;
+13c2df10-1a3c-4024-b28d-d155e24b941a::TransactionMetadata&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;transactionalId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;13c2df10-1a3c-4024-b28d-d155e24b941a, &lt;span class=&quot;nv&quot;&gt;producerId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1000, &lt;span class=&quot;nv&quot;&gt;producerEpoch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;28, &lt;span class=&quot;nv&quot;&gt;txnTimeoutMs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;60000, &lt;span class=&quot;nv&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;Ongoing, &lt;span class=&quot;nv&quot;&gt;pendingState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;None, &lt;span class=&quot;nv&quot;&gt;topicPartitions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;Set&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;test-1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;txnStartTimestamp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1594967312702, &lt;span class=&quot;nv&quot;&gt;txnLastUpdateTimestamp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1594967312702&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+13c2df10-1a3c-4024-b28d-d155e24b941a::TransactionMetadata&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;transactionalId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;13c2df10-1a3c-4024-b28d-d155e24b941a, &lt;span class=&quot;nv&quot;&gt;producerId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1000, &lt;span class=&quot;nv&quot;&gt;producerEpoch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;28, &lt;span class=&quot;nv&quot;&gt;txnTimeoutMs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;60000, &lt;span class=&quot;nv&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;PrepareCommit, &lt;span class=&quot;nv&quot;&gt;pendingState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;None, &lt;span class=&quot;nv&quot;&gt;topicPartitions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;Set&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;test-1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;txnStartTimestamp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1594967312702, &lt;span class=&quot;nv&quot;&gt;txnLastUpdateTimestamp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1594967312712&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+13c2df10-1a3c-4024-b28d-d155e24b941a::TransactionMetadata&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;transactionalId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;13c2df10-1a3c-4024-b28d-d155e24b941a, &lt;span class=&quot;nv&quot;&gt;producerId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1000, &lt;span class=&quot;nv&quot;&gt;producerEpoch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;28, &lt;span class=&quot;nv&quot;&gt;txnTimeoutMs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;60000, &lt;span class=&quot;nv&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;CompleteCommit, &lt;span class=&quot;nv&quot;&gt;pendingState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;None, &lt;span class=&quot;nv&quot;&gt;topicPartitions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;Set&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;txnStartTimestamp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1594967312702, &lt;span class=&quot;nv&quot;&gt;txnLastUpdateTimestamp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1594967312713&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;__transaction_state&lt;/code&gt; 토픽은 Producer가 전송한 각 트랜잭션의 상태 정보를 기록하며 Consumer가 이 정보를 참조한다.&lt;/li&gt;
+  &lt;li&gt;트랜잭션의 상태가 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ongoing&lt;/code&gt; -&amp;gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PrepareCommit&lt;/code&gt; -&amp;gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CompleteCommit&lt;/code&gt;순서로 갱신된다.&lt;/li&gt;
+  &lt;li&gt;커밋 완료 상태의 트랜잭션에 대해서만 메시지를 읽어올 수 있다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-4-broker-offset&quot;&gt;4-4. Broker offset&lt;/h3&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./kafka-dump-log.sh &lt;span class=&quot;nt&quot;&gt;--files&lt;/span&gt; /path/to/kafka/kafka_2.12-2.5.0/data/test-1/00000000000000000000.log &lt;span class=&quot;nt&quot;&gt;--deep-iteration&lt;/span&gt;
+baseOffset: 16 lastOffset: 16 count: 1 baseSequence: 0 lastSequence: 0 producerId: 1000 producerEpoch: 21 partitionLeaderEpoch: 0 isTransactional: &lt;span class=&quot;nb&quot;&gt;true &lt;/span&gt;isControl: &lt;span class=&quot;nb&quot;&gt;false &lt;/span&gt;position: 1680 CreateTime: 1594965813907 size: 122 magic: 2 compresscodec: NONE crc: 3909138376 isvalid: &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;
+| offset: 16 CreateTime: 1594965813907 keysize: &lt;span class=&quot;nt&quot;&gt;-1&lt;/span&gt; valuesize: 54 sequence: 0 headerKeys: &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;
+baseOffset: 17 lastOffset: 17 count: 1 baseSequence: &lt;span class=&quot;nt&quot;&gt;-1&lt;/span&gt; lastSequence: &lt;span class=&quot;nt&quot;&gt;-1&lt;/span&gt; producerId: 1000 producerEpoch: 21 partitionLeaderEpoch: 0 isTransactional: &lt;span class=&quot;nb&quot;&gt;true &lt;/span&gt;isControl: &lt;span class=&quot;nb&quot;&gt;true &lt;/span&gt;position: 1802 CreateTime: 1594965813942 size: 78 magic: 2 compresscodec: NONE crc: 3102183917 isvalid: &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;
+| offset: 17 CreateTime: 1594965813942 keysize: 4 valuesize: 6 sequence: &lt;span class=&quot;nt&quot;&gt;-1&lt;/span&gt; headerKeys: &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; endTxnMarker: COMMIT coordinatorEpoch: 0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;위 예시에선 토픽의 특정 파티션에 메시지가 입력되어 16번, 17번 offset에 각각 기록되었다.&lt;/p&gt;
+
+    &lt;table&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt; &lt;/th&gt;
+          &lt;th&gt;isTransactional&lt;/th&gt;
+          &lt;th&gt;isControl&lt;/th&gt;
+          &lt;th&gt;endTxnMarker&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;16번 offset&lt;/td&gt;
+          &lt;td&gt;true&lt;/td&gt;
+          &lt;td&gt;false&lt;/td&gt;
+          &lt;td&gt;-&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;17번 offset&lt;/td&gt;
+          &lt;td&gt;true&lt;/td&gt;
+          &lt;td&gt;true&lt;/td&gt;
+          &lt;td&gt;COMMIT&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Producer는 메시지를 전송하고(16번 offset) 트랜잭션이 완료되면 COMMIT 메시지를 입력한다(17번 offset).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;즉, 한 트랜잭션에 대해 실제 메시지와 COMMIT 메시지를 위해 offset이 2개 소모되었다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Consumer는 데이터를 가져갈 때 &lt;strong&gt;트랜잭션의 실제 데이터인 16번 offset만 가져가고, COMMIT 명시 데이터인 17번 offset은 무시&lt;/strong&gt;한다.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;5-consumer-side의-exactly-once-구현&quot;&gt;5. Consumer side의 exactly-once 구현&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Consumer에서 메시지를 읽고 나서 &lt;strong&gt;DB에 저장하는 단계&lt;/strong&gt;와 &lt;strong&gt;offset을 갱신하는 단계&lt;/strong&gt; 사이에서 장애가 발생할 경우에 메시지 중복 처리가 발생한다.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/dhkdn9192/data_engineer_should_know/blob/master/interview/hadoop/kafka_sparkstreaming_integration.md&quot;&gt;Kafka + Spark Streaming Integration의 Receiver-based Approach&lt;/a&gt; 의 예시에선 Receiver와 WAL을 제거하고 directStream 및 자체 offset checkpoint (with HDFS/HBase)를 사용하여 동일 메시지를 중복으로 읽지 않도록 할 수 있다. (자세한 건 링크 참조)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;6-conclusion&quot;&gt;6. Conclusion&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Kafka는 0.11.0.0 버전부터 트랜잭션을 이용한 exactly-once를 지원하게 되었다.&lt;/li&gt;
+  &lt;li&gt;offset 소모, 약간의 성능저하 등 일정 부분을 희생한 trade-off가 존재한다.&lt;/li&gt;
+  &lt;li&gt;파이프라인 전체에 대해 exactly-once를 지원하려면 Kafka 외부의 애플리케이션단에서도 중복 처리 이슈까지 해결되어야 한다. (예: Spark Streaming의 Receiver-based Approach 이슈)&lt;/li&gt;
+  &lt;li&gt;데이터 처리에 있어 동일 데이터의 중복이 허용되지 않는 경우엔 exactly-once가 필수적이나, 그렇지 않은 경우에는 기존의 at-least-once를 사용하면 된다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;https://medium.com/@jaykreps/exactly-once-support-in-apache-kafka-55e1fdd0a35f&lt;/li&gt;
+  &lt;li&gt;https://www.joinc.co.kr/w/man/12/Kafka/exactlyonce&lt;/li&gt;
+  &lt;li&gt;https://blog.voidmainvoid.net/354&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-kafka" /><category term="kafka" /><summary type="html">Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?</summary></entry><entry><title type="html">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?</title><link href="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/" rel="alternate" type="text/html" title="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?" /><published>2021-06-16T00:00:00+09:00</published><updated>2021-06-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/">&lt;p&gt;컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.&lt;/p&gt;
 
 &lt;p&gt;모든 컨슈머는 특정 컨슈머 그룹에 소속된다. 만약 같은 그룹의 컨슈머들이 같은 토픽을 subscribe한다면 각 컨슈머는 서로 겹치지 않게 파티션의 데이터를 읽게 된다.&lt;/p&gt;
 
@@ -828,217 +1020,4 @@ Usage: FreeGenerator &amp;lt;inputDir&amp;gt; &amp;lt;segmentsDir&amp;gt; [-filt
   &lt;li&gt;https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=122916819&lt;/li&gt;
   &lt;li&gt;https://github.com/apache/nutch/pull/519&lt;/li&gt;
   &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2810&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="java" /><category term="nutch" /><category term="jira" /><summary type="html">최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다. 이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.</summary></entry><entry><title type="html">Apache Nutch 튜닝하기</title><link href="http://localhost:4000/apache-nutch/nutch-tuning/" rel="alternate" type="text/html" title="Apache Nutch 튜닝하기" /><published>2020-09-14T00:00:00+09:00</published><updated>2020-09-14T00:00:00+09:00</updated><id>http://localhost:4000/apache-nutch/nutch-tuning</id><content type="html" xml:base="http://localhost:4000/apache-nutch/nutch-tuning/">&lt;h2 id=&quot;1-apache-nutch&quot;&gt;1. Apache Nutch&lt;/h2&gt;
-&lt;p&gt;Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다.
-현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다.
-최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-logo.png&quot; alt=&quot;nutch-logo&quot; /&gt;&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;name&lt;/th&gt;
-      &lt;th&gt;version&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Nutch&lt;/td&gt;
-      &lt;td&gt;1.17&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;OpenJDK&lt;/td&gt;
-      &lt;td&gt;1.8.0_265&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Hadoop&lt;/td&gt;
-      &lt;td&gt;2.7.3 (hdp 2.6.3)&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h2 id=&quot;2-what-to-crawl&quot;&gt;2. What to crawl&lt;/h2&gt;
-&lt;p&gt;구축할 웹 크롤러의 목적은 타겟 해외 사이트들을 주기적으로 수집하는 것이다.
-주식 관련 뉴스들을 제공해주는 소스 사이트들이 존재하는데,
-이들 사이트를 seed로 하여 페이지 내의 뉴스 링크들을 수집하는 것이다.&lt;/p&gt;
-
-&lt;p&gt;Nutch는 방대한 인터넷 세계를 깊이 탐색하며 수집할 수 있도록 설계된 범용성 있는 크롤러다.
-때문에 내 요구사항에 그대로 맞춰 사용하기에는 어려운 점들이 많아 일부 튜닝이 필요했다.&lt;/p&gt;
-
-&lt;h2 id=&quot;3-tuning&quot;&gt;3. Tuning&lt;/h2&gt;
-&lt;h3 id=&quot;3-1-이전-페이지의-url-저장하기&quot;&gt;3-1. 이전 페이지의 url 저장하기&lt;/h3&gt;
-&lt;p&gt;Nutch는 웹 페이지를 저장(indexing)할 때 해당 페이지로 연결되는 &lt;strong&gt;이전 페이지의 링크 텍스트&lt;/strong&gt;(anchor)를 함께 기록한다.
-아래처럼 뉴스 타이틀에 하이퍼링크가 걸려있어서 뉴스 페이지로 연결될 경우, anchor 필드에 뉴스 타이틀이 들어오게 된다.
-혹은 “다음 기사”와 같이 버튼을 눌러 뉴스 페이지로 연결될 수도 있다.&lt;/p&gt;
-
-&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;tstamp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2020-06-30T01:58:26.987Z&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;anchor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Facebook Sales at Risk as Starbucks Bails&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Next Article&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;title&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Facebook Sales at Risk as Starbucks Bails&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;url&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://...&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;여기서 내가 수집하고 싶은 정보는 링크 텍스트가 아니라 &lt;strong&gt;이전 페이지의 url&lt;/strong&gt;이다.
-즉 아래처럼 anchor 필드에는 현재 페이지로 연결되는 url들이 들어와야 한다.&lt;/p&gt;
-&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;tstamp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2020-06-30T01:58:26.987Z&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;anchor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://first.link.url/quote.ashx?q=facebook&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://second.link.url/quote.ashx?q=facebook&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;title&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Facebook Sales at Risk as Starbucks Bails&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
-  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;url&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://...&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;위처럼 이전페이지 url을 넣는 방법은 간단하다.
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/java/org/apache/nutch/crawl/Inlinks.java&lt;/code&gt; 코드에서 
-Inlinks 클래스의 getAnchors 메소드를 수정해주면 된다.
-while문의 마지막 if문에서 anchor 대신 fromUrl을 results에 입력해준다.&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nc&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainToAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
-    &lt;span class=&quot;nc&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
-    &lt;span class=&quot;nc&quot;&gt;Iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Inlink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlinks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;iterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hasNext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;nc&quot;&gt;Inlink&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlink&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-      &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;anchor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getAnchor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-      &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inlink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getFromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;anchor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// skip empty anchors&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// extract domain name&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;URL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getHost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;MalformedURLException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;nc&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainToAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HashSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;domainToAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;domainAnchors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromUrl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// 이전 페이지의 url 입력&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()]);&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;소스코드 수정 후 Nutch를 다시 빌드해준다.
-이제부턴 anchor 필드에 이전 페이지 url이 입력될 것이다.&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ant runtime
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;3-2-원본-html-저장하기&quot;&gt;3-2. 원본 html 저장하기&lt;/h3&gt;
-&lt;p&gt;Nutch는 자체 parser로 html의 텍스트를 추출/파싱해준다.
-하지만 파싱되지 않은 원본 그대로의 html을 저장하고 싶을 경우,
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-addBinaryContent&lt;/code&gt; 옵션을 사용하면 된다.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nutch index &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;crawldb 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;-linkdb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;linkdb 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;대상 segment 경로&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;-filter&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;-normalize&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;-deleteGone&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;-addBinaryContent&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;-base64&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;인코딩 문제를 방지하기 위해 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-base64&lt;/code&gt; 인코딩 옵션을 함께 사용하는 것이 좋다.
-주의할 점은, 1.15 버전에선 버그로 인하여 해당 옵션을 사용할 경우 에러가 발생하게 된다는 것이다.
-이 버그는 1.16 버전부터는 개선되었으며 최신 버전을 사용한다면 문제 없다.
-자세한 사항은 &lt;a href=&quot;https://issues.apache.org/jira/browse/NUTCH-2706&quot;&gt;NUTCH-2706&lt;/a&gt; 이슈를 참고&lt;/p&gt;
-
-&lt;h3 id=&quot;3-3-batch-수행간-중복-url-제거&quot;&gt;3-3. batch 수행간 중복 url 제거&lt;/h3&gt;
-&lt;p&gt;Nutch는 실행되는 동안 한 번이라도 수집된 페이지는 다시 수집하지 않는다.
-timeout을 설정하면 수집된 페이지도 일정 시간 뒤 재수집이 가능하지만 특정 페이지만 재수집하는 것은 불가능하다.&lt;/p&gt;
-
-&lt;p&gt;나의 개발요건은 seed url들을 주기적으로 반복 수집하며 신규 페이지들을 수집하는 것이다.
-그러나 Nutch의 특성상 seed url들만 재수집할 수는 없으므로,
-매번 crawldb를 리셋시키고 처음부터 crawling을 수행해야 했다.&lt;/p&gt;
-
-&lt;p&gt;그 결과, 매번 crawldb가 리셋되므로 각 Nutch 배치잡은 이전 배치에서 수집했던 페이지들을 중복으로 수집했다.
-Nutch가 페이지를 저장하는 과정에서 중복 페이지는 알아서 제거되지만,
-문제는 불필요한 중복 페이지 수집 때문에 fetch time이 너무 오래걸린다는 것이다.
-(Nutch는 politeness를 최대한 준수하기 위해 동일 서버에 대해 기본적으로 5초의 idle time을 갖는다.)&lt;/p&gt;
-
-&lt;p&gt;아래는 Nutch의 워크플로우 구조다.
-&lt;strong&gt;inject&lt;/strong&gt; &amp;gt; [ &lt;strong&gt;generate&lt;/strong&gt; &amp;gt; &lt;strong&gt;fetch&lt;/strong&gt; &amp;gt; &lt;strong&gt;parse&lt;/strong&gt; &amp;gt; &lt;strong&gt;update&lt;/strong&gt; ]*n &amp;gt; &lt;strong&gt;invert links&lt;/strong&gt; &amp;gt; &lt;strong&gt;index&lt;/strong&gt; 순서로 작업이 진행된다.
-&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-nutch-workflow.png&quot; alt=&quot;nutch-workflow&quot; /&gt;&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;name&lt;/th&gt;
-      &lt;th&gt;description&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;strong&gt;inject&lt;/strong&gt;&lt;/td&gt;
-      &lt;td&gt;- 수집의 시작점이 되는 seed url들을 crawldb에 입력한다&lt;br /&gt;- crawldb는 url들의 메타정보들을 저장한 DB이다&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;strong&gt;generate&lt;/strong&gt;&lt;/td&gt;
-      &lt;td&gt;- crawldb로부터 수집할 url 목록인 fetchlist를 생성한다.&lt;br /&gt;- fetchlist는 아직 수집하지 않은 url들로 구성된다.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;strong&gt;fetch&lt;/strong&gt;&lt;/td&gt;
-      &lt;td&gt;- 앞서 작성된 fetchlist의 url들에 대해 실제로 수집을 수행한다.&lt;br /&gt;- 각 url들의 컨텐츠(html)를 가져온다.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;strong&gt;parse&lt;/strong&gt;&lt;/td&gt;
-      &lt;td&gt;- 수집된 컨텐츠를 파싱한다.&lt;br /&gt;- 웹 페이지의 텍스트, html 속 href 태그들, 날짜/시간 정보 등을 추출한다.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;strong&gt;update&lt;/strong&gt;&lt;/td&gt;
-      &lt;td&gt;- 파싱 단계에서 새로 얻어진 url들을 crawldb에 추가한다.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;strong&gt;invert links&lt;/strong&gt;&lt;/td&gt;
-      &lt;td&gt;- 페이지간의 연결 정보를 linkdb에 갱신한다.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;strong&gt;index&lt;/strong&gt;&lt;/td&gt;
-      &lt;td&gt;-크롤링된 웹 페이지들을 Solr, Elasticsearch, Kafka 등에 인덱싱한다.&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;여기서 각 Nutch 배치가 이전 배치의 수집 url들을 제거하여 fetch list를 줄일 수 있도록 워크플로우를 수정했다.
- &lt;strong&gt;generate&lt;/strong&gt; ~ &lt;strong&gt;update&lt;/strong&gt;  의 사이클을 1회만 수행한다.
-그 후, 갱신된 crawldb를 읽어(&lt;strong&gt;readdb&lt;/strong&gt;) 이전 배치에서 수집한 url들을 제거하고 (&lt;strong&gt;remove_existing&lt;/strong&gt;) 중복 제거된 fetch list를 생성한다(&lt;strong&gt;freegen&lt;/strong&gt;).
-readdb, freegen은 Nutch 명령어이며 remove_existing은 파이썬으로 직접 구현했다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/14/2020-09-14-my-workflow.png&quot; alt=&quot;my-workflow&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;수정된 워크플로우에선 중복 fetch가 모두 사라지면서 수집시간이 2시간에서 30분 내외로 획기적으로 줄었다.
-(그동안 중복 페이지들을 얼마나 많이 수집했던건지…ㄷㄷ)&lt;/p&gt;
-
-&lt;h3 id=&quot;3-4-mapreduce-병렬처리-문제&quot;&gt;3-4. MapReduce 병렬처리 문제&lt;/h3&gt;
-&lt;p&gt;위의 freegen 명령어를 사용하다가 Nutch 소스코드에 버그가 있다는 것을 발견했다.
-Nutch의 github 이슈에 댓글을 달았더니 담당 개발자분이 알려줘서 고맙다고 답글을 달았다.
-금새 이슈가 생성됐고 지금은 해결되었다.
-이 부분은 다른 포스트로 자세히 다뤄볼 생각이다.
-해당 이슈는 &lt;a href=&quot;https://issues.apache.org/jira/browse/NUTCH-2810&quot;&gt;NUTCH-2810&lt;/a&gt;를 참고&lt;/p&gt;
-
-&lt;h3 id=&quot;3-5-배치-작업-스케줄링&quot;&gt;3-5. 배치 작업 스케줄링&lt;/h3&gt;
-&lt;p&gt;Nutch 배치작업은 Apache Airflow로 스케줄링하고 있다.&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;https://cwiki.apache.org/confluence/display/NUTCH/NutchTutorial&lt;/li&gt;
-  &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2706&lt;/li&gt;
-  &lt;li&gt;https://www.slideshare.net/sebastian_nagel/aceu2014-snagelwebcrawlingnutch&lt;/li&gt;
-  &lt;li&gt;https://issues.apache.org/jira/browse/NUTCH-2810&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="nutch" /><category term="java" /><category term="crawler" /><category term="airflow" /><summary type="html">1. Apache Nutch Apache Nutch는 Java 언어로 만들어진 분산형 웹 크롤러다. 현재는 널리 쓰이고 있는 Hadoop이 바로 이 Nutch의 하위 프로젝트에서 시작되었다. 최근 Nutch로 웹 크롤러를 구축하면서 소소하게 경험해본 것들을 기록해본다.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-nutch" /><category term="java" /><category term="nutch" /><category term="jira" /><summary type="html">최근 웹 크롤러를 구축하기 위해 Apache Nutch를 사용하다가 소스코드 상의 버그를 발견하게 되었다. 이를 해결하고 contributor에게 공유했던 경험을 기록해보았다.</summary></entry></feed>

@@ -76,4 +76,10 @@ var store = [{
         "tags": ["spark","kafka"],
         "url": "http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/",
         "teaser": null
+      },{
+        "title": "Kafka's exactly-once delivery",
+        "excerpt":"Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까? 1. Messaging sementics 카프카와 같은 메시징 시스템은 특정 수준의 메시지 보증 전략을 가지고 있다. at-most-once : 실패나 타임아웃 등이 발생하면 메시지를 버릴 수 있다. 데이터가 일부 누락되더라도 영향이 없는 경우엔 대량처리 및 짧은 주기의 전송 서비스에 유용할 수 있다. exactly-once...","categories": ["apache-kafka"],
+        "tags": ["kafka"],
+        "url": "http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/",
+        "teaser": null
       }]
