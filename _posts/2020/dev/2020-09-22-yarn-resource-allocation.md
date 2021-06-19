@@ -1,5 +1,5 @@
 ---
-title: "[YARN] CPU 코어 할당을 위한 스케줄러 설정"
+title: CPU 코어 할당을 위한 YARN 스케줄러 설정
 comments: true
 toc: true
 toc_sticky: true
@@ -96,9 +96,7 @@ HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 �
 ![yarn_cpu_scheduling_config](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cpu-scheduling-config.jpeg)
 
 
-맨 처음 실행했던 pyspark 코드를 다시 실행하면 아래와 같이 설정대로 executor별 코어가 할당되는 것을 확인할 수 있다.
-
-![yarn-cores-after](https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cores-after.jpeg)
+맨 처음 실행했던 pyspark 코드를 다시 실행하면 이젠 설정대로 executor별 코어가 할당되는 것을 확인할 수 있다.
 
 ## References
 - https://towardsdatascience.com/schedulers-in-yarn-concepts-to-configurations-5dd7ced6c214

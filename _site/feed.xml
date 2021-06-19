@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-18T14:06:19+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Kafka’s exactly-once delivery</title><link href="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/" rel="alternate" type="text/html" title="Kafka’s exactly-once delivery" /><published>2021-06-18T00:00:00+09:00</published><updated>2021-06-18T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">&lt;p&gt;Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-19T14:40:09+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Kafka’s exactly-once delivery</title><link href="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/" rel="alternate" type="text/html" title="Kafka’s exactly-once delivery" /><published>2021-06-18T00:00:00+09:00</published><updated>2021-06-18T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">&lt;p&gt;Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?&lt;/p&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
@@ -882,7 +882,7 @@ reference count가 0이되는 object는 메모리 할당이 해제된다.&lt;/p&
 &lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;https://medium.com/analytics-vidhya/apache-spark-memory-management-49682ded3d42&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="java" /><category term="jvm" /><summary type="html">Spark 1.6 이상부턴 메모리 관리가 UnifiedMemoryManager class에 의해 이뤄진다.</summary></entry><entry><title type="html">[YARN] CPU 코어 할당을 위한 스케줄러 설정</title><link href="http://localhost:4000/apache-hadoop/yarn-resource-allocation/" rel="alternate" type="text/html" title="[YARN] CPU 코어 할당을 위한 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/apache-hadoop/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/apache-hadoop/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="java" /><category term="jvm" /><summary type="html">Spark 1.6 이상부턴 메모리 관리가 UnifiedMemoryManager class에 의해 이뤄진다.</summary></entry><entry><title type="html">CPU 코어 할당을 위한 YARN 스케줄러 설정</title><link href="http://localhost:4000/apache-hadoop/yarn-resource-allocation/" rel="alternate" type="text/html" title="CPU 코어 할당을 위한 YARN 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/apache-hadoop/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/apache-hadoop/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
 &lt;p&gt;Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다.
 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.&lt;/p&gt;
 
@@ -960,9 +960,7 @@ YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 &lt;co
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cpu-scheduling-config.jpeg&quot; alt=&quot;yarn_cpu_scheduling_config&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;맨 처음 실행했던 pyspark 코드를 다시 실행하면 아래와 같이 설정대로 executor별 코어가 할당되는 것을 확인할 수 있다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cores-after.jpeg&quot; alt=&quot;yarn-cores-after&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;맨 처음 실행했던 pyspark 코드를 다시 실행하면 이젠 설정대로 executor별 코어가 할당되는 것을 확인할 수 있다.&lt;/p&gt;
 
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 &lt;ul&gt;
