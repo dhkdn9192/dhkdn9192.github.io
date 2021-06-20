@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-20T21:52:55+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Kafka’s exactly-once delivery</title><link href="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/" rel="alternate" type="text/html" title="Kafka’s exactly-once delivery" /><published>2021-06-18T00:00:00+09:00</published><updated>2021-06-18T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">&lt;p&gt;Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-20T21:56:58+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Kafka’s exactly-once delivery</title><link href="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/" rel="alternate" type="text/html" title="Kafka’s exactly-once delivery" /><published>2021-06-18T00:00:00+09:00</published><updated>2021-06-18T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">&lt;p&gt;Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?&lt;/p&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
@@ -1004,7 +1004,7 @@ Usage: FreeGenerator &amp;lt;inputDir&amp;gt; &amp;lt;segmentsDir&amp;gt; [-filt
 해당 경로의 텍스트 파일들을 읽어 url 목록을 생성한다.
 즉, 내가 수집하고 싶은 url들로 목록을 생성할 수 있다.&lt;/p&gt;
 
-&lt;h2 id=&quot;2-무엇이-문제였나&quot;&gt;2. 무엇이 문제였나?&lt;/h2&gt;
+&lt;h3 id=&quot;1-3-single-map-task&quot;&gt;1-3. Single Map Task&lt;/h3&gt;
 &lt;p&gt;fetch list로 실제 수집 MapReduce Job을 수행할 때 몇 개의 Map task로 분산 수집할 것인지 설정할 수 있다.
 FreeGenerator 모듈의 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-numFetchers &amp;lt;n&amp;gt;&lt;/code&gt; 옵션으로 원하는 Map task 수를 정할 수 있다.
 그러나 실제로 사용했을 때 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-numFetchers &amp;lt;n&amp;gt;&lt;/code&gt; 값만큼 Map task가 생성되지 않고 항상 1개만 생성되어
@@ -1016,7 +1016,7 @@ FreeGenerator 모듈의 &lt;code class=&quot;language-plaintext highlighter-roug
 FreeGenerator.java  소스코드에서 옵션 값을 전달하는 구문이 실수로 생략됐던 것이다.
 컨트리뷰터의 원래 의도는 위 이미지의 194 line을 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;job.setNumReduceTasks(numFetchers);&lt;/code&gt;로 대체하는 것이었다.&lt;/p&gt;
 
-&lt;h2 id=&quot;3-문제-해결과-공유&quot;&gt;3. 문제 해결과 공유&lt;/h2&gt;
+&lt;h2 id=&quot;2-문제-해결과-공유&quot;&gt;2. 문제 해결과 공유&lt;/h2&gt;
 &lt;p&gt;생략된 구문을 numFetchers 변수와 함께 추가하여 빌드한 결과 정상적으로 Map task가 생성되는 것을 확인했다.
 해당 내용을 담당 컨트리뷰터에게 공유하여 조치가 이뤄졌다.&lt;/p&gt;
 
@@ -1024,7 +1024,7 @@ FreeGenerator.java  소스코드에서 옵션 값을 전달하는 구문이 실�
 
 &lt;p&gt;&lt;a href=&quot;https://issues.apache.org/jira/browse/NUTCH-2810&quot;&gt;NUTCH-2810&lt;/a&gt; 이슈가 생성되어 Nutch 1.18 release부터 해당 버그가 fix되어 배포되었다.&lt;/p&gt;
 
-&lt;h2 id=&quot;4-결론&quot;&gt;4. 결론&lt;/h2&gt;
+&lt;h2 id=&quot;3-결론&quot;&gt;3. 결론&lt;/h2&gt;
 &lt;p&gt;업무에 사용하던 오픈소스에서 버그를 발견하고 수정하고 컨트리뷰터에 공유해본 경험은 처음이었다.
 간접적으로나마 오픈소스 bug-fix에 기여했다는게 나름 뿌듯한 경험이었다.&lt;/p&gt;
 

@@ -51,7 +51,7 @@ Usage: FreeGenerator <inputDir> <segmentsDir> [-filter] [-normalize] [-numFetche
 즉, 내가 수집하고 싶은 url들로 목록을 생성할 수 있다.
 
 
-## 2. 무엇이 문제였나?
+### 1-3. Single Map Task
 fetch list로 실제 수집 MapReduce Job을 수행할 때 몇 개의 Map task로 분산 수집할 것인지 설정할 수 있다.
 FreeGenerator 모듈의 ```-numFetchers <n>``` 옵션으로 원하는 Map task 수를 정할 수 있다.
 그러나 실제로 사용했을 때 ```-numFetchers <n>``` 값만큼 Map task가 생성되지 않고 항상 1개만 생성되어
@@ -64,7 +64,7 @@ FreeGenerator.java  소스코드에서 옵션 값을 전달하는 구문이 실�
 컨트리뷰터의 원래 의도는 위 이미지의 194 line을 ```job.setNumReduceTasks(numFetchers);```로 대체하는 것이었다.
 
 
-## 3. 문제 해결과 공유
+## 2. 문제 해결과 공유
 생략된 구문을 numFetchers 변수와 함께 추가하여 빌드한 결과 정상적으로 Map task가 생성되는 것을 확인했다.
 해당 내용을 담당 컨트리뷰터에게 공유하여 조치가 이뤄졌다.
 
@@ -72,7 +72,7 @@ FreeGenerator.java  소스코드에서 옵션 값을 전달하는 구문이 실�
 
 [NUTCH-2810](https://issues.apache.org/jira/browse/NUTCH-2810) 이슈가 생성되어 Nutch 1.18 release부터 해당 버그가 fix되어 배포되었다.
 
-## 4. 결론
+## 3. 결론
 업무에 사용하던 오픈소스에서 버그를 발견하고 수정하고 컨트리뷰터에 공유해본 경험은 처음이었다.
 간접적으로나마 오픈소스 bug-fix에 기여했다는게 나름 뿌듯한 경험이었다.
 
