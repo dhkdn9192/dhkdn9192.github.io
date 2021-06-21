@@ -82,4 +82,10 @@ var store = [{
         "tags": ["kafka"],
         "url": "http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/",
         "teaser": null
+      },{
+        "title": "CPU 스케줄링 알고리즘",
+        "excerpt":"스케줄링(scheduling)은 다중 프로그래밍을 가능하게 하는 운영 체제의 동작 기법이다. 운영 체제는 프로세스들에게 CPU 등의 자원 배정을 적절히 함으로써 시스템의 성능을 개선할 수 있다. 1. 스케줄링 알고리즘 평가 기준 항목 설명 CPU 사용률(CPU Utilization) 전체 시스템 시간 중 CPU가 작업을 처리하는 시간의 비율 처리량(Throughput) CPU가 단위 시간당 처리하는 프로세스의 개수 응답...","categories": ["computer_science"],
+        "tags": ["os","cpu-scheduling"],
+        "url": "http://localhost:4000/computer_science/cpu-scheduling-algorithm/",
+        "teaser": null
       }]
