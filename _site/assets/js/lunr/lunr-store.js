@@ -88,4 +88,10 @@ var store = [{
         "tags": ["os","cpu-scheduling"],
         "url": "http://localhost:4000/computer_science/cpu-scheduling-algorithm/",
         "teaser": null
+      },{
+        "title": "페이지 교체 알고리즘",
+        "excerpt":"페이지 교체 알고리즘은 페이징 기법으로 메모리를 관리하는 운영체제에서, Page Fault가 발생 하여 새로운 페이지를 할당하기 위해 현재 할당된 페이지 중 어느 것과 교체할지를 결정하는 방법이다. 이 알고리즘이 사용되는 시기는 Page Fault가 발생해 새로운 페이지를 적재 해야하나 페이지를 적재할 공간이 없어 이미 적재되어 있는 페이지 중 교체할 페이지를 정할 때 사용된다....","categories": ["computer_science"],
+        "tags": ["os","virtual-memory"],
+        "url": "http://localhost:4000/computer_science/page-replacement-algorithm/",
+        "teaser": null
       }]

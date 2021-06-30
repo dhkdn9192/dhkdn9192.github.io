@@ -1,4 +1,144 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-21T23:00:29+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">CPU 스케줄링 알고리즘</title><link href="http://localhost:4000/computer_science/cpu-scheduling-algorithm/" rel="alternate" type="text/html" title="CPU 스케줄링 알고리즘" /><published>2021-06-21T00:00:00+09:00</published><updated>2021-06-21T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/cpu-scheduling-algorithm</id><content type="html" xml:base="http://localhost:4000/computer_science/cpu-scheduling-algorithm/">&lt;p&gt;스케줄링(scheduling)은 다중 프로그래밍을 가능하게 하는 운영 체제의 동작 기법이다. 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-06-30T18:15:30+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">페이지 교체 알고리즘</title><link href="http://localhost:4000/computer_science/page-replacement-algorithm/" rel="alternate" type="text/html" title="페이지 교체 알고리즘" /><published>2021-06-30T00:00:00+09:00</published><updated>2021-06-30T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/page-replacement-algorithm</id><content type="html" xml:base="http://localhost:4000/computer_science/page-replacement-algorithm/">&lt;p&gt;페이지 교체 알고리즘은 페이징 기법으로 메모리를 관리하는 운영체제에서, 
+Page Fault가 발생 하여 새로운 페이지를 할당하기 위해 현재 할당된 페이지 중 어느 것과 교체할지를 결정하는 방법이다. 
+이 알고리즘이 사용되는 시기는 Page Fault가 발생해 새로운 페이지를 적재 해야하나 페이지를 적재할 공간이 없어 
+이미 적재되어 있는 페이지 중 교체할 페이지를 정할 때 사용된다.&lt;/p&gt;
+
+&lt;p&gt;단점으로는 TimeStamping에 의한 overhead가 존재한다는 점이다.&lt;/p&gt;
+
+&lt;h2 id=&quot;1-페이지-교체-알고리즘의-종류&quot;&gt;1. 페이지 교체 알고리즘의 종류&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;OPT (Optimal)&lt;/li&gt;
+  &lt;li&gt;FIFO (First In First Out)&lt;/li&gt;
+  &lt;li&gt;LRU (Least Recently Used)&lt;/li&gt;
+  &lt;li&gt;LRU-K (Least Recently Used K-th)&lt;/li&gt;
+  &lt;li&gt;Clock Algorithm&lt;/li&gt;
+  &lt;li&gt;Enhanced Clock Algorithm&lt;/li&gt;
+  &lt;li&gt;LFU (Least Frequently Used)&lt;/li&gt;
+  &lt;li&gt;MFU (Most Frequently Used)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-1-opt-optimal&quot;&gt;1-1. OPT (Optimal)&lt;/h3&gt;
+&lt;p&gt;앞으로 가장 오랫동안 사용되지 않을 페이지를 교체하는 알고리즘이다.
+최적 알고리즘은 수행하기 전에 선행되어야 할 전제조건이 있다. 
+프로세스가 앞으로 사용할 페이지를 미리 알아야 한다는 것이다. 
+이 전제 조건이 실제 활용에서는 알 방법이 없기 때문에 최적 알고리즘은 구현이 불가능한 알고리즘 이다.&lt;/p&gt;
+
+&lt;h3 id=&quot;1-2-fifo-first-in-first-out&quot;&gt;1-2. FIFO (First In First Out)&lt;/h3&gt;
+&lt;p&gt;가장 간단한 알고리즘으로, 메모리에 올라온 지 가장 오래된 페이지를 교체한다. 
+이 알고리즘을 수행하기 위해서 각 페이지가 올라온 시간을 페이지에 기록하거나, 
+페이지가 올라온 순서를 큐(Queue)에 저장하는 방식 등을 사용할 수 있다.&lt;/p&gt;
+
+&lt;h3 id=&quot;1-3-lru-least-recently-used&quot;&gt;1-3. LRU (Least Recently Used)&lt;/h3&gt;
+&lt;p&gt;가장 오래 사용되지 않은 페이지를 교체하는 알고리즘이다.
+최적 알고리즘은 실제 구현이 불가능하므로, 최적 알고리즘의 방식과 비슷한 효과를 낼 수 있는 방법을 사용한 것이 LRU 알고리즘이다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;LRU의 단점1: 프로세스가 주기억장치에 접근할 때마다 참조된 페이지에 대한 시간을 기록해야 한다.
+즉 계수기나 스택과 같은 별도의 하드웨어가 필요하며, 시간적인 큰 오버헤드가 발생한다.&lt;/li&gt;
+  &lt;li&gt;LRU의 단점2: 동일한 패턴이 반복되는 경우 성능이 저하된다. 
+예를 들어, N개 페이지의 LRU 풀에 대해서 N+1개 페이지의 배열이 반복적으로 참조된다면 매 loop마다 Page Fault가 발생한다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-4-lru-k-least-recently-used-k-th&quot;&gt;1-4. LRU-K (Least Recently Used K-th)&lt;/h3&gt;
+&lt;p&gt;LRU는 각 페이지에 대해 가장 최근에 참조된 시간을 기준으로 교체 여부를 정한다.
+반면, LRU-K는 각 페이지의 가장 최근 참조 시간이 아니라, 가장 최근에 K번째로 참조된 시간을 기준으로 한다.&lt;/p&gt;
+
+&lt;p&gt;예를 들어, 페이지 A와 B에 대해:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;마지막 참조 시간인 t1 을 비교할 경우, B의 t1이 더 최근과 가까우므로 LRU에선 “A &amp;lt; B” 로 가치평가한다.&lt;/li&gt;
+  &lt;li&gt;끝에서 세번쨰 참조 시간인 t3를 비교할 경우, A의 t3가 더 최근과 가까우므로 LRU-3에선 “A &amp;gt; B”로 가치평가한다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/computer_science/img/lru_k.png&quot; alt=&quot;lru_k&quot; width=&quot;30%&quot; /&gt;
+&lt;/p&gt;
+
+&lt;h3 id=&quot;1-5-clock-algorithm&quot;&gt;1-5. Clock Algorithm&lt;/h3&gt;
+&lt;p&gt;LRU를 근사화시킨 방식으로, 각 페이지가 최근에 참조되었는지 여부를 활용한다.
+1bit짜리 reference bit에 사용했는지 여부를 기록한다.
+시간을 일정한 time interval로 나누고, 그 범위 안에서 사용 여부를 비교하는 방식이다.&lt;/p&gt;
+
+&lt;p&gt;clock hand가 임의의 페이지를 가리키고 있으며 이 clock hand를 움직여 교체할 페이지를 결정한다.
+가리키는 페이지의 reference bit가 1이명 0으로 바꾸고 다음 페이지로 넘어간다.
+이 과정을 반복하다가 0인 페이지를 만나면 페이지 교체가 일어난다.&lt;/p&gt;
+
+&lt;p&gt;clock hand가 빠르게 돌고 있다면 OS가 과부하 상태일 수 있다.
+만약 모든 페이지가 사용 중이라면 clock hand가 전체 페이지를 순회하게 되며,
+알고리즘 성능이 FIFO와 동일한 수준으로 떨어지게 된다.&lt;/p&gt;
+
+&lt;p&gt;대표적인 LRU 계열의 알고리즘으로, UNIX OS에서 많이 사용하는 방식이다.&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/computer_science/img/clock_algorithm.png&quot; alt=&quot;clock_algorithm&quot; width=&quot;70%&quot; /&gt;
+&lt;/p&gt;
+
+&lt;h3 id=&quot;1-6-enhanced-clock-algorithm&quot;&gt;1-6. Enhanced Clock Algorithm&lt;/h3&gt;
+&lt;p&gt;reference bit 뿐만 아니라 dirty bit(페이지 수정 여부 기록)도 고려하여 페이지 교체를 결정하는 방식이다.
+reference bit와 dirty bit 모두 1이면 보존하고 둘 다 0이면 우선적으로 교체 대상이 된다.
+교체 대상 우선순위는 아래와 같다.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;reference bit&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;dirty bit&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;우선순위&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;0&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;0&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;교체 1순위&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;0&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;1&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;교체 2순위&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;1&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;0&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;교체 3순위&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;1&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;1&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;교체 4순위&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;여기에도 문제가 남는다. dirty bit가 0인 clean page를 내보내는 것이 반드시 옳은 결정이라고 보장할 수 없다.&lt;/p&gt;
+
+&lt;p&gt;매킨토시 OS에서 사용하는 방식이다.&lt;/p&gt;
+
+&lt;h3 id=&quot;1-7-lfu-least-recently-used&quot;&gt;1-7. LFU (Least Recently Used)&lt;/h3&gt;
+&lt;p&gt;참조 횟수가 가장 작은 페이지를 교체하는 알고리즘이다. 
+만약 교체 대상인 페이지가 여러 개 일 경우, LRU 알고리즘을 따라 가장 오래 사용되지 않은 페이지로 교체한다.&lt;/p&gt;
+
+&lt;p&gt;LFU 알고리즘은 초기에 한 페이지를 집중적으로 참조하다가 이후 다시 참조하지 않는 경우 문제가 될 수 있다. 
+앞으로 사용하지 않아도 초기에 사용된 참조횟수가 높아 메모리에 계속 남아있기 때문이다.&lt;/p&gt;
+
+&lt;h3 id=&quot;1-8-mfu-most-frequently-used&quot;&gt;1-8. MFU (Most Frequently Used)&lt;/h3&gt;
+&lt;p&gt;LFU 알고리즘과 반대로, 참조 횟수가 가장 많은 페이지를 교체하는 알고리즘이다. 
+참조 횟수가 적은 페이지가 최 근에 사용된 것이기 때문에 앞으로 사용될 가능성이 높다는 판단이다.&lt;/p&gt;
+
+&lt;p&gt;LFU와 MFU는 실제 사용에 잘 쓰이지 않는다.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://ko.wikipedia.org/wiki/%ED%8E%98%EC%9D%B4%EC%A7%80&lt;em&gt;%EA%B5%90%EC%B2%B4&lt;/em&gt;%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98&lt;/li&gt;
+  &lt;li&gt;https://medium.com/pocs/%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B5%90%EC%B2%B4-page-replacement-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-650d58ae266b&lt;/li&gt;
+  &lt;li&gt;https://en.wikipedia.org/wiki/Page_replacement_algorithm#Clock&lt;/li&gt;
+  &lt;li&gt;http://www.datanet.co.kr/news/articleView.html?idxno=115592&lt;/li&gt;
+  &lt;li&gt;https://books.google.co.kr/books?id=EcMqBh5MDQIC&amp;amp;pg=PA277&amp;amp;lpg=PA277&amp;amp;dq=LRU-K+%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98&amp;amp;source=bl&amp;amp;ots=UPpNGusj94&amp;amp;sig=ACfU3U3Nvu3LZIB1wu7mGw9DI47DiQmxuQ&amp;amp;hl=ko&amp;amp;sa=X&amp;amp;ved=2ahUKEwjGl93Py9jpAhUGVN4KHYMXBrsQ6AEwB3oECAcQAQ#v=onepage&amp;amp;q=LRU-K&amp;amp;f=false (도서 “운영 체제와 정보기술의 원리”)&lt;/li&gt;
+  &lt;li&gt;https://jennysgap.tistory.com/entry/%EC%9A%B4%EC%98%81%EC%B2%B4%EC%A0%9C%EC%9D%98-%EA%B8%B0%EC%B4%88-18-Demand-Paging-2&lt;/li&gt;
+  &lt;li&gt;https://kouzie.github.io/operatingsystem/%EA%B0%80%EC%83%81%EB%A9%94%EB%AA%A8%EB%A6%AC/#clock-algorithm&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="os" /><category term="virtual-memory" /><summary type="html">페이지 교체 알고리즘은 페이징 기법으로 메모리를 관리하는 운영체제에서, Page Fault가 발생 하여 새로운 페이지를 할당하기 위해 현재 할당된 페이지 중 어느 것과 교체할지를 결정하는 방법이다. 이 알고리즘이 사용되는 시기는 Page Fault가 발생해 새로운 페이지를 적재 해야하나 페이지를 적재할 공간이 없어 이미 적재되어 있는 페이지 중 교체할 페이지를 정할 때 사용된다.</summary></entry><entry><title type="html">CPU 스케줄링 알고리즘</title><link href="http://localhost:4000/computer_science/cpu-scheduling-algorithm/" rel="alternate" type="text/html" title="CPU 스케줄링 알고리즘" /><published>2021-06-21T00:00:00+09:00</published><updated>2021-06-21T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/cpu-scheduling-algorithm</id><content type="html" xml:base="http://localhost:4000/computer_science/cpu-scheduling-algorithm/">&lt;p&gt;스케줄링(scheduling)은 다중 프로그래밍을 가능하게 하는 운영 체제의 동작 기법이다. 
 운영 체제는 프로세스들에게 CPU 등의 자원 배정을 적절히 함으로써 시스템의 성능을 개선할 수 있다.&lt;/p&gt;
 
 &lt;h2 id=&quot;1-스케줄링-알고리즘-평가-기준&quot;&gt;1. 스케줄링 알고리즘 평가 기준&lt;/h2&gt;
@@ -1017,89 +1157,4 @@ reference count가 0이되는 object는 메모리 할당이 해제된다.&lt;/p&
 &lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;https://medium.com/analytics-vidhya/apache-spark-memory-management-49682ded3d42&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="java" /><category term="jvm" /><summary type="html">Spark 1.6 이상부턴 메모리 관리가 UnifiedMemoryManager class에 의해 이뤄진다.</summary></entry><entry><title type="html">CPU 코어 할당을 위한 YARN 스케줄러 설정</title><link href="http://localhost:4000/apache-hadoop/yarn-resource-allocation/" rel="alternate" type="text/html" title="CPU 코어 할당을 위한 YARN 스케줄러 설정" /><published>2020-09-22T00:00:00+09:00</published><updated>2020-09-22T00:00:00+09:00</updated><id>http://localhost:4000/apache-hadoop/yarn-resource-allocation</id><content type="html" xml:base="http://localhost:4000/apache-hadoop/yarn-resource-allocation/">&lt;h2 id=&quot;1-yarn의-초기-cpu-스케줄링-문제&quot;&gt;1. YARN의 초기 CPU 스케줄링 문제&lt;/h2&gt;
-&lt;p&gt;Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다.
-아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;spark&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SparkSession&lt;/span&gt; \
-	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt; \
-	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;appName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Spark_Example&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
-	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;master&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;yarn-client&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
-	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;spark.executor.instances&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;3&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
-	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;spark.executor.memory&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;10g&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
-	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;spark.executor.cores&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;5&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; \
-	&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getOrCreate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.executor.cores&lt;/code&gt; 설정으로 executor 당 5개 코어를 쓰도록 설정했다.
-그러나 실제로 executor별로 할당된 코어수는 1개 뿐이다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cores-before.jpeg&quot; alt=&quot;yarn-cores-before&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;코어가 설정값대로 할당되지 않는 이유는 YARN의 디폴트 스케줄러 설정이 CPU 스케줄링을 지원하지 않기 때문이다.
-YARN의 스케줄링과 리소스 할당을 간단하게 살펴보자.&lt;/p&gt;
-
-&lt;h2 id=&quot;2-yarn-스케줄링&quot;&gt;2. YARN 스케줄링&lt;/h2&gt;
-&lt;p&gt;YARN은 애플리케이션의 요청에 따라 클러스터의 자원을 할당해주어야 한다.
-이러한 역할은 YARN 스케줄러가 수행한다.
-YARN은 다음 이미지와 같이 3가지 스케줄러 옵션을 제공한다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-scheduling.png&quot; alt=&quot;yarn_scheduling&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;2-1-fifo-scheduler&quot;&gt;2-1. FIFO Scheduler&lt;/h3&gt;
-&lt;p&gt;모든 잡은 큐에 들어운 순서대로 실행되고 자기 차례가 될 때까지 대기해야 한다.
-간단하고 이해하기 쉽지만 하나의 잡이 모든 자원을 차지해버릴 수 있기 때문에 
-대규모 클러스터에서 사용하기에 적합하진 않다.&lt;/p&gt;
-
-&lt;h3 id=&quot;2-2-capacity-scheduler&quot;&gt;2-2. Capacity Scheduler&lt;/h3&gt;
-&lt;p&gt;각각의 잡은 서로 구분되는 전용 큐에서 처리된다.
-잡을 위한 자원을 미리 예약해두어야 하므로 전체 클러스터 관점에선 자원 효율성이 떨어진다.
-보통 이 capacity scheduler를 기본적으로 사용하게 된다.&lt;/p&gt;
-
-&lt;h3 id=&quot;2-3-fair-scheduler&quot;&gt;2-3. Fair Scheduler&lt;/h3&gt;
-&lt;p&gt;실행 중인 모든 잡에 대해 자원을 동적으로 할당해준다.
-이미 잡이 실행 중일 때 다른 잡이 추가되면 각 잡은 클러스터 자원을 절반씩 할당받는다.
-즉, 잡들이 공평하게 자원을 나눠가질 수 있다.&lt;/p&gt;
-
-&lt;h2 id=&quot;3-yarn-resource-allocation&quot;&gt;3. YARN Resource Allocation&lt;/h2&gt;
-&lt;h3 id=&quot;3-1-default-resource-calculator&quot;&gt;3-1. Default Resource Calculator&lt;/h3&gt;
-&lt;p&gt;언급한대로 Capacity Scheduler를 디폴트로 사용한다.
-스케줄링의 기본 단위는 큐이며 각 잡은 전용 큐에서 처리된다.
-각 큐의 용량은 클러스터 가용 자원 중 애플리케이션이 제출한 비율만큼을 할당하여 정해진다.&lt;/p&gt;
-
-&lt;p&gt;이 과정에서 클러스터 자원 할당을 위해 Resource Calculator가 사용된다.
-YARN이 디폴트로 사용하는 것은 &lt;strong&gt;DefaultResourceCalculator&lt;/strong&gt;이다.
-DefaultResourceCalculator는 오직 메모리만을 기준으로 하여 자원을 할당한다.
-즉, CPU 코어 수는 스케줄링하지 않는다.
-처음 Hadoop 클러스터를 구성했을 때 YARN 애플리케이션에 CPU 코어 수를 원하는대로 할당할 수 없는 이유가 바로 이것이다.&lt;/p&gt;
-
-&lt;h3 id=&quot;3-2-dominant-resource-calculator&quot;&gt;3-2. Dominant Resource Calculator&lt;/h3&gt;
-&lt;p&gt;CPU 자원을 할당하는 방법은 Resource Calculator를 &lt;strong&gt;DominantResourceCalculator&lt;/strong&gt;로 변경하는 것이다.
-YARN의 ResourceManager와 각 NodeManager에서 Hadoop 설정 파일 중 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;capacity-scheduler.xml&lt;/code&gt;를 열어보자.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# vim /etc/hadoop/conf/capacity-scheduler.xml&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;여러 property들 중에서 resource-calaulator 항목을 찾을 수 있다.
-최초 설치 시 DefaultResourceCalculator로 설정되어 있는데 이를 다음처럼 DominantResourceCalculator로 변경하면 된다.&lt;/p&gt;
-
-&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-	&lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;yarn.scheduler.capacity.resource-calculator&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-	&lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;org.apache.hadoop.yarn.util.resource.DominantResourceCalculator&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;3-3-hdp의-resource-calculator-수정하기&quot;&gt;3-3. HDP의 Resource Calculator 수정하기&lt;/h3&gt;
-
-&lt;p&gt;HDP의 경우엔 Ambari에서 CPU Scheduling 설정을 Enabled로 변경하면 모든 YARN 컴포넌트 서버들에 대해 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;capacity-scheduler.xml&lt;/code&gt;가 일괄적을 수정된다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/dhkdn9192.github.io/master/assets/images/posts/2020/09/22/2020-09-22-yarn-cpu-scheduling-config.jpeg&quot; alt=&quot;yarn_cpu_scheduling_config&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;맨 처음 실행했던 pyspark 코드를 다시 실행하면 이젠 설정대로 executor별 코어가 할당되는 것을 확인할 수 있다.&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;https://towardsdatascience.com/schedulers-in-yarn-concepts-to-configurations-5dd7ced6c214&lt;/li&gt;
-  &lt;li&gt;https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.6.3/bk_yarn-resource-management/content/about_yarn_resource_allocation.html&lt;/li&gt;
-  &lt;li&gt;“하둡 완벽 가이드 (4판)”, 한빛미디어, 톰 화이트 지음&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-hadoop" /><category term="yarn" /><category term="spark" /><summary type="html">1. YARN의 초기 CPU 스케줄링 문제 Hadoop 클러스터를 처음 구축하면 애플리케이션을 제출할 때 CPU 코어 수가 원하는대로 할당되지 않는 문제를 겪게 된다. 아래와 같이 yarn-client 모드로 SparkSession을 생성하는 예시를 보자.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="java" /><category term="jvm" /><summary type="html">Spark 1.6 이상부턴 메모리 관리가 UnifiedMemoryManager class에 의해 이뤄진다.</summary></entry></feed>
