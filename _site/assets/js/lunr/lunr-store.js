@@ -94,4 +94,10 @@ var store = [{
         "tags": ["os","virtual-memory"],
         "url": "http://localhost:4000/computer_science/page-replacement-algorithm/",
         "teaser": null
+      },{
+        "title": "교착상태의 개념과 발생조건",
+        "excerpt":"교착상태(Deadlock)은 프로세스가 자원을 얻지 못해 다음 처리를 하지 못하는 상태를 의미한다. 시스템적으로 한정된 자원을 여러 곳에서 사용하려고 할 때 발생한다. 1. 교착상태 발생 조건 1-1. 상호배제 (Mutual Exclusion) 한 자원에 대해 동시에 한 프로세스만 접근 가능 1-2. 점유와 대기 (Hold and Wait) 자원을 점유한 상태에서 다른 프로세스의 자원이 반납되기를 기다림...","categories": ["computer_science"],
+        "tags": ["os","deadlock"],
+        "url": "http://localhost:4000/computer_science/",
+        "teaser": null
       }]
