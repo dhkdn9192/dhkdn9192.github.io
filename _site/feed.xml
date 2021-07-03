@@ -1,4 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-07-01T22:10:21+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">교착상태의 개념과 발생조건</title><link href="http://localhost:4000/computer_science/" rel="alternate" type="text/html" title="교착상태의 개념과 발생조건" /><published>2021-07-01T00:00:00+09:00</published><updated>2021-07-01T00:00:00+09:00</updated><id>http://localhost:4000/</id><content type="html" xml:base="http://localhost:4000/computer_science/">&lt;p&gt;교착상태(Deadlock)은 프로세스가 자원을 얻지 못해 다음 처리를 하지 못하는 상태를 의미한다.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://dhkdn9192.github.io//feed.xml" rel="self" type="application/atom+xml" /><link href="https://dhkdn9192.github.io//" rel="alternate" type="text/html" /><updated>2021-07-03T16:41:03+09:00</updated><id>https://dhkdn9192.github.io//feed.xml</id><title type="html">오류동 개발자</title><subtitle>개발과 일상적인 이야기들</subtitle><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><entry><title type="html">Big Sur에서 Jekyll 버전 업그레이드 하기</title><link href="https://dhkdn9192.github.io//etc/jekyll-update-on-bigsur/" rel="alternate" type="text/html" title="Big Sur에서 Jekyll 버전 업그레이드 하기" /><published>2021-07-03T00:00:00+09:00</published><updated>2021-07-03T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//etc/jekyll-update-on-bigsur</id><content type="html" xml:base="https://dhkdn9192.github.io//etc/jekyll-update-on-bigsur/">&lt;p&gt;최근 Mac OS를 BigSur 11.4 버전으로 업데이트하면서 여러가지 문제들을 겪고 있다.
+잘 쓰던 프로그램들이 버전 충돌이 나거나 먹통이 된 것들이 꽤 많다.
+그 중에서도 Ruby와 Jekyll이 동작하지 않아서 github page 블로그를 쓰는데 애를 먹었다.
+Big Sur 환경에서 Jekyll을 재설치하는 과정을 기록해본다.&lt;/p&gt;
+
+&lt;h2 id=&quot;1-ruby-설치&quot;&gt;1. Ruby 설치&lt;/h2&gt;
+&lt;p&gt;Mac OS에선 시스템에서 사용하기 위한 Ruby가 설치되어 있다. 
+root 계정으로 관리되기 때문에 gem install 명령어로 패키지를 설치하기가 어렵다.
+따라서 rbenv를 이용해 별도로 Ruby를 설치하기로 했다.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew update
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;rbenv ruby-build
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Ruby 버전은 2.5.x 이하는 지원이 중단되어 2.6.3으로 설치한다.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rbenv &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;2.6.3
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rbenv global 2.6.3
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rbenv rehash
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;2-환경변수-설정&quot;&gt;2. 환경변수 설정&lt;/h2&gt;
+&lt;p&gt;나는 bash가 아닌 zsh을 사용하므로 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.zshrc&lt;/code&gt;에 아래와 같은 설정을 추가하고 source 해주었다.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;vim ~/.zshrc
+&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;아래 라인들을 추가&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;which rbenv &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; /dev/null&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;rbenv init -&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi
+&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ruby&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Users/gimdonghyeog/.rbenv/shims/ruby
+&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;jekyll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Users/gimdonghyeog/.rbenv/shims/jekyll
+&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/Users/gimdonghyeog/.rbenv/shims/gem
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.zshrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;설치된 Ruby 및 Gem 버전을 확인해본다.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ruby &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;3-jekyll-설치&quot;&gt;3. Jekyll 설치&lt;/h2&gt;
+&lt;p&gt;jekyll을 설치한다. 최신 릴리즈 버전 중 하나로 3.9.1를 선택했다.&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ gem update
+$ gem install bundler
+$ gem install jekyll -v 3.9.1
+$ sudo bundle install
+$ sudo bundle update jekyll
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;4-jekyll-실행&quot;&gt;4. Jekyll 실행&lt;/h2&gt;
+
+&lt;p&gt;github page 블로그 디렉토리에서 jekyll을 실행한다.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;github page &lt;span class=&quot;nb&quot;&gt;dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;jekyll serve
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;만약 버전 dependencies 문제가 생긴다면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bundle exec&lt;/code&gt;으로 필요한 버전의 패키지만 사용하도록 할 수 있다.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;jekyll serve
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://smartbase.tistory.com/43&lt;/li&gt;
+  &lt;li&gt;https://www.freecodecamp.org/news/do-not-use-mac-system-ruby-do-this-instead/&lt;/li&gt;
+  &lt;li&gt;http://corecode.pe.kr/2020/08/21/ruby_jekyll_install/&lt;/li&gt;
+  &lt;li&gt;https://frhyme.github.io/others/jekyll_serve_not_work/&lt;/li&gt;
+  &lt;li&gt;https://jekyllrb.com/news/2021/04/08/jekyll-3-9-1-released/&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="etc" /><category term="blog" /><category term="jekyll" /><summary type="html">최근 Mac OS를 BigSur 11.4 버전으로 업데이트하면서 여러가지 문제들을 겪고 있다. 잘 쓰던 프로그램들이 버전 충돌이 나거나 먹통이 된 것들이 꽤 많다. 그 중에서도 Ruby와 Jekyll이 동작하지 않아서 github page 블로그를 쓰는데 애를 먹었다. Big Sur 환경에서 Jekyll을 재설치하는 과정을 기록해본다.</summary></entry><entry><title type="html">교착상태의 개념과 발생조건</title><link href="https://dhkdn9192.github.io//computer_science/" rel="alternate" type="text/html" title="교착상태의 개념과 발생조건" /><published>2021-07-01T00:00:00+09:00</published><updated>2021-07-01T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//</id><content type="html" xml:base="https://dhkdn9192.github.io//computer_science/">&lt;p&gt;교착상태(Deadlock)은 프로세스가 자원을 얻지 못해 다음 처리를 하지 못하는 상태를 의미한다.
 시스템적으로 한정된 자원을 여러 곳에서 사용하려고 할 때 발생한다.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/computer_science/img/deadlock.png&quot; alt=&quot;deadlock&quot; /&gt;&lt;/p&gt;
@@ -62,7 +127,7 @@
 &lt;ul&gt;
   &lt;li&gt;https://jwprogramming.tistory.com/12&lt;/li&gt;
   &lt;li&gt;https://junsday.tistory.com/32&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="os" /><category term="deadlock" /><summary type="html">교착상태(Deadlock)은 프로세스가 자원을 얻지 못해 다음 처리를 하지 못하는 상태를 의미한다. 시스템적으로 한정된 자원을 여러 곳에서 사용하려고 할 때 발생한다.</summary></entry><entry><title type="html">페이지 교체 알고리즘</title><link href="http://localhost:4000/computer_science/page-replacement-algorithm/" rel="alternate" type="text/html" title="페이지 교체 알고리즘" /><published>2021-06-30T00:00:00+09:00</published><updated>2021-06-30T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/page-replacement-algorithm</id><content type="html" xml:base="http://localhost:4000/computer_science/page-replacement-algorithm/">&lt;p&gt;페이지 교체 알고리즘은 페이징 기법으로 메모리를 관리하는 운영체제에서, 
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="os" /><category term="deadlock" /><summary type="html">교착상태(Deadlock)은 프로세스가 자원을 얻지 못해 다음 처리를 하지 못하는 상태를 의미한다. 시스템적으로 한정된 자원을 여러 곳에서 사용하려고 할 때 발생한다.</summary></entry><entry><title type="html">페이지 교체 알고리즘</title><link href="https://dhkdn9192.github.io//computer_science/page-replacement-algorithm/" rel="alternate" type="text/html" title="페이지 교체 알고리즘" /><published>2021-06-30T00:00:00+09:00</published><updated>2021-06-30T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//computer_science/page-replacement-algorithm</id><content type="html" xml:base="https://dhkdn9192.github.io//computer_science/page-replacement-algorithm/">&lt;p&gt;페이지 교체 알고리즘은 페이징 기법으로 메모리를 관리하는 운영체제에서, 
 Page Fault가 발생 하여 새로운 페이지를 할당하기 위해 현재 할당된 페이지 중 어느 것과 교체할지를 결정하는 방법이다. 
 이 알고리즘이 사용되는 시기는 Page Fault가 발생해 새로운 페이지를 적재 해야하나 페이지를 적재할 공간이 없어 
 이미 적재되어 있는 페이지 중 교체할 페이지를 정할 때 사용된다.&lt;/p&gt;
@@ -202,7 +267,7 @@ reference bit와 dirty bit 모두 1이면 보존하고 둘 다 0이면 우선적
   &lt;li&gt;https://books.google.co.kr/books?id=EcMqBh5MDQIC&amp;amp;pg=PA277&amp;amp;lpg=PA277&amp;amp;dq=LRU-K+%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98&amp;amp;source=bl&amp;amp;ots=UPpNGusj94&amp;amp;sig=ACfU3U3Nvu3LZIB1wu7mGw9DI47DiQmxuQ&amp;amp;hl=ko&amp;amp;sa=X&amp;amp;ved=2ahUKEwjGl93Py9jpAhUGVN4KHYMXBrsQ6AEwB3oECAcQAQ#v=onepage&amp;amp;q=LRU-K&amp;amp;f=false (도서 “운영 체제와 정보기술의 원리”)&lt;/li&gt;
   &lt;li&gt;https://jennysgap.tistory.com/entry/%EC%9A%B4%EC%98%81%EC%B2%B4%EC%A0%9C%EC%9D%98-%EA%B8%B0%EC%B4%88-18-Demand-Paging-2&lt;/li&gt;
   &lt;li&gt;https://kouzie.github.io/operatingsystem/%EA%B0%80%EC%83%81%EB%A9%94%EB%AA%A8%EB%A6%AC/#clock-algorithm&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="os" /><category term="virtual-memory" /><summary type="html">페이지 교체 알고리즘은 페이징 기법으로 메모리를 관리하는 운영체제에서, Page Fault가 발생 하여 새로운 페이지를 할당하기 위해 현재 할당된 페이지 중 어느 것과 교체할지를 결정하는 방법이다. 이 알고리즘이 사용되는 시기는 Page Fault가 발생해 새로운 페이지를 적재 해야하나 페이지를 적재할 공간이 없어 이미 적재되어 있는 페이지 중 교체할 페이지를 정할 때 사용된다.</summary></entry><entry><title type="html">CPU 스케줄링 알고리즘</title><link href="http://localhost:4000/computer_science/cpu-scheduling-algorithm/" rel="alternate" type="text/html" title="CPU 스케줄링 알고리즘" /><published>2021-06-21T00:00:00+09:00</published><updated>2021-06-21T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/cpu-scheduling-algorithm</id><content type="html" xml:base="http://localhost:4000/computer_science/cpu-scheduling-algorithm/">&lt;p&gt;스케줄링(scheduling)은 다중 프로그래밍을 가능하게 하는 운영 체제의 동작 기법이다. 
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="os" /><category term="virtual-memory" /><summary type="html">페이지 교체 알고리즘은 페이징 기법으로 메모리를 관리하는 운영체제에서, Page Fault가 발생 하여 새로운 페이지를 할당하기 위해 현재 할당된 페이지 중 어느 것과 교체할지를 결정하는 방법이다. 이 알고리즘이 사용되는 시기는 Page Fault가 발생해 새로운 페이지를 적재 해야하나 페이지를 적재할 공간이 없어 이미 적재되어 있는 페이지 중 교체할 페이지를 정할 때 사용된다.</summary></entry><entry><title type="html">CPU 스케줄링 알고리즘</title><link href="https://dhkdn9192.github.io//computer_science/cpu-scheduling-algorithm/" rel="alternate" type="text/html" title="CPU 스케줄링 알고리즘" /><published>2021-06-21T00:00:00+09:00</published><updated>2021-06-21T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//computer_science/cpu-scheduling-algorithm</id><content type="html" xml:base="https://dhkdn9192.github.io//computer_science/cpu-scheduling-algorithm/">&lt;p&gt;스케줄링(scheduling)은 다중 프로그래밍을 가능하게 하는 운영 체제의 동작 기법이다. 
 운영 체제는 프로세스들에게 CPU 등의 자원 배정을 적절히 함으로써 시스템의 성능을 개선할 수 있다.&lt;/p&gt;
 
 &lt;h2 id=&quot;1-스케줄링-알고리즘-평가-기준&quot;&gt;1. 스케줄링 알고리즘 평가 기준&lt;/h2&gt;
@@ -337,7 +402,7 @@ Aging 등의 방식으로 대기 시간이 긴 프로세스를 높은 우선순�
 &lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;https://ko.wikipedia.org/wiki/%EC%8A%A4%EC%BC%80%EC%A4%84%EB%A7%81_(%EC%BB%B4%ED%93%A8%ED%8C%85)&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="os" /><category term="cpu-scheduling" /><summary type="html">스케줄링(scheduling)은 다중 프로그래밍을 가능하게 하는 운영 체제의 동작 기법이다. 운영 체제는 프로세스들에게 CPU 등의 자원 배정을 적절히 함으로써 시스템의 성능을 개선할 수 있다.</summary></entry><entry><title type="html">Kafka’s exactly-once delivery</title><link href="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/" rel="alternate" type="text/html" title="Kafka’s exactly-once delivery" /><published>2021-06-18T00:00:00+09:00</published><updated>2021-06-18T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kakfa-exactly-once-delivery/">&lt;p&gt;Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="os" /><category term="cpu-scheduling" /><summary type="html">스케줄링(scheduling)은 다중 프로그래밍을 가능하게 하는 운영 체제의 동작 기법이다. 운영 체제는 프로세스들에게 CPU 등의 자원 배정을 적절히 함으로써 시스템의 성능을 개선할 수 있다.</summary></entry><entry><title type="html">Kafka’s exactly-once delivery</title><link href="https://dhkdn9192.github.io//apache-kafka/kakfa-exactly-once-delivery/" rel="alternate" type="text/html" title="Kafka’s exactly-once delivery" /><published>2021-06-18T00:00:00+09:00</published><updated>2021-06-18T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//apache-kafka/kakfa-exactly-once-delivery</id><content type="html" xml:base="https://dhkdn9192.github.io//apache-kafka/kakfa-exactly-once-delivery/">&lt;p&gt;Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?&lt;/p&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
@@ -529,7 +594,7 @@ baseOffset: 17 lastOffset: 17 count: 1 baseSequence: &lt;span class=&quot;nt&quo
   &lt;li&gt;https://medium.com/@jaykreps/exactly-once-support-in-apache-kafka-55e1fdd0a35f&lt;/li&gt;
   &lt;li&gt;https://www.joinc.co.kr/w/man/12/Kafka/exactlyonce&lt;/li&gt;
   &lt;li&gt;https://blog.voidmainvoid.net/354&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-kafka" /><category term="kafka" /><summary type="html">Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?</summary></entry><entry><title type="html">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?</title><link href="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/" rel="alternate" type="text/html" title="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?" /><published>2021-06-16T00:00:00+09:00</published><updated>2021-06-16T00:00:00+09:00</updated><id>http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming</id><content type="html" xml:base="http://localhost:4000/apache-kafka/kafka-consuming-in-sparkstreaming/">&lt;p&gt;컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-kafka" /><category term="kafka" /><summary type="html">Kafka에서 메시지를 중복이나 누락 없이 순서대로 전달되도록 보증하려면 어떻게 해야할까?</summary></entry><entry><title type="html">Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?</title><link href="https://dhkdn9192.github.io//apache-kafka/kafka-consuming-in-sparkstreaming/" rel="alternate" type="text/html" title="Spark Streaming에서 Kafka 메시지를 효율적으로 읽으려면?" /><published>2021-06-16T00:00:00+09:00</published><updated>2021-06-16T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//apache-kafka/kafka-consuming-in-sparkstreaming</id><content type="html" xml:base="https://dhkdn9192.github.io//apache-kafka/kafka-consuming-in-sparkstreaming/">&lt;p&gt;컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.&lt;/p&gt;
 
 &lt;p&gt;모든 컨슈머는 특정 컨슈머 그룹에 소속된다. 만약 같은 그룹의 컨슈머들이 같은 토픽을 subscribe한다면 각 컨슈머는 서로 겹치지 않게 파티션의 데이터를 읽게 된다.&lt;/p&gt;
 
@@ -601,7 +666,7 @@ baseOffset: 17 lastOffset: 17 count: 1 baseSequence: &lt;span class=&quot;nt&quo
   &lt;li&gt;https://oreilly.com/library/view/kafka-the-definitive/9781491936153/ch04.html&lt;/li&gt;
   &lt;li&gt;https://stackoverflow.com/questions/55474645/how-to-optimize-number-of-executor-instances-in-spark-structured-streaming-app&lt;/li&gt;
   &lt;li&gt;https://community.cloudera.com/t5/Support-Questions/What-s-the-right-number-of-cores-and-executors-for-a-spark/m-p/61943&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-kafka" /><category term="spark" /><category term="kafka" /><summary type="html">컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.</summary></entry><entry><title type="html">Java : String vs StringBuffer, StringBuilder</title><link href="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/" rel="alternate" type="text/html" title="Java : String vs StringBuffer, StringBuilder" /><published>2021-06-14T00:00:00+09:00</published><updated>2021-06-14T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/java-stringbuffer-stringbuilder</id><content type="html" xml:base="http://localhost:4000/computer_science/java-stringbuffer-stringbuilder/">&lt;p&gt;Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-kafka" /><category term="spark" /><category term="kafka" /><summary type="html">컨슈머는 Kafka로부터 메시지를 subscribe하고 처리하여 원하는 저장소에 전달한다. 만약 프로듀서가 토픽에 메시지를 입력하는 속도가 컨슈머의 처리 속도를 초과한다면 어떻게 해야할까? 이 경우엔 여러 컨슈머가 같은 토픽을 subscribe할 수 있도록 컨슈머 그룹를 확장해야 한다.</summary></entry><entry><title type="html">Java : String vs StringBuffer, StringBuilder</title><link href="https://dhkdn9192.github.io//computer_science/java-stringbuffer-stringbuilder/" rel="alternate" type="text/html" title="Java : String vs StringBuffer, StringBuilder" /><published>2021-06-14T00:00:00+09:00</published><updated>2021-06-14T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//computer_science/java-stringbuffer-stringbuilder</id><content type="html" xml:base="https://dhkdn9192.github.io//computer_science/java-stringbuffer-stringbuilder/">&lt;p&gt;Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자&lt;/p&gt;
 
 &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;myQuery&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;select * &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
@@ -701,7 +766,7 @@ baseOffset: 17 lastOffset: 17 count: 1 baseSequence: &lt;span class=&quot;nt&quo
 
 &lt;ul&gt;
   &lt;li&gt;도서 “자바 성능 튜닝 이야기”, 인사이트, 이상민 지음&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="jvm" /><category term="gc" /><category term="java" /><summary type="html">Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자</summary></entry><entry><title type="html">Kafka + Spark Streaming Integration</title><link href="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/" rel="alternate" type="text/html" title="Kafka + Spark Streaming Integration" /><published>2021-06-08T00:00:00+09:00</published><updated>2021-06-08T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration</id><content type="html" xml:base="http://localhost:4000/apache-spark/apache-kafka/kafka-sparkstreaming-integration/">&lt;p&gt;Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="jvm" /><category term="gc" /><category term="java" /><summary type="html">Java String으로 문자열 연산을 수행하기 위해 아래와 같은 쿼리를 수행한다고 가정해보자</summary></entry><entry><title type="html">Kafka + Spark Streaming Integration</title><link href="https://dhkdn9192.github.io//apache-spark/apache-kafka/kafka-sparkstreaming-integration/" rel="alternate" type="text/html" title="Kafka + Spark Streaming Integration" /><published>2021-06-08T00:00:00+09:00</published><updated>2021-06-08T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//apache-spark/apache-kafka/kafka-sparkstreaming-integration</id><content type="html" xml:base="https://dhkdn9192.github.io//apache-spark/apache-kafka/kafka-sparkstreaming-integration/">&lt;p&gt;Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Receiver-based Approach&lt;/li&gt;
@@ -761,7 +826,7 @@ baseOffset: 17 lastOffset: 17 count: 1 baseSequence: &lt;span class=&quot;nt&quo
   &lt;li&gt;https://tommypagy.tistory.com/155&lt;/li&gt;
   &lt;li&gt;https://spark.apache.org/docs/2.4.6/streaming-kafka-0-8-integration.html&lt;/li&gt;
   &lt;li&gt;https://databricks.com/blog/2015/03/30/improvements-to-kafka-integration-of-spark-streaming.html&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="apache-kafka" /><category term="spark" /><category term="kafka" /><category term="spark-streaming" /><summary type="html">Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.</summary></entry><entry><title type="html">Python의 GIL</title><link href="http://localhost:4000/computer_science/python-gil/" rel="alternate" type="text/html" title="Python의 GIL" /><published>2021-05-30T00:00:00+09:00</published><updated>2021-05-30T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/python-gil</id><content type="html" xml:base="http://localhost:4000/computer_science/python-gil/">&lt;p&gt;CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다.
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="apache-kafka" /><category term="spark" /><category term="kafka" /><category term="spark-streaming" /><summary type="html">Spark Streaming과 Kafka를 연동하는 방법에는 크게 2가지가 있다.</summary></entry><entry><title type="html">Python의 GIL</title><link href="https://dhkdn9192.github.io//computer_science/python-gil/" rel="alternate" type="text/html" title="Python의 GIL" /><published>2021-05-30T00:00:00+09:00</published><updated>2021-05-30T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//computer_science/python-gil</id><content type="html" xml:base="https://dhkdn9192.github.io//computer_science/python-gil/">&lt;p&gt;CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다.
 이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하지 않기 때문이다.&lt;/p&gt;
 
 &lt;ul&gt;
@@ -821,7 +886,7 @@ reference count가 0이되는 object는 메모리 할당이 해제된다.&lt;/p&
 &lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;https://dgkim5360.tistory.com/entry/understanding-the-global-interpreter-lock-of-cpython&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="python" /><category term="gil" /><summary type="html">CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다. 이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하지 않기 때문이다.</summary></entry><entry><title type="html">Garbage Collection 개념 정리</title><link href="http://localhost:4000/computer_science/garbage-collection/" rel="alternate" type="text/html" title="Garbage Collection 개념 정리" /><published>2021-05-29T00:00:00+09:00</published><updated>2021-05-29T00:00:00+09:00</updated><id>http://localhost:4000/computer_science/garbage-collection</id><content type="html" xml:base="http://localhost:4000/computer_science/garbage-collection/">&lt;p&gt;Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="python" /><category term="gil" /><summary type="html">CPython에서의 GIL은 여러개의 thread로 Python 코드(bytecode)를 실행할 결우, 단 하나의 thread만이 Python Object에 접근할 수 있도록 제한하는 mutex이다. 이 lock이 필요한 이유는 CPython의 메모리 관리가 thread-safe하지 않기 때문이다.</summary></entry><entry><title type="html">Garbage Collection 개념 정리</title><link href="https://dhkdn9192.github.io//computer_science/garbage-collection/" rel="alternate" type="text/html" title="Garbage Collection 개념 정리" /><published>2021-05-29T00:00:00+09:00</published><updated>2021-05-29T00:00:00+09:00</updated><id>https://dhkdn9192.github.io//computer_science/garbage-collection</id><content type="html" xml:base="https://dhkdn9192.github.io//computer_science/garbage-collection/">&lt;p&gt;Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.&lt;/p&gt;
 
 &lt;p&gt;GC가 발생하는 예시로, Java의 String 연산을 빈번하게 수행하면 불필요한 객체가 많이 생성되므로 잦은 GC를 유발하게 되고 성능이 저하될 수 있다.&lt;/p&gt;
 
@@ -1023,106 +1088,4 @@ reference count가 0이되는 object는 메모리 할당이 해제된다.&lt;/p&
   &lt;li&gt;https://d2.naver.com/helloworld/37111&lt;/li&gt;
   &lt;li&gt;https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/G1GettingStarted/index.html&lt;/li&gt;
   &lt;li&gt;https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-15921907-B297-43A4-8C48-DC88035BC7CF&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="jvm" /><category term="gc" /><category term="java" /><summary type="html">Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.</summary></entry><entry><title type="html">효율적인 Spark Join 전략</title><link href="http://localhost:4000/apache-spark/spark-join-strategy/" rel="alternate" type="text/html" title="효율적인 Spark Join 전략" /><published>2021-05-29T00:00:00+09:00</published><updated>2021-05-29T00:00:00+09:00</updated><id>http://localhost:4000/apache-spark/spark-join-strategy</id><content type="html" xml:base="http://localhost:4000/apache-spark/spark-join-strategy/">&lt;p&gt;Spark에서 join을 수행하는 경우는 크게 두 가지로 나눌 수 있다. (1) &lt;em&gt;큰 테이블과 작은 테이블을 조인&lt;/em&gt; 또는 (2) &lt;em&gt;큰 테이블과 큰 테이블을 조인&lt;/em&gt;. Spark은 join을 수행하기 위해 Sort Merge Join, Broadcast Join, Shuffle Hash Join 등의 방법을 제공한다.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;핵심 키워드 : &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sort merge join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shuffle hash join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;broadcast join&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;straggler&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;1-sort-merge-join&quot;&gt;1. Sort Merge Join&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/sort_merge_join.png&quot; alt=&quot;data_engineer_should_know/sort_merge_join.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;1-1-개요&quot;&gt;1-1. 개요&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;모든 노드 간의 &lt;strong&gt;all-to-all communication&lt;/strong&gt; 방식이다.&lt;/li&gt;
-  &lt;li&gt;다음과 같이 두 단계로 수행된다.
-    &lt;ul&gt;
-      &lt;li&gt;(1) 먼저 실제 join 작업을 수행하기 전에 파티션들을 정렬한다. (이 작업만으로도 비용이 크다)&lt;/li&gt;
-      &lt;li&gt;(2) 정렬된 데이터들을 병합하면서 join key가 같은 row들을 join한다.&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Sort Merge Join은 Shuffle Hash Join과 비교할 때, 클러스터 내 데이터 이동이 더 적은 경향이 있다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Spark 2.3부터 디폴트 join 알고리즘으로 사용되고 있다. (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.sql.join.perferSortMergeJoin=true&lt;/code&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;1-2-이상적인-성능을-발휘하려면&quot;&gt;1-2. 이상적인 성능을 발휘하려면&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Join될 파티션들이 최대한 같은 곳에 위치해야 한다. 그렇지 않으면 파티션들을 이동시키기 위해 대량의 shuffle이 발생한다.&lt;/li&gt;
-  &lt;li&gt;DataFrame의 데이터가 클러스터에 균등하게 분배되어 있어야 한다. 그렇지 않으면 특정 노드에 부하가 집중되고 연산 속도가 느려진다.&lt;/li&gt;
-  &lt;li&gt;병렬처리가 이뤄지려면 일정한 수의 고유키가 존재해야 한다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;2-broadcast-join&quot;&gt;2. Broadcast Join&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/dhkdn9192/data_engineer_should_know/master/interview/hadoop/img/broadcast_join.png&quot; alt=&quot;data_engineer_should_know/broadcast_join.png at master · dhkdn9192/data_engineer_should_know (github.com)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;2-1-개요&quot;&gt;2-1. 개요&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;join할 두 테이블 중 작은 것을 모든 executor에 복사(broadcast)한다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;따라서 all-to-all communication 방법으로 shuffle할 필요가 없다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;각 executor에선 보유하고 있는 큰 테이블의 일부와 broadcast된 테이블을 join한다.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;코드 샘플&lt;/p&gt;
-
-    &lt;div class=&quot;language-scala highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.spark.sql.functions.broadcast&lt;/span&gt;
-  
-&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;joinDF&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;bigDF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;broadcast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;smallDF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;joinKey&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;3-shuffle-hash-join&quot;&gt;3. Shuffle Hash Join&lt;/h2&gt;
-
-&lt;h3 id=&quot;3-1-개요&quot;&gt;3-1. 개요&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;map-reduce에 기반한 join 방식이다.&lt;/li&gt;
-  &lt;li&gt;맵 단계에선 join 칼럼을 기준으로 DataFrame을 매핑하고, 리듀스 단계에서 DataFrame을 shuffle하여 join key가 같은 것끼리 join을 수행한다.&lt;/li&gt;
-  &lt;li&gt;Spark은 디폴트로 Sort Merge Join을 사용하므로 Shuffle Hash Join을 사용하려면 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spark.sql.join.perferSortMergeJoin&lt;/code&gt; 옵션을 false로 변경해야 한다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;효율적인-join을-방해하는-것들&quot;&gt;효율적인 Join을 방해하는 것들&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Data Skewness&lt;/strong&gt; : join key가 클러스터에 균일하게 분포해 있지 않으면 특정 파티션이 매우 커질 수 있다. 이는 Spark이 parallel하게 연산을 수행하는 것을 방해한다.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;All-to-all communication&lt;/strong&gt; : broadcast join이 아닐 경우, 두 DF의 데이터 모두에서 대규모 shuffle이 발생한다.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;Limited executor memory&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;data-skewness를-해결하려면&quot;&gt;Data Skewness를 해결하려면?&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Repartitioning&lt;/strong&gt; : 단순히 repartition을 수행하는 것으로 데이터를 파티션들에 더 골고루 분배할 수 있다.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;Key Salting&lt;/strong&gt; : 근본적으로 파티셔닝되는 칼럼 키값에 salting을 적용하여 키가 고르게 분배될 수 있도록 할 수 있다.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;https://towardsdatascience.com/the-art-of-joining-in-spark-dcbd33d693c&lt;/li&gt;
-  &lt;li&gt;https://medium.com/datakaresolutions/optimize-spark-sql-joins-c81b4e3ed7da&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="apache-spark" /><category term="spark" /><category term="jvm" /><summary type="html">Spark에서 join을 수행하는 경우는 크게 두 가지로 나눌 수 있다. (1) 큰 테이블과 작은 테이블을 조인 또는 (2) 큰 테이블과 큰 테이블을 조인. Spark은 join을 수행하기 위해 Sort Merge Join, Broadcast Join, Shuffle Hash Join 등의 방법을 제공한다.</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>김동혁</name><email>dhkdn9192@naver.com</email></author><category term="computer_science" /><category term="jvm" /><category term="gc" /><category term="java" /><summary type="html">Java에선 메모리 관리를 Garbage Collector가 수행한다. 메모리 상의 불필요한 객체를 찾아 해제하는 역할을 수행한다.</summary></entry></feed>
