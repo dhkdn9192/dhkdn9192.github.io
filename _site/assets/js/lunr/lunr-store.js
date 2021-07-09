@@ -108,8 +108,8 @@ var store = [{
         "teaser": null
       },{
         "title": "TCP의 연결세션 생성과 종료",
-        "excerpt":"TCP의 연결세션 생성과 종료를 위한 3-way handshake, 4-way handshake 개념과 절차를 정리한다. 1. 3-way handshake TCP/IP프로토콜을 이용해서 통신을 하는 응용프로그램이 데이터를 전송하기 전에 정확한 전송을 보장하기 위해 상대방 컴퓨터와 사전에 세션을 수립하는 과정을 의미한다 양쪽 모두 데이타를 전송할 준비가 되었다는 것을 보장하고, 실제로 데이타 전달이 시작하기전에 한쪽이 다른 쪽이 준비되었다는...","categories": [],
-        "tags": [],
-        "url": "https://dhkdn9192.github.io//tcp-connection-session/",
+        "excerpt":"TCP의 연결세션 생성과 종료를 위한 3-way handshake, 4-way handshake 개념과 절차를 정리한다. 1. 3-way handshake TCP/IP프로토콜을 이용해서 통신을 하는 응용프로그램이 데이터를 전송하기 전에 정확한 전송을 보장하기 위해 상대방 컴퓨터와 사전에 세션을 수립하는 과정을 의미한다 양쪽 모두 데이타를 전송할 준비가 되었다는 것을 보장하고, 실제로 데이타 전달이 시작하기전에 한쪽이 다른 쪽이 준비되었다는...","categories": ["computer_science"],
+        "tags": ["tcp","network"],
+        "url": "https://dhkdn9192.github.io//computer_science/tcp-connection-session/",
         "teaser": null
       }]

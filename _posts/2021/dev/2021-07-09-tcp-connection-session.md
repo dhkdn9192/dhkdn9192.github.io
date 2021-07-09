@@ -4,6 +4,11 @@ comments: true
 toc: true
 toc_sticky: true
 toc_label: 목차
+categories:
+- computer_science
+tags:
+- tcp
+- network
 ---
 
 TCP의 연결세션 생성과 종료를 위한 3-way handshake, 4-way handshake 개념과 절차를 정리한다.
